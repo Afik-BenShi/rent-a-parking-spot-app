@@ -44,7 +44,7 @@ const barStyles = StyleSheet.create({
         margin: 0,
         padding: 12,
         gap:12,
-        alignContent:"center"
+        alignItems:"center",
     },
     nameAndPhoneContainer: {
         flex: 2,
