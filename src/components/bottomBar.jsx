@@ -3,11 +3,19 @@ import { ButtonGroup } from "@rneui/themed";
 import { Text, StyleSheet } from 'react-native';
 
 const BottomBar = ({navigation}) => {
-   <Text> Hey this is the bottom bar</Text>
     const routePages = (value) => {
-      console.log('value', value)
-      if (value == 0)
-        navigation.navigate('addParking')
+      switch (value) {
+        case 0: 
+          navigation.navigate('addParking')
+        case 1: 
+          navigation.navigate('history')
+        case 2: 
+          navigation.navigate('changeType')
+        case 3: 
+          navigation.navigate('current')
+        case 4: 
+          navigation.navigate('homePage')
+      }
     }
 
     const [selectedIndex, setSelectedIndex] = useState(0);
