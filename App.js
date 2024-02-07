@@ -21,21 +21,21 @@ export default function App() {
              component={addParking}
              options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
             />
-        <Stack.Screen
+        {/* <Stack.Screen
              name = "history"
              component={historyComponent}
              options={{title: 'history parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          />
-        <Stack.Screen
+          /> */}
+        {/* <Stack.Screen
              name = "changeType"
              component={changeTypeComponent}
              options={{title: 'change type', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          />
-        <Stack.Screen
+          /> */}
+        {/* <Stack.Screen
              name = "current"
              component={currentComponent}
              options={{title: 'My Current Parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          />
+          /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -18,7 +18,7 @@ const BottomBar = ({navigation}) => {
       }
     }
 
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(4);
     return (
     <>
     <ButtonGroup
@@ -58,25 +58,5 @@ const styles = StyleSheet.create({
       textAlign: 'center',
     },
   });
-  
-
-// const styles = StyleSheet.create({
-// container: {
-//   backgroundColor : "#lightgray",
-//   position: 'absolute',
-//   bottom: 0,
-//   left: 0,
-//   right: 0,
-//   padding: 10,
-//   marginBottom : 10
-// },
-// button: {
-//     flex: 1,
-//     margin: 5,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     height: '100%',
-//   },
-// })
 
 export default BottomBar;
