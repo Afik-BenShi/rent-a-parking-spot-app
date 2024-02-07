@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button, Platform , Text, SafeAreaView, StyleSheet, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { COLORS } from '../constants';
+import { COLORS } from '../../assets/theme';
 
 const DateTimePickerExample = ({ minDate, onDateChange }) => {
     const [date, setDate] = useState(new Date());

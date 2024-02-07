@@ -1,50 +1,17 @@
-import React from 'react';
-import { useState } from "react";
-import { View, SafeAreaView, ScrollView, TextInput, Button, StyleSheet, CheckBox, Text } from "react-native";
-import { Link, Stack, useRouter } from "expo-router";
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView} from "react-native";
+import Welcome from "../components/Welcome";
 
-import { COLORS, icons, images, SIZES } from "../constants";
-import {
-    ScreenHeaderBtn,
-    Welcome,
-  } from "../components";
-  
+  import { COLORS} from "../../assets/theme";
+
     
 const AddParking = () => {
-    const router = useRouter()
-    const [searchTerm, setSearchTerm] = useState("");
-  
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-            <Stack.Screen
-            options={{
-                headerShadowVisible: true,
-                headerStyle: { backgroundColor: COLORS.lightPurple },
-                
-                
-                headerTitle: "Add parking",
-            }}
-            />
-
             <ScrollView>
-        
-            
                 <Welcome/>
-                
-
-                
-
-
-            </ScrollView>
-        
-        
-        
-        
-        
-        </SafeAreaView>
-
-        
-    
+            </ScrollView>    
+        </SafeAreaView>   
     )
 }
 

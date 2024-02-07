@@ -2,7 +2,14 @@ import React, {useState} from 'react';
 import { ButtonGroup } from "@rneui/themed";
 import { Text, StyleSheet } from 'react-native';
 
-const BottomBar = () => {
+const BottomBar = ({navigation}) => {
+   <Text> Hey this is the bottom bar</Text>
+    const routePages = (value) => {
+      console.log('value', value)
+      if (value == 0)
+        navigation.navigate('addParking')
+    }
+
     const [selectedIndex, setSelectedIndex] = useState(0);
     return (
     <>
@@ -11,14 +18,15 @@ const BottomBar = () => {
       selectedIndex={selectedIndex}
       onPress={(value) => {
         setSelectedIndex(value);
+        routePages(value)
       }}
       textStyle={styles.buttonText}
       buttonStyle={styles.button}
-      containerStyle={styles.container}    />
+      containerStyle={styles.container}   
+    />
   </>
 )
 }
-
 
 const styles = StyleSheet.create({
     container: {
