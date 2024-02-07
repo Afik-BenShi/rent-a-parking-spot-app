@@ -12,6 +12,7 @@ export default function App() {
       {/* <Slider minPrice={1} maxPrice={100} title={"Price"}/> */}
       <Filters/>
       {/* <BottomBar/> */}
+      <BottomBar/>
       <StatusBar style="auto" />
     </View>
   );
