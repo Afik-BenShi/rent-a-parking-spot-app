@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
-import { Switch, SearchBar } from '@rneui/themed';
+import BottomBar from '../components/bottomBar'
 
 const telAvivStreetNames = [
   'Dizengoff',
@@ -63,7 +63,7 @@ const generateFakeParkingSpots = () => {
   return spots;
 };
 
-const ParkingScreen = () => {
+const ParkingScreen = ({navigation}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [parkingSpots, setParkingSpots] = useState(generateFakeParkingSpots());
   const [expandedSpot, setExpandedSpot] = useState(null);
@@ -169,6 +169,7 @@ const ParkingScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
+      <BottomBar navigation={navigation}/>
     </View>
   );
 };

@@ -14,16 +14,14 @@ import {
   FlatList,
   ScrollView
 } from "react-native";
-import { useRouter } from "expo-router";
 
 import styles from './welcome.style'
-import COLORS from "../../assets/theme";
+import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
 
  
 const Welcome = () => {
-  const router = useRouter();
   const [detailsShow, setdetailsShow] = useState(false);
 
   // State to hold the entered details
