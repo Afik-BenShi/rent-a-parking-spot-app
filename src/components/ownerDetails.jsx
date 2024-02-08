@@ -8,7 +8,7 @@ export function OwnerDetailsBar({ owner }) {
     };
     const avatarLetters = getOwnerLetters(owner.name);
     return (
-        <Pressable onPress={makePhoneCall}>
+        <Pressable style={{overflow:"visible"}}onPress={makePhoneCall}>
             <View style={barStyles.container}>
                 <Avatar
                     size={48}
@@ -44,6 +44,9 @@ const barStyles = StyleSheet.create({
         padding: 12,
         gap: 12,
         alignItems: "center",
+        borderTopWidth: 1,
+        borderBottomWidth:1,
+        borderColor: "rgba(0,0,0,0.1)",
     },
     nameAndPhoneContainer: {
         flex: 2,
