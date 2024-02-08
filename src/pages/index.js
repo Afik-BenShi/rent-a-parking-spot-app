@@ -8,7 +8,7 @@ import {
     Welcome,
   } from "../components";
   
-//import AddParking from './Hello';
+
     
 const Home = () => {
     const router = useRouter()
