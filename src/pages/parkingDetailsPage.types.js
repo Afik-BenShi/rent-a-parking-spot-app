@@ -2,8 +2,8 @@
  * @typedef {{
  *  id: string,
  *  location: {
- *      latitude: string,
- *      longitude: string,
+ *      latitude: number,
+ *      longitude: number,
  *      address: string,
  *  },
  *  owner: {

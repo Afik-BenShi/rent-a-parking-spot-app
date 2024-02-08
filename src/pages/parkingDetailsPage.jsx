@@ -6,13 +6,14 @@ import { OwnerDetailsBar } from "../components/ownerDetails";
 import { AvailabilityBox } from "../components/availabilityBox";
 import { dateRangeFormat } from "../utils/dateTime";
 import "./parkingDetailsPage.types";
+import GoogleMaps from "../components/GoogleMaps";
 
 /**
  *  @type {React.FC}
  *  @param {ParkingDetailsPageProps} Props
  */
 export default function ParkingDetailsPage({ route, navigation }) {
-    const { details = mock, onReserveParking = (r) => {} } = route.params;
+    const { details = mock, onReserveParking = (_) => {} } = route.params;
 
     const parkingImage = details.parkingImage
         ? { uri: details.parkingImage }
@@ -20,10 +21,25 @@ export default function ParkingDetailsPage({ route, navigation }) {
           require("../../assets/parking-details-images/parkingImagePlaceholder.png");
 
     const parkingReserveHandler = () => {
-        console.log("reserved!");
-    }
+        /** @type {ParkingReservation} */
+        const reservation = {
+            id: "1",
+            parkingId: details.id,
+            scheduling: {
+                startTime: new Date(),
+            },
+            reservingUser: {
+                id: "4",
+                name: "Yonatan Mergui",
+                phoneNumber: "050-1112222",
+                carPlate: "989-27-864",
+            },
+        };
+        onReserveParking(reservation);
+        alert(`reserved! ${JSON.stringify(reservation, undefined, 2)}`);
+    };
     return (
-        <SafeAreaView style={styles.pageContainer}>
+        <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
                 <Text h3 style={styles.text}>
                     Parking - {details.location.address}
@@ -35,15 +51,20 @@ export default function ParkingDetailsPage({ route, navigation }) {
                     Availavility
                 </Text>
                 <AvailabilityBox availability={details.availability} />
+                <GoogleMaps
+                    location={details.location}
+                    style={styles.map}
+                    movable
+                />
             </ScrollView>
             <Button
                 title={"Start Parking"}
-                titleStyle={{fontSize:30}}
+                titleStyle={{ fontSize: 30 }}
                 buttonStyle={styles.parkBtn}
                 containerStyle={styles.parkBtnContainer}
                 onPress={parkingReserveHandler}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -51,12 +72,14 @@ const styles = StyleSheet.create({
     pageContainer: {
         flex: 1,
         position: "relative",
-        borderWidth: 1,
-        borderColor: "#000",
+        // borderWidth: 1,
+        // borderColor: "#000",
     },
     scrollable: {
         paddingTop: 12,
         gap: 6,
+        overflow: "scroll",
+        paddingBottom: 144,
     },
     image: {
         height: 200,
@@ -66,14 +89,20 @@ const styles = StyleSheet.create({
     parkBtn: {
         height: "100%",
         borderRadius: 0,
+        paddingBottom: 36,
     },
     parkBtnContainer: {
         alignSelf: "center",
         position: "absolute",
         bottom: 0,
         width: "100%",
-        height: "10%",
+        height: 120,
         borderRadius: 0,
+    },
+    map: {
+        marginTop:12,
+        height: 200,
+        width: "auto",
     },
 });
 
@@ -81,8 +110,8 @@ const styles = StyleSheet.create({
 const mock = {
     id: "1",
     location: {
-        latitude: "32.077890",
-        longitude: "34.774304",
+        latitude: 32.07789,
+        longitude: 34.774304,
         address: "Dizengoff square",
     },
     owner: {
