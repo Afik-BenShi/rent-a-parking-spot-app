@@ -37,10 +37,9 @@
  */
 
 /**
- * @typedef {{
- *  route:{ 
- *      params:{
- *          parkingDetails: ParkingDetails,
- *          onReserveParking?: (reservation: ParkingReservation) => void | Promise<void>,
- * }}}} ParkingDetailsPageProps
+ * @typedef {import('@react-navigation/native-stack').NativeStackScreenProps<{
+ *  parkingDetails:{
+ *      details: ParkingDetails,
+ *      onReserveParking?: (reservation: ParkingReservation) => void | Promise<void>,
+ * }}, "parkingDetails">} ParkingDetailsPageProps
  */
