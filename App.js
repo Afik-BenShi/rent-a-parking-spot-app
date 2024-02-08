@@ -1,7 +1,9 @@
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
 import addParking from './src/pages/AddParking'
+import ParkingDetailsPage from './src/pages/parkingDetailsPage';
 
 import { COLORS} from "./assets/theme";
 
@@ -25,17 +27,21 @@ export default function App() {
              name = "history"
              component={historyComponent}
              options={{title: 'history parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          /> */}
+            /> */}
         {/* <Stack.Screen
              name = "changeType"
              component={changeTypeComponent}
              options={{title: 'change type', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          /> */}
+            /> */}
         {/* <Stack.Screen
              name = "current"
              component={currentComponent}
              options={{title: 'My Current Parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-          /> */}
+            /> */}
+          <Stack.Screen
+            name="parkingDetails"
+            component={ParkingDetailsPage}
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );
