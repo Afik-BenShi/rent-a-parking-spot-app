@@ -1,7 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
-import addParking from './src/pages/AddParking'
+import addParking from './src/pages/AddParking';
+
+import { View, Pressable } from 'react-native';
+import { Header, Icon, Text } from 'react-native-elements';
 
 import { COLORS} from "./assets/theme";
 
@@ -14,7 +17,7 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={homePage}
-          options={{title: 'Home page'}}
+          options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
         />
         <Stack.Screen
              name = "addParking"

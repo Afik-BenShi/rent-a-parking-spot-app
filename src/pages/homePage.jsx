@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
 import BottomBar from '../components/bottomBar'
+import { COLORS } from '../../assets/theme';
 
 const telAvivStreetNames = [
   'Dizengoff',
@@ -86,91 +87,95 @@ const ParkingScreen = ({navigation}) => {
     const isExpanded = expandedSpot === item.id;
 
     return (
-      <Pressable onPress={() => handleSpotPress(item.id)}>
-        <View style={[styles.parkingSpotContainer, isExpanded && styles.expandedSpot]}>
-          <View style={styles.addressInfo}>
-            <Text style={styles.boldText}>
-              {item.street} {item.number}
-            </Text>
-            <Text style={styles.parkingSpotDetails}>
-              Available until {item.availableUntil}
-            </Text>
-          </View>
-          <Text style={styles.parkingSpotDetails}>${item.price} per hr</Text>
-          <Text style={styles.parkingSpotDetails}>{item.distance} km away from me</Text>
-
-          {isExpanded && (
-            <View style={styles.additionalDetails}>
-              <Text style={styles.detailsTitle}>Spot Details:</Text>
-              <Text>{item.details}</Text>
-
-              <View style={{ marginVertical: 10 }}></View>
-
-              <Text style={styles.detailsTitle}>Available Parking Time:</Text>
-              <Text>
-                {item.startTime} - {item.endTime}
+      <SafeAreaView style={{ flex: 1}}>
+        <Pressable onPress={() => handleSpotPress(item.id)}>
+          <View style={[styles.parkingSpotContainer, isExpanded && styles.expandedSpot]}>
+            <View style={styles.addressInfo}>
+              <Text style={styles.boldText}>
+                {item.street} {item.number}
               </Text>
+              <Text style={styles.parkingSpotDetails}>
+                Available until {item.availableUntil}
+              </Text>
+            </View>
+            <Text style={styles.parkingSpotDetails}>${item.price} per hr</Text>
+            <Text style={styles.parkingSpotDetails}>{item.distance} km away from me</Text>
 
-              <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.navigateButton} onPress={() => console.log('Navigate pressed')}>
-                  <Icon name="map-marker" type="font-awesome" color="#777" />
-                  <Text style={styles.buttonText}>Navigate</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.chatButton}
-                  onPress={() => console.log(`Chat with ${item.owner} pressed`)}
-                >
-                  <Icon name="comment" type="font-awesome" color="#777" />
-                  <Text style={styles.buttonText}>Chat with {item.owner}</Text>
+            {isExpanded && (
+              <View style={styles.additionalDetails}>
+                <Text style={styles.detailsTitle}>Spot Details:</Text>
+                <Text>{item.details}</Text>
+
+                <View style={{ marginVertical: 10 }}></View>
+
+                <Text style={styles.detailsTitle}>Available Parking Time:</Text>
+                <Text>
+                  {item.startTime} - {item.endTime}
+                </Text>
+
+                <View style={styles.buttonsContainer}>
+                  <TouchableOpacity style={styles.navigateButton} onPress={() => console.log('Navigate pressed')}>
+                    <Icon name="map-marker" type="font-awesome" color="#777" />
+                    <Text style={styles.buttonText}>Navigate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.chatButton}
+                    onPress={() => console.log(`Chat with ${item.owner} pressed`)}
+                  >
+                    <Icon name="comment" type="font-awesome" color="#777" />
+                    <Text style={styles.buttonText}>Chat with {item.owner}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.startButton} onPress={() => console.log("Let's Start pressed")}>
+                  <Text style={styles.startButtonText}>Let's Start</Text>
                 </TouchableOpacity>
               </View>
-
-              <TouchableOpacity style={styles.startButton} onPress={() => console.log("Let's Start pressed")}>
-                <Text style={styles.startButtonText}>Let's Start</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </Pressable>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <Header
-        leftComponent={
-          <View style={styles.leftHeader}>
-            <Pressable onPress={() => console.log('Menu button pressed!')}>
-              <Icon name="menu" color="#fff" iconStyle={styles.menuIcon} />
-            </Pressable>
-            <Text style={styles.headerText}>SmartPark</Text>
+            )}
           </View>
-        }
-        containerStyle={styles.headerContainer}
-      />
+        </Pressable>
+      </SafeAreaView>
+      );
+    };
 
-      <View style={styles.searchContainer}>
-        <Input
-          placeholder="Where would you like to park?"
-          leftIcon={<Icon name="search" size={23} color="black" />}
-          containerStyle={styles.searchInputContainer}
-          inputContainerStyle={styles.searchInputInnerContainer}
-          placeholderTextColor="#bbb"
+    return (
+      <SafeAreaView style={{ flex: 1}}>
+      <View style={styles.container}>
+        <Header
+          leftComponent={
+            <View style={styles.leftHeader}>
+              <Pressable onPress={() => console.log('Menu button pressed!')}>
+                <Icon name="menu" color="#fff" iconStyle={styles.menuIcon} />
+              </Pressable>
+              <Text style={styles.headerText}>SmartPark</Text>
+            </View>
+          }
+          containerStyle={styles.headerContainer}
         />
-      </View>
 
-      <View style={styles.timePickerContainer}>
-        {/* Add your time picker components here */}
-      </View>
+        <View style={styles.searchContainer}>
+          <Input
+            placeholder="Where would you like to park?"
+            leftIcon={<Icon name="search" size={23} color="black" />}
+            containerStyle={styles.searchInputContainer}
+            inputContainerStyle={styles.searchInputInnerContainer}
+            placeholderTextColor="#bbb"
+          />
+        </View>
 
-      <FlatList
-        data={parkingSpots}
-        renderItem={renderParkingSpot}
-        keyExtractor={(item) => item.id.toString()}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      />
-      <BottomBar navigation={navigation}/>
-    </View>
+        <View style={styles.timePickerContainer}>
+          {/* Add your time picker components here */}
+        </View>
+
+        <FlatList
+          data={parkingSpots}
+          renderItem={renderParkingSpot}
+          keyExtractor={(item) => item.id.toString()}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
+        <BottomBar navigation={navigation}/>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -261,7 +266,7 @@ const styles = StyleSheet.create({
   navigateButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 2,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
   chatButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
