@@ -195,8 +195,8 @@ return (
                     <Text style={styles.inputLabel}>   Start time : </Text>
                 </View>
 
-                <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange} />
-
+                <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange}/>
+                <Text> </Text>
 
                 <View>
                     <Text style={styles.inputLabel}>   End time : </Text>
@@ -204,7 +204,8 @@ return (
                 </View>
 
                 <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} />
-
+                <Text> </Text>
+                
                 <View>
                     <Text>start: {startDate ? startDate.toLocaleString() : 'Not selected'}</Text>
                     <Text>end: {endDate ? endDate.toLocaleString() : 'Not selected'}</Text>

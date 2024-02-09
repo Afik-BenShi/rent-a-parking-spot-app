@@ -18,7 +18,9 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        //screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen
           name="Home"
           component={homePage}
@@ -55,6 +57,7 @@ export default function App() {
           <Stack.Screen
             name="submitParkingDetails"
             component={SubmitPersonalDetails}
+            options={{ headerShown: false }} // to remove Stack header
           />
 
       </Stack.Navigator>
