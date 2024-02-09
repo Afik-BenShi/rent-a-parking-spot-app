@@ -22,6 +22,9 @@ const COLORS = {
   orenge: '#FB8C00',
   darkBlue: '#1F4690',
   veryDarkBlue: '#130D33',
+
+  background: '#F2F2F2',
+  lightBackground: '#e8ecf4',  //light grey 
 };
 
 const FONT = {
