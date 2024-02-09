@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
-
 import { COLORS} from "../../assets/theme";
 
 import {
@@ -12,6 +11,7 @@ import {
   ScrollView,
   Text,
 } from 'react-native';
+import NextBackBtn from '../components/nextAndBackBtn';
 
 export default function MyAddParking ({navigation}) {
   
@@ -71,24 +71,29 @@ export default function MyAddParking ({navigation}) {
   
   
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-            <ScrollView>
-                <FillPersonalDetails 
-                    sendDataToParent={handleInputChange} 
-                    sendStartDateToParent={handleStartDateChange}
-                    sendEndDateToParent={handleEndDateChange}/>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
+        <ScrollView>
+          <FillPersonalDetails 
+            sendDataToParent={handleInputChange} 
+            sendStartDateToParent={handleStartDateChange}
+            sendEndDateToParent={handleEndDateChange}/>
 
-                <TouchableOpacity style={styles.finishButton} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Finish</Text>
-                </TouchableOpacity>
+          {/*<TouchableOpacity style={styles.finishButton} onPress={() => navigation.navigate("signIn")}>
+            <Text style={styles.buttonText}>SignIn-page</Text>
+          </TouchableOpacity>
+    */}
+        
 
-                <TouchableOpacity style={styles.finishButton} onPress={() => navigation.navigate("signIn")}>
-                    <Text style={styles.buttonText}>SignIn-page</Text>
-                </TouchableOpacity>
-                
-            </ScrollView>    
-        </SafeAreaView>      
-  );
+          <NextBackBtn
+            nextText="Next"
+            backText="Back"
+            navigation={navigation}
+            onNextPress={handleSubmit}
+          />    
+        
+        </ScrollView>   
+      </SafeAreaView>   
+    );
 }
 
 const styles = StyleSheet.create({
@@ -145,4 +150,46 @@ startButtonText: {
     color: '#333',
     fontWeight: 'bold',
 },
+btn: {
+  borderWidth: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 8,
+  paddingVertical: 8,
+  paddingHorizontal: 16,
+  backgroundColor: 'transparent',
+  borderColor: '#266EF1',
+},
+btnGroup: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginHorizontal: -6,
+  marginTop: 18,
+},
+btnText: {
+  fontSize: 14,
+  lineHeight: 20,
+  fontWeight: '600',
+  color: '#266EF1',
+},
+btnPrimary: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 8,
+  paddingVertical: 8,
+  paddingHorizontal: 16,
+  borderWidth: 1,
+  backgroundColor: '#266EF1',
+  borderColor: '#266EF1',
+},
+btnPrimaryText: {
+  fontSize: 14,
+  lineHeight: 20,
+  fontWeight: '600',
+  color: '#fff',
+},
+
 });

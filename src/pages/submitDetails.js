@@ -12,6 +12,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS } from '../../assets/theme';
+import NextBackBtn from '../components/nextAndBackBtn';
 
 
 
@@ -29,7 +30,7 @@ export default function SubmitDetails({ navigation, route }) {
                         <View style={styles.header}>
                             <View style={styles.headerAction}>
                             </View>
-                            <Text style={styles.title}>Your Parking</Text>
+                            <Text style={styles.title}>Your Parking Spot</Text>
                             <View
                                 style={[styles.headerAction, { alignItems: 'flex-end' }]} />
                             </View>
@@ -104,32 +105,31 @@ export default function SubmitDetails({ navigation, route }) {
 
                             </View>
                         </ScrollView>
+                
                     </View>
                 </SafeAreaView>
 
                 <View style={styles.overlay}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            // handle onPress
-                        }}>
-                        <View style={styles.btn}>
-                            <Text style={styles.btnText}>Add Your Parking</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={onGoBackPress}>
-                        <View style={styles.btnSecondary}>
-                            <Text style={styles.btnSecondaryText}>Go Back</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                      <Text style={styles.receiptDescription}>
+                      By clicking Finish,{'\n'} 
+                      the parking will be available for rent by other users {'\n'}
+                      with the details you have entered
+                      </Text>
+
+                      <NextBackBtn 
+                        nextText="Finish"
+                        backText="Back"
+                        navigation={navigation}
+                        onNextPress={()  => { /* handle back press */ }}
+                        paddingBottom={0}
+                      />   
+                    </View>
+
+                
             </View>
         );
     }
 
-    SubmitDetails.navigationOptions = {
-        headerShown: false,
-    };
 
     /*
     houseNumber: "",
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   receiptDescription: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 20,
     color: '#818181',
     textAlign: 'center',
     marginBottom: 12,

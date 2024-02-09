@@ -18,11 +18,13 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        //screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen
           name="Home"
           component={homePage}
-          options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.lightWhite }}}
+          options={{title: 'Home page', headerShown: false, headerStyle: { backgroundColor: COLORS.lightWhite }}}
         />
         <Stack.Screen
              name = "addParking"
@@ -55,6 +57,7 @@ export default function App() {
           <Stack.Screen
             name="submitParkingDetails"
             component={SubmitPersonalDetails}
+            options={{ headerShown: false }} // to remove Stack header
           />
 
       </Stack.Navigator>

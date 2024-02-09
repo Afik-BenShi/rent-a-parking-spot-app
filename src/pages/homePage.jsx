@@ -1,7 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
-import BottomBar from '../components/bottomBar'
+import DesignBottomBar from '../components/designBottomBar'
+
+import {
+  SafeAreaView,
+  TextInput,
+  Image
+} from 'react-native';
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import { COLORS } from '../../assets/theme';
+
 
 const telAvivStreetNames = [
   'Dizengoff',
@@ -137,6 +146,44 @@ const ParkingScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+      
+      {/* Header */}
+      
+      <View style={styles.top}>
+      <SafeAreaView>
+        <View style={styles.header}>
+          
+          <TouchableOpacity
+            onPress={() => console.log('Menu button pressed!')}>
+
+            <FeatherIcon name="menu" size={26} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>SmartPark</Text>
+
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}>
+            <Image
+              style={styles.headerImage}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+        </SafeAreaView>
+      </View>
+      
+
+      {/* Finish header */}
+    
+    
+    
+    
+    
+    <View style={styles.container}>
+    {/*
       <Header
         leftComponent={
           <View style={styles.leftHeader}>
@@ -147,9 +194,32 @@ const ParkingScreen = ({navigation}) => {
           </View>
         }
         containerStyle={styles.headerContainer}
-      />
 
+      />
+      */}
+
+      
+
+      {/******/}
       <View style={styles.searchContainer}>
+          <TextInput
+            placeholder="Search street here"
+            placeholderTextColor="#05141c"
+            style={styles.input} />
+
+          <View style={styles.inputIcon}>
+            <FeatherIcon
+              color="#05141c"
+              name="search"
+              size={16} 
+              marginLeft={20}
+              marginTop={20}/>
+          </View>
+        </View>
+
+      {/******/}
+
+      {/*<View style={styles.searchContainer}>
         <Input
           placeholder="Where would you like to park?"
           leftIcon={<Icon name="search" size={23} color="black" />}
@@ -158,6 +228,7 @@ const ParkingScreen = ({navigation}) => {
           placeholderTextColor="#bbb"
         />
       </View>
+      */}
 
       <View style={styles.timePickerContainer}>
         {/* Add your time picker components here */}
@@ -169,7 +240,9 @@ const ParkingScreen = ({navigation}) => {
         keyExtractor={(item) => item.id.toString()}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
-      <BottomBar navigation={navigation}/>
+      <DesignBottomBar navigation={navigation}/>
+    </View>
+
     </View>
   );
 };
@@ -197,10 +270,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     fontFamily: 'Roboto',
-    width: '100%',
+    //width: '100%',
     textAlign: 'center',
-    borderTopWidth: 70,
-    marginLeft: 0,
+    borderTopWidth: 40,
+    //marginLeft: 0,
   },
   menuIcon: {
     borderRadius: 10,
@@ -208,8 +281,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchContainer: {
-    backgroundColor: '#007BFF',
+    backgroundColor: COLORS.btnBlue,
     padding: 10,
+    height:80,
+    justifyContent:'center',
   },
   searchInputContainer: {
     backgroundColor: 'white',
@@ -297,7 +372,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   startButton: {
-    backgroundColor: 'lightgreen',
+    backgroundColor: COLORS.searchGreen,
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -308,6 +383,57 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: 'bold',
   },
+  /** Header */
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 9999,
+  },
+  /** Top */
+  top: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    backgroundColor: COLORS.btnBlue,
+  },
+  topContent: {
+    paddingHorizontal: 24,
+  },
+  /** Search */
+  searchInput: {
+    height: 50,
+    backgroundColor: COLORS.lightWhite,
+    paddingHorizontal: 16,
+    color: '#1a2525',
+    fontSize: 18,
+    borderRadius: 9999,
+  },
+  
+  /* search input */
+  inputIcon: {
+    position: 'absolute',
+    width: 44,
+    height: 44,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    height: 50,
+    backgroundColor: '#fff',
+    paddingLeft: 44,
+    paddingRight: 24,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  }
 });
 
 export default ParkingScreen;
