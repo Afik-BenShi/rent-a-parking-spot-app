@@ -7,7 +7,10 @@ import NewAddParking from './src/pages/MyAddParking'
 import ParkingDetailsPage from './src/pages/parkingDetailsPage';
 import SignInGoogle from './src/pages/SignInGoogle';
 import SubmitPersonalDetails from './src/pages/submitDetails';
+import addParking from './src/pages/AddParking';
 
+import { View, Pressable } from 'react-native';
+import { Header, Icon, Text } from 'react-native-elements';
 import { COLORS} from "./assets/theme";
 
 const Stack = createNativeStackNavigator();
@@ -19,7 +22,7 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={homePage}
-          options={{title: 'Home page'}}
+          options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
         />
         <Stack.Screen
              name = "addParking"
