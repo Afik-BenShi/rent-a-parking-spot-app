@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   navigateButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 0,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   chatButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 2,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,

@@ -22,7 +22,7 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={homePage}
-          options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
+          options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightWhite }}}
         />
         <Stack.Screen
              name = "addParking"
