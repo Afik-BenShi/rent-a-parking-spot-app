@@ -4,8 +4,6 @@ import homePage from './src/pages/homePage';
 import addParking from './src/pages/AddParking'
 
 import { COLORS } from "./assets/theme";
-import { View, Pressable } from 'react-native';
-import { Header, Icon, Text } from 'react-native-elements';
 
 const Stack = createNativeStackNavigator();
 
