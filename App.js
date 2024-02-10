@@ -3,6 +3,8 @@ import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
 import addParking from './src/pages/AddParking'
 
+import { View, Pressable } from 'react-native';
+import { Header, Icon, Text } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
 
 const Stack = createNativeStackNavigator();
