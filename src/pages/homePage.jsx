@@ -6,6 +6,7 @@ import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
 import BottomBar from '../components/bottomBar';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { parkingSpots, orderedParkingSpots } from '../../assets/mockData'; // Import the mock data
+import { COLORS } from '../../assets/theme';
 
 const ParkingScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: '#007BFF',
+    backgroundColor: COLORS.btnBlue,
     justifyContent: 'space-around',
     height: 115,
     borderBottomWidth: 1,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   searchContainer: {
-    backgroundColor: '#007BFF',
+    backgroundColor: COLORS.btnBlue,
     padding: 10,
   },
   searchInputContainer: {
