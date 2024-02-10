@@ -1,83 +1,29 @@
+// ParkingScreen.js
+
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
-import BottomBar from '../components/bottomBar'
+import BottomBar from '../components/bottomBar';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { parkingSpots, orderedParkingSpots } from '../../assets/mockData'; // Import the mock data
 
-const telAvivStreetNames = [
-  'Dizengoff',
-  'Ben Yehuda',
-  'Rothschild',
-  'Allenby',
-  'King George',
-  'Ibn Gabirol',
-  'Nordau',
-  'Sokolov',
-  'Yefet',
-  'HaYarkon',
-  'Frishman',
-  'Bugrashov',
-  'Bialik',
-  'Trumpeldor',
-  'Shenkin',
-  'Herzl',
-  'Montefiore',
-  'Shlomo Hamelech',
-  'Nahalat Binyamin',
-  'Hayarkon',
-  'Shaul Hamelech',
-  'Nahmani',
-  'Nachalat Yitzhak',
-  'Shabazi',
-  'Allenby',
-  'Shenkar',
-  'Masaryk',
-  'Nahalat Itzhak',
-  'Levontin',
-];
-
-const generateFakeParkingSpots = () => {
-  const spots = [];
-  for (let i = 1; i <= 30; i++) {
-    const startHour = Math.floor(Math.random() * 24);
-    const endHour = (startHour + Math.floor(Math.random() * 5) + 1) % 24; // Ensure end time is later than start time
-
-    spots.push({
-      id: i,
-      street: telAvivStreetNames[i - 1],
-      number: i,
-      price: Math.floor(Math.random() * 10) + 1,
-      distance: Math.floor(Math.random() * 10) + 1,
-      availableUntil: `${Math.floor(Math.random() * 24)
-        .toString()
-        .padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
-      details: `This spot is located on ${telAvivStreetNames[i - 1]}`,
-      owner: `Owner ${i}`,
-      startTime: `${startHour.toString().padStart(2, '0')}:${Math.floor(Math.random() * 60)
-        .toString()
-        .padStart(2, '0')}`,
-      endTime: `${endHour.toString().padStart(2, '0')}:${Math.floor(Math.random() * 60)
-        .toString()
-        .padStart(2, '0')}`,
-    });
-  }
-  return spots;
-};
-
-const ParkingScreen = ({navigation}) => {
+const ParkingScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [parkingSpots, setParkingSpots] = useState(generateFakeParkingSpots());
   const [expandedSpot, setExpandedSpot] = useState(null);
+  const [parkingSpots, setParkingSpots] = useState(parkingSpots);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
     setTimeout(() => {
-      setParkingSpots(generateFakeParkingSpots());
+      // Use the ordered list on refresh
+      setParkingSpots(orderedParkingSpots);
       setExpandedSpot(null); // Close any expanded spot on refresh
       setRefreshing(false);
     }, 1000);
   }, []);
+
+
 
   const handleSpotPress = (id) => {
     setExpandedSpot((prevSpot) => (prevSpot === id ? null : id));
@@ -141,24 +87,23 @@ const ParkingScreen = ({navigation}) => {
       <Header
         leftComponent={
           <Pressable onPress={() => console.log('Menu button pressed!')}>
-            <FontAwesome name="bars" color="#fff" size={20} style={styles.menuIcon} />       
+            <FontAwesome name="bars" color="#fff" size={20} style={styles.menuIcon} />
           </Pressable>
         }
         centerComponent={
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
-              Steet  
+              Street
               <FontAwesome5 name="map-marker-alt" size={25} color="#fff" style={styles.logoIcon} />
-              wize
+              Wise
             </Text>
           </View>
         }
-        rightComponent={ // filter icon
+        rightComponent={
           <Pressable onPress={() => console.log('Filter button pressed!')}>
             <FontAwesome name="filter" color="#fff" size={25} style={styles.filterIcon} />
           </Pressable>
         }
-
         containerStyle={styles.headerContainer}
       />
 
@@ -182,7 +127,7 @@ const ParkingScreen = ({navigation}) => {
         keyExtractor={(item) => item.id.toString()}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
-      <BottomBar navigation={navigation}/>
+      <BottomBar navigation={navigation} />
     </View>
   );
 };
