@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
 import BottomBar from '../components/bottomBar'
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
 const telAvivStreetNames = [
   'Dizengoff',
@@ -139,13 +140,25 @@ const ParkingScreen = ({navigation}) => {
     <View style={styles.container}>
       <Header
         leftComponent={
-          <View style={styles.leftHeader}>
-            <Pressable onPress={() => console.log('Menu button pressed!')}>
-              <Icon name="menu" color="#fff" iconStyle={styles.menuIcon} />
-            </Pressable>
-            <Text style={styles.headerText}>SmartPark</Text>
+          <Pressable onPress={() => console.log('Menu button pressed!')}>
+            <FontAwesome name="bars" color="#fff" size={20} style={styles.menuIcon} />       
+          </Pressable>
+        }
+        centerComponent={
+          <View style={styles.centerHeader}>
+            <Text style={styles.headerText}>
+              Steet  
+              <FontAwesome5 name="map-marker-alt" size={25} color="#fff" style={styles.logoIcon} />
+              wize
+            </Text>
           </View>
         }
+        rightComponent={ // filter icon
+          <Pressable onPress={() => console.log('Filter button pressed!')}>
+            <FontAwesome name="filter" color="#fff" size={25} style={styles.filterIcon} />
+          </Pressable>
+        }
+
         containerStyle={styles.headerContainer}
       />
 
@@ -160,7 +173,7 @@ const ParkingScreen = ({navigation}) => {
       </View>
 
       <View style={styles.timePickerContainer}>
-        {/* Add your time picker components here */}
+        {/* Add time picker components here */}
       </View>
 
       <FlatList
@@ -185,27 +198,26 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#fff',
   },
-  leftHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 120,
-    marginLeft: 10,
-    marginRight: 0,
-  },
   headerText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 24,
     fontFamily: 'Roboto',
-    width: '100%',
     textAlign: 'center',
-    borderTopWidth: 70,
-    marginLeft: 0,
+    marginTop: 0,
+  },
+  centerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoIcon: {
+    marginRight: 5,
   },
   menuIcon: {
-    borderRadius: 10,
-    borderTopWidth: 72,
-    marginRight: 10,
+    marginTop: 0,
+  },
+  filterIcon: {
+    marginTop: 0,
   },
   searchContainer: {
     backgroundColor: '#007BFF',
