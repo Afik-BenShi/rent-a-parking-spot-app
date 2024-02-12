@@ -1,80 +1,95 @@
-// ParkingScreen.js
+// RentalScreen.js
 
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
-import { Header, Icon, Input, Slider, Text } from 'react-native-elements';
-import BottomBar from '../components/bottomBar';
+import { Header, Icon, Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { parkingSpots, orderedParkingSpots } from '../../assets/mockData'; // Import the mock data
-import { COLORS } from '../../assets/theme';
+import BottomBar from '../components/bottomBar';
+import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
 
-const ParkingScreen = ({ navigation }) => {
+const RentalScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedSpot, setExpandedSpot] = useState(null);
-  const [parkingSpots, setParkingSpots] = useState(parkingSpots);
+  const [expandedItem, setExpandedItem] = useState(null);
+  const [rentalItems, setRentalItems] = useState(rentalItems);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
     setTimeout(() => {
       // Use the ordered list on refresh
-      setParkingSpots(orderedParkingSpots);
-      setExpandedSpot(null); // Close any expanded spot on refresh
+      setRentalItems(orderedRentalItems);
+      setExpandedItem(null); // Close any expanded item on refresh
       setRefreshing(false);
     }, 1000);
   }, []);
 
-
-
-  const handleSpotPress = (id) => {
-    setExpandedSpot((prevSpot) => (prevSpot === id ? null : id));
+  const handleItemPress = (id) => {
+    setExpandedItem((prevItem) => (prevItem === id ? null : id));
   };
 
-  const renderParkingSpot = ({ item }) => {
-    const isExpanded = expandedSpot === item.id;
+  const renderRatingStars = (owner) => {
+    // You can customize this function to return the appropriate rating for each owner
+    // For now, it's a placeholder with a constant rating for all owners
+    const rating = 4.5;
+    
+    return (
+      <View style={styles.ratingContainer}>
+        <FontAwesome5 name="star" color="#FFD700" size={14} solid />
+        <Text style={styles.ratingText}>{`${owner}'s Rating: ${rating}`}</Text>
+      </View>
+    );
+  };
+
+  const renderRentalItem = ({ item }) => {
+    const isExpanded = expandedItem === item.id;
 
     return (
-      <Pressable onPress={() => handleSpotPress(item.id)}>
-        <View style={[styles.parkingSpotContainer, isExpanded && styles.expandedSpot]}>
-          <View style={styles.addressInfo}>
-            <Text style={styles.boldText}>
-              {item.street} {item.number}
-            </Text>
-            <Text style={styles.parkingSpotDetails}>
-              Available until {item.availableUntil}
+      <Pressable onPress={() => handleItemPress(item.id)}>
+        <View style={[styles.rentalItemContainer, isExpanded && styles.expandedItem]}>
+          <View style={styles.nameInfo}>
+            <Text style={styles.boldText}>{item.name}</Text>
+            <Text style={styles.rentalItemDetails}>
+              Available from {item.startDate}
             </Text>
           </View>
-          <Text style={styles.parkingSpotDetails}>${item.price} per hr</Text>
-          <Text style={styles.parkingSpotDetails}>{item.distance} km away from me</Text>
+          <Text style={styles.rentalItemDetails}>${item.price} per day</Text>
+          <Text style={styles.rentalItemDetails}>
+            {item.distanceFromMe !== undefined ? `${item.distanceFromMe} km from me` : ''}
+          </Text>
 
           {isExpanded && (
             <View style={styles.additionalDetails}>
-              <Text style={styles.detailsTitle}>Spot Details:</Text>
+              <Text style={styles.detailsTitle}>Item Details:</Text>
               <Text>{item.details}</Text>
 
               <View style={{ marginVertical: 10 }}></View>
 
-              <Text style={styles.detailsTitle}>Available Parking Time:</Text>
+              <Text style={styles.detailsTitle}>Available Rental Period:</Text>
               <Text>
-                {item.startTime} - {item.endTime}
+                {item.startDate}
               </Text>
 
+              {renderRatingStars(item.owner)}
+
               <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.navigateButton} onPress={() => console.log('Navigate pressed')}>
-                  <Icon name="map-marker" type="font-awesome" color="#777" />
+                <TouchableOpacity
+                  style={styles.navigateButton}
+                  onPress={() => navigation.navigate('Map', { item })}
+                >
+                  <Icon name="location-pin" type="entypo" color="#777" />
                   <Text style={styles.buttonText}>Navigate</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.chatButton}
                   onPress={() => console.log(`Chat with ${item.owner} pressed`)}
                 >
-                  <Icon name="comment" type="font-awesome" color="#777" />
+                  <Icon name="chat" type="entypo" color="#777" />
                   <Text style={styles.buttonText}>Chat with {item.owner}</Text>
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate("productDetails", {})}>
-                <Text style={styles.startButtonText}>Let's Start</Text>
+              <TouchableOpacity style={styles.startButton} onPress={() => console.log("Let's Rent")}>
+                <Text style={styles.startButtonText}>Let's Rent</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -94,8 +109,8 @@ const ParkingScreen = ({ navigation }) => {
         centerComponent={
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
-              Street
-              <FontAwesome5 name="map-marker-alt" size={25} color="#fff" style={styles.logoIcon} />
+              Rental
+              <FontAwesome5 name="box-open" size={25} color="#fff" style={styles.logoIcon} />
               Wise
             </Text>
           </View>
@@ -110,7 +125,7 @@ const ParkingScreen = ({ navigation }) => {
 
       <View style={styles.searchContainer}>
         <Input
-          placeholder="Where would you like to park?"
+          placeholder="What would you like to rent?"
           leftIcon={<Icon name="search" size={23} color="black" />}
           containerStyle={styles.searchInputContainer}
           inputContainerStyle={styles.searchInputInnerContainer}
@@ -123,8 +138,8 @@ const ParkingScreen = ({ navigation }) => {
       </View>
 
       <FlatList
-        data={parkingSpots}
-        renderItem={renderParkingSpot}
+        data={rentalItems}
+        renderItem={renderRentalItem}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
@@ -181,7 +196,7 @@ const styles = StyleSheet.create({
   timePickerContainer: {
     // Style time picker container here
   },
-  parkingSpotContainer: {
+  rentalItemContainer: {
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -189,18 +204,18 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: 'bold',
   },
-  addressInfo: {
+  nameInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
   },
-  parkingSpotDetails: {
+  rentalItemDetails: {
     fontSize: 14,
     color: '#555',
   },
-  expandedSpot: {
-    height: 307,
+  expandedItem: {
+    height: 347, // Adjusted height to accommodate the additional line
   },
   additionalDetails: {
     paddingVertical: 10,
@@ -266,6 +281,16 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: 'bold',
   },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  ratingText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#555',
+  },
 });
 
-export default ParkingScreen;
+export default RentalScreen;
