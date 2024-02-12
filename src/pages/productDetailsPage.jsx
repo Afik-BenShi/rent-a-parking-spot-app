@@ -1,29 +1,29 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Button, Card, Image, Text } from "@rneui/themed";
-import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Card, Text } from "@rneui/themed";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { OwnerDetailsBar } from "../components/ownerDetails";
 import { AvailabilityBox } from "../components/availabilityBox";
-import { dateRangeFormat } from "../utils/dateTime";
-import "./parkingDetailsPage.types";
+import "./productDetailsPage.types";
 import GoogleMaps from "../components/GoogleMaps";
+import ExpandableImage from "../components/ExpandableImage";
 
 /**
  *  @type {React.FC}
  *  @param {ParkingDetailsPageProps} Props
  */
-export default function ParkingDetailsPage({ route, navigation }) {
+export default function ProductDetailsPage({ route, navigation }) {
     const { details = mock, onReserveParking = (_) => {} } = route.params;
 
-    const parkingImage = details.parkingImage
-        ? { uri: details.parkingImage }
+    const productImage = details.image
+        ? { uri: details.image }
         : //@ts-expect-error
-          require("../../assets/parking-details-images/parkingImagePlaceholder.png");
+          require("../../assets/parking-details-images/littleBlackDress.jpg");
 
     const parkingReserveHandler = () => {
-        /** @type {ParkingReservation} */
+        /** @type {ProductReservation} */
         const reservation = {
             id: "1",
+            title: details.title,
             parkingId: details.id,
             scheduling: {
                 startTime: new Date(),
@@ -42,15 +42,19 @@ export default function ParkingDetailsPage({ route, navigation }) {
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
                 <Text h3 style={styles.text}>
-                    Parking - {details.location.address}
+                    {details.title}
                 </Text>
                 <Card.Divider />
+                <Text style={styles.description}>{details.description}</Text>
+                <ExpandableImage source={productImage} initialHeight={200} />
                 <OwnerDetailsBar owner={details.owner} />
-                <Image style={styles.image} source={parkingImage} />
                 <Text h4 style={styles.text}>
                     Availavility
                 </Text>
                 <AvailabilityBox availability={details.availability} />
+                <Text h4 style={styles.text}>
+                    Address
+                </Text>
                 <GoogleMaps
                     location={details.location}
                     style={styles.map}
@@ -58,7 +62,7 @@ export default function ParkingDetailsPage({ route, navigation }) {
                 />
             </ScrollView>
             <Button
-                title={"Start Parking"}
+                title={`Start Renting for ${details.price.amount}${details.price.currency}/${details.price.duration}`}
                 titleStyle={{ fontSize: 30 }}
                 buttonStyle={styles.parkBtn}
                 containerStyle={styles.parkBtnContainer}
@@ -81,11 +85,12 @@ const styles = StyleSheet.create({
         overflow: "scroll",
         paddingBottom: 144,
     },
-    image: {
-        height: 200,
-        width: "auto",
-    },
     text: { paddingHorizontal: 12 },
+    description: {
+        paddingHorizontal: 12,
+        marginBottom:7,
+        fontSize: 16,
+    },
     parkBtn: {
         height: "100%",
         borderRadius: 0,
@@ -100,15 +105,23 @@ const styles = StyleSheet.create({
         borderRadius: 0,
     },
     map: {
-        marginTop:12,
+        marginTop: 12,
         height: 200,
         width: "auto",
     },
 });
 
-/**@type {ParkingDetails} */
+/**@type {ProductDetails} */
 const mock = {
     id: "1",
+    title: "Little Black Dress",
+    description:
+        "Every girl needs a little black dress. But if you don't have one, rent have mine for a night",
+    price: {
+        amount: 10,
+        currency: "$",
+        duration: "day",
+    },
     location: {
         latitude: 32.07789,
         longitude: 34.774304,
