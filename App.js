@@ -4,7 +4,7 @@ import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
 import AddParking from './src/pages/AddParking'
 import NewAddParking from './src/pages/MyAddParking'
-import ParkingDetailsPage from './src/pages/parkingDetailsPage';
+import ProductDetailsPage from './src/pages/parkingDetailsPage';
 import SignInGoogle from './src/pages/SignInGoogle';
 import SubmitPersonalDetails from './src/pages/submitDetails';
 import addParking from './src/pages/AddParking';

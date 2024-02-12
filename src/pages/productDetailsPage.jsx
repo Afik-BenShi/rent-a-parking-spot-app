@@ -1,29 +1,28 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
 import { Button, Card, Image, Text } from "@rneui/themed";
-import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { OwnerDetailsBar } from "../components/ownerDetails";
 import { AvailabilityBox } from "../components/availabilityBox";
-import { dateRangeFormat } from "../utils/dateTime";
-import "./parkingDetailsPage.types";
+import "./productDetailsPage.types";
 import GoogleMaps from "../components/GoogleMaps";
 
 /**
  *  @type {React.FC}
  *  @param {ParkingDetailsPageProps} Props
  */
-export default function ParkingDetailsPage({ route, navigation }) {
+export default function ProductDetailsPage({ route, navigation }) {
     const { details = mock, onReserveParking = (_) => {} } = route.params;
 
-    const parkingImage = details.parkingImage
-        ? { uri: details.parkingImage }
+    const parkingImage = details.image
+        ? { uri: details.image }
         : //@ts-expect-error
-          require("../../assets/parking-details-images/parkingImagePlaceholder.png");
+          require("../../assets/parking-details-images/littleBlackDress.png");
 
     const parkingReserveHandler = () => {
-        /** @type {ParkingReservation} */
+        /** @type {ProductReservation} */
         const reservation = {
             id: "1",
+            title: details.title,
             parkingId: details.id,
             scheduling: {
                 startTime: new Date(),
@@ -58,7 +57,7 @@ export default function ParkingDetailsPage({ route, navigation }) {
                 />
             </ScrollView>
             <Button
-                title={"Start Parking"}
+                title={`Start Renting for ${details.price.amount} ${details.price.currency}/${details.price.duration}`}
                 titleStyle={{ fontSize: 30 }}
                 buttonStyle={styles.parkBtn}
                 containerStyle={styles.parkBtnContainer}
@@ -100,15 +99,23 @@ const styles = StyleSheet.create({
         borderRadius: 0,
     },
     map: {
-        marginTop:12,
+        marginTop: 12,
         height: 200,
         width: "auto",
     },
 });
 
-/**@type {ParkingDetails} */
+/**@type {ProductDetails} */
 const mock = {
     id: "1",
+    title: "Little black dress",
+    description:
+        "Every girl needs a little black dress. If you don't like yours, you can have mine for a night",
+    price: {
+        amount: 10,
+        currency: "$",
+        duration: "day",
+    },
     location: {
         latitude: 32.07789,
         longitude: 34.774304,

@@ -1,6 +1,13 @@
 /**
  * @typedef {{
  *  id: string,
+ *  title: string,
+ *  description: string,
+ *  price:{
+ *      amount: number,
+ *      currency: string,
+ *      duration: "hour"|"day"|"week"|"month"
+ *  },
  *  location: {
  *      latitude: number,
  *      longitude: number,
@@ -11,17 +18,18 @@
  *      name: string,
  *      phoneNumber: string,
  *  },
- *  parkingImage?: string,
+ *  image?: string,
  *  availability: {
  *      startTime: Date,
  *      endTime: Date,
  *  },
- * }} ParkingDetails
+ * }} ProductDetails
  */
 
 /**
  * @typedef {{
  *  id: string,
+ *  title: string,
  *  parkingId: string,
  *  scheduling: {
  *      startTime: Date,
@@ -33,13 +41,13 @@
  *      phoneNumber:string,
  *      carPlate: string,
  *  },
- * }} ParkingReservation
+ * }} ProductReservation
  */
 
 /**
  * @typedef {import('@react-navigation/native-stack').NativeStackScreenProps<{
- *  parkingDetails:{
- *      details: ParkingDetails,
- *      onReserveParking?: (reservation: ParkingReservation) => void | Promise<void>,
- * }}, "parkingDetails">} ParkingDetailsPageProps
+ *  productDetails:{
+ *      details: ProductDetails,
+ *      onReserveParking?: (reservation: ProductReservation) => void | Promise<void>,
+ * }}, "productDetails">} ParkingDetailsPageProps
  */
