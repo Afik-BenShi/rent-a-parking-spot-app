@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+
 import BottomBar from '../components/bottomBar';
 import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
-import { COLORS } from '../../assets/theme';
+import { COLORS } from '../../assets/theme'
 
 const RentalScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -87,6 +88,7 @@ const RentalScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
+
               <TouchableOpacity style={styles.startButton} onPress={() => console.log("Let's Rent")}>
                 <Text style={styles.startButtonText}>Let's Rent</Text>
               </TouchableOpacity>
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: '#007BFF',
+    backgroundColor: COLORS.btnBlue,
     justifyContent: 'space-around',
     height: 115,
     borderBottomWidth: 1,
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   searchContainer: {
-    backgroundColor: '#007BFF',
+    backgroundColor: COLORS.btnBlue,
     padding: 10,
   },
   searchInputContainer: {
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   navigateButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 0,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
@@ -244,7 +246,7 @@ const styles = StyleSheet.create({
   chatButton: {
     backgroundColor: '#ddd',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 2,
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
@@ -291,5 +293,6 @@ const styles = StyleSheet.create({
     color: '#555',
   },
 });
+
 
 export default RentalScreen;

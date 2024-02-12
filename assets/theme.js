@@ -22,6 +22,12 @@ const COLORS = {
   orenge: '#FB8C00',
   darkBlue: '#1F4690',
   veryDarkBlue: '#130D33',
+  lightgreen: '#1DE9B6',
+  btnBlue: '#266EF1',   // the color of the home Page header
+  searchGreen: '#5bd2bc',
+
+  background: '#F2F2F2',
+  lightBackground: '#e8ecf4',  //light grey 
 };
 
 const FONT = {

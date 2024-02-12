@@ -10,6 +10,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     flexDirection: "column",
     margin: 10,
+    backgroundColor: COLORS.lightBackground,
+  },
+  dateSelectorContainer:{
+    flex: 1, 
+    justifyContent: 'center', 
+    flexDirection: "column", 
+    marginTop:15,
   },
   userName: {
     fontSize: 18,
@@ -19,8 +26,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    color: COLORS.secondary,
+    color: COLORS.darkBlue,
     fontWeight: 'bold',
+    marginTop: 20,
     margin: 10,
     marginLeft: 30,
   },
@@ -66,46 +74,152 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginVertical: 10, // Adjust the margin as needed
   },
-  
-
-  //----
-  searchContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    marginTop: SIZES.large,
-    height: 50,
-  },
-  searchWrapper: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    marginRight: SIZES.small,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: SIZES.medium,
-    height: "100%",
-  },
-  searchInput: {
-    width: "100%",
-    height: "100%",
-    paddingHorizontal: SIZES.medium,
-  },
-  searchBtn: {
-    width: 50,
-    height: "100%",
-    backgroundColor: COLORS.tertiary,
-    borderRadius: SIZES.medium,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchBtnImage: {
-    width: "50%",
-    height: "50%",
-    tintColor: COLORS.white,
-  },
   tabsContainer: {
     width: "100%",
     marginTop: SIZES.medium,
+  },
+  container: {
+    padding: 24,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+  },
+  title: {
+    fontSize: 27,
+    fontWeight: '700',
+    color: COLORS.darkBlue,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#929292',
+    textAlign: 'center',
+  },
+  /** Header */
+  header: {
+    marginVertical: 36,
+  },
+  headerImg: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+    marginBottom: 36,
+  },
+  /** Form */
+  form: {
+    marginBottom: 24,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+  },
+  formAction: {
+    marginVertical: 24,
+  },
+  formFooter: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#222',
+    textAlign: 'center',
+    letterSpacing: 0.15,
+  },
+  /** Input */
+  input: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 8,
+  },
+  inputControl: {
+    height: 44,
+    backgroundColor: '#f3eff6',   // grey color good
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
+  /** Button */
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#075eec',
+    borderColor: '#075eec',
+  },
+  btnText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  btnSecondary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: 'transparent',
+    borderColor: '#000',
+  },
+  btnSecondaryText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',
+    color: '#000',
+  },
+  GoogleBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    borderColor: COLORS.lightgrey,
+  },
+  /** Picker */
+  picker: {
+    marginTop: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#f5f5f5',
+  },
+  pickerDates: {
+    marginLeft: 12,
+  },
+  pickerDatesText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  pickerAction: {
+    marginLeft: 'auto',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pickerActionText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: '600',
+    color: '#4c6cfd',
   },
   tab: (activeJobType, item) => ({
     paddingVertical: SIZES.small / 2,
