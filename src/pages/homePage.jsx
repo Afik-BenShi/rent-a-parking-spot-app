@@ -87,7 +87,7 @@ const RentalScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.startButton} onPress={() => console.log("Let's Rent")}>
+              <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate("productDetails", {})}>
                 <Text style={styles.startButtonText}>Let's Rent</Text>
               </TouchableOpacity>
             </View>
