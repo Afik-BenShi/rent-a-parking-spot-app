@@ -1,11 +1,10 @@
-// RentalScreen.js
-
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { Header, Icon, Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import BottomBar from '../components/bottomBar';
 import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
+import { COLORS } from '../../assets/theme'
 
 const RentalScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
