@@ -4,7 +4,7 @@ import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
 import AddParking from './src/pages/AddParking'
 import NewAddParking from './src/pages/MyAddParking'
-import ProductDetailsPage from './src/pages/parkingDetailsPage';
+import ProductDetailsPage from './src/pages/productDetailsPage';
 import SignInGoogle from './src/pages/SignInGoogle';
 import SubmitPersonalDetails from './src/pages/submitDetails';
 import addParking from './src/pages/AddParking';
@@ -47,8 +47,8 @@ export default function App() {
              options={{title: 'My Current Parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
             /> */}
           <Stack.Screen
-            name="parkingDetails"
-            component={ParkingDetailsPage}
+            name="productDetails"
+            component={ProductDetailsPage}
           />
           <Stack.Screen
             name="signIn"

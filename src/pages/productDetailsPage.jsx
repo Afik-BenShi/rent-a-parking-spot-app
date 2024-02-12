@@ -1,10 +1,11 @@
 import React from "react";
-import { Button, Card, Image, Text } from "@rneui/themed";
+import { Button, Card, Text } from "@rneui/themed";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { OwnerDetailsBar } from "../components/ownerDetails";
 import { AvailabilityBox } from "../components/availabilityBox";
 import "./productDetailsPage.types";
 import GoogleMaps from "../components/GoogleMaps";
+import ExpandableImage from "../components/ExpandableImage";
 
 /**
  *  @type {React.FC}
@@ -13,10 +14,10 @@ import GoogleMaps from "../components/GoogleMaps";
 export default function ProductDetailsPage({ route, navigation }) {
     const { details = mock, onReserveParking = (_) => {} } = route.params;
 
-    const parkingImage = details.image
+    const productImage = details.image
         ? { uri: details.image }
         : //@ts-expect-error
-          require("../../assets/parking-details-images/littleBlackDress.png");
+          require("../../assets/parking-details-images/littleBlackDress.jpg");
 
     const parkingReserveHandler = () => {
         /** @type {ProductReservation} */
@@ -41,15 +42,19 @@ export default function ProductDetailsPage({ route, navigation }) {
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
                 <Text h3 style={styles.text}>
-                    Parking - {details.location.address}
+                    {details.title}
                 </Text>
                 <Card.Divider />
+                <Text style={styles.description}>{details.description}</Text>
+                <ExpandableImage source={productImage} initialHeight={200} />
                 <OwnerDetailsBar owner={details.owner} />
-                <Image style={styles.image} source={parkingImage} />
                 <Text h4 style={styles.text}>
                     Availavility
                 </Text>
                 <AvailabilityBox availability={details.availability} />
+                <Text h4 style={styles.text}>
+                    Address
+                </Text>
                 <GoogleMaps
                     location={details.location}
                     style={styles.map}
@@ -57,7 +62,7 @@ export default function ProductDetailsPage({ route, navigation }) {
                 />
             </ScrollView>
             <Button
-                title={`Start Renting for ${details.price.amount} ${details.price.currency}/${details.price.duration}`}
+                title={`Start Renting for ${details.price.amount}${details.price.currency}/${details.price.duration}`}
                 titleStyle={{ fontSize: 30 }}
                 buttonStyle={styles.parkBtn}
                 containerStyle={styles.parkBtnContainer}
@@ -80,11 +85,12 @@ const styles = StyleSheet.create({
         overflow: "scroll",
         paddingBottom: 144,
     },
-    image: {
-        height: 200,
-        width: "auto",
-    },
     text: { paddingHorizontal: 12 },
+    description: {
+        paddingHorizontal: 12,
+        marginBottom:7,
+        fontSize: 16,
+    },
     parkBtn: {
         height: "100%",
         borderRadius: 0,
@@ -108,9 +114,9 @@ const styles = StyleSheet.create({
 /**@type {ProductDetails} */
 const mock = {
     id: "1",
-    title: "Little black dress",
+    title: "Little Black Dress",
     description:
-        "Every girl needs a little black dress. If you don't like yours, you can have mine for a night",
+        "Every girl needs a little black dress. But if you don't have one, rent have mine for a night",
     price: {
         amount: 10,
         currency: "$",

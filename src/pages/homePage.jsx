@@ -73,7 +73,7 @@ const ParkingScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate("parkingDetails", {})}>
+              <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate("productDetails", {})}>
                 <Text style={styles.startButtonText}>Let's Start</Text>
               </TouchableOpacity>
             </View>
