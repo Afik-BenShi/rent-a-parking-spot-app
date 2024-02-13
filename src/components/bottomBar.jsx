@@ -6,13 +6,13 @@ const BottomBar = ({navigation}) => {
     const routePages = (value) => {
       switch (value) {
         case 0: 
-          navigation.navigate('addProduct')
-        case 1: 
-          navigation.navigate('history')
-        case 2: 
-          navigation.navigate('changeType')
-        case 3: 
-          navigation.navigate('current')
+        //   navigation.navigate('addProduct')
+        // case 1: 
+        //   navigation.navigate('history')
+        // case 2: 
+        //   navigation.navigate('changeType')
+        // case 3: 
+        //   navigation.navigate('current')
         case 4: 
           navigation.navigate('homePage')
       }
