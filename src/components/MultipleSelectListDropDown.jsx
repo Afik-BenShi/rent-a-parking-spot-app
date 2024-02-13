@@ -7,17 +7,21 @@ export default function MultipleSelectListDropDown({ onSelectCategory }) {
     
     const data = [
         {key:'1', value:'Sports equipment'},
-        {key:'2', value:'Clothing'},
-        {key:'3', value:'Travel & Outdoors'},
+        {key:'2', value:'Fashion & Style'},
+        {key:'3', value:'Travel equipment'},
         {key:'4', value:'Ski & Snowboard'},
-        {key:'5', value:'Electronics'},
-        {key:'6', value:'Home & Kitchen'},
-        {key:'7', value:'Mobiles'},
-        {key:'8', value:'Books'},
-        {key:'9', value:'Computers'},
+        {key:'5', value:'Camping equipment'},
+        {key:'6', value:'Home'},
+        {key:'7', value:'Entertainment & Events'},
+        {key:'8', value:'Technology & Gadgets'},
+        {key:'9', value:'Navigation devices'},
         {key:'10', value:'Beauty & Health'},
-        {key:'11', value:'Garden'},
-        {key:'12', value:'Other'},
+        {key:'11', value:'Garden & Outdoor'},
+        {key:'12', value:'Electronics'},
+        {key:'13', value:'Family & Kids'},
+        {key:'14', value:'Photography Gear'},
+        {key:'15', value:'Other'}
+        
     ]
 
     /*

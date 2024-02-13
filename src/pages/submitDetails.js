@@ -21,7 +21,6 @@ const productImage = require("../../assets/parking-details-images/littleBlackDre
 
 export default function SubmitDetails({ navigation, route }) {
         const { detailsList } = route.params;
-        const { categoryList } = route.params;
 
         const onGoBackPress = () =>{
             navigation.goBack();
@@ -77,7 +76,12 @@ export default function SubmitDetails({ navigation, route }) {
                                 <View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Category</Text>
 
-                                    <Text style={styles.detailsValue}>{categoryList}</Text>
+                                    <View>
+                                        {detailsList.category.map((category, index) => (
+                                          <Text key={index} style={styles.detailsValue}>{category}</Text>
+                                        ))}
+                                    </View>
+                                     
                                 </View>
 
 

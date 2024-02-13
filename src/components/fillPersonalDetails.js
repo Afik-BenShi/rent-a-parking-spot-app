@@ -28,9 +28,9 @@ import DateTimePickerExample from "./DatePick";
 import MultipleSelectListDropDown from "./MultipleSelectListDropDown";
 
  
-const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent }) => {
+const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
 
-  //
+  // not used
   // State to hold the entered details
   const [details, setDetails] = useState({
     ownerName: "",
@@ -49,7 +49,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [selectedCat, setSelectedCat] = useState([]);
   
   //const [error, setError] = useState('');
 
@@ -71,14 +70,8 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     </View>
   );
 
-  const onSelectCategory = (item) => {
-    updated = {...selectedCat, item};
-    setSelectedCat(updated);
-    //setSelectedCat(item);
-    console.log(updated);
-    sendDataToParent("category", selectedCat);
-  };
 
+  // this methods are not use. we use the same methods in the parent class called MyNewProduct
   const onStartDateChange = (selectedDate) => {
     setStartDate(selectedDate);
     const start = startDate ? startDate.toLocaleString() : 'Not selected';
@@ -152,7 +145,7 @@ return (
                 <View style={{ flex: 1, padding: 20 }}>
                 <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product categories</Text>
                 <MultipleSelectListDropDown
-                      onSelectCategory = {onSelectCategory}
+                      onSelectCategory = {sendCatToParent}
                 />
                 </View>
                 
