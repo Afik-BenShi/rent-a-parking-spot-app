@@ -116,7 +116,7 @@ const RentalScreen = ({ navigation }) => {
           </View>
         }
         rightComponent={
-          <Pressable onPress={() => console.log('Filter button pressed!')}>
+          <Pressable onPress={() => navigation.navigate('filters')}>
             <FontAwesome name="filter" color="#fff" size={25} style={styles.filterIcon} />
           </Pressable>
         }
