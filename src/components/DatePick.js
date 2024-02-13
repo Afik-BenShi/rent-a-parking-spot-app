@@ -66,8 +66,8 @@ const DateTimePickerExample = ({ minDate, onDateChange }) => {
                     <FeatherIcon color="#000" name="calendar" size={18} />
 
                     <View style={styles.pickerDates}>
-                        <Text style={[styles.pickerDatesText, { margin: 5 }]}>
-                        {formattedDate} , {formattedTime}
+                        <Text style={[styles.pickerDatesText, { margin: 5, marginLeft: 10}]}>
+                        {formattedDate}
                         </Text>
                     </View>
 
@@ -77,7 +77,8 @@ const DateTimePickerExample = ({ minDate, onDateChange }) => {
                         <FeatherIcon
                         color="#4C6CFD"
                         name="chevron-down"
-                        size={18} />
+                        size={18}
+                        marginRight={10} />
                     </View>
             </TouchableOpacity>
             
@@ -90,9 +91,9 @@ const DateTimePickerExample = ({ minDate, onDateChange }) => {
                         <DateTimePicker
                             testID="dateTimePicker"
                             value={date}
-                            mode='datetime'
+                            mode='date'
                             minimumDate={minDate} // Set minimum date to today for date picker
-                            minuteInterval={15} // Set 15-minute interval for time picker
+                            //minuteInterval={15} // Set 15-minute interval for time picker
                             is24Hour={true}
                             onChange={onChange}
                         />
@@ -149,7 +150,7 @@ const DateTimePickerExample = ({ minDate, onDateChange }) => {
         marginLeft: 12,
     },
     pickerDatesText: {
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: '500',
     },
     pickerAction: {
