@@ -21,7 +21,7 @@ export default function MyAddParking ({navigation}) {
     const [details, setDetails] = useState({
         ownerName: "",
         productName: "",
-        category: "",  // add choose from list
+        category: [],  // add choose from list
         city: "",
         //street: "",
         //houseNumber: "",
@@ -33,7 +33,7 @@ export default function MyAddParking ({navigation}) {
     });
 
     const handleStartDateChange = (startDate) => {
-        const start = startDate ? startDate.toLocaleString() : 'Not selected';
+        const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected'; 
         console.log(start);
 
         setDetails((prevDetails) => ({
@@ -43,7 +43,7 @@ export default function MyAddParking ({navigation}) {
     };
 
     const handleEndDateChange = (endDate) => {
-        const end = endDate ? endDate.toLocaleString() : 'Not selected';
+        const end = endDate ? endDate.toLocaleDateString('en-GB') : 'Not selected';
         console.log(end); 
 
         setDetails((prevDetails) => ({
@@ -64,6 +64,12 @@ export default function MyAddParking ({navigation}) {
         }));
     };
 
+    const handleCategoryChange = (selectedCategory) => {
+      setDetails((prevDetails) => ({
+        ...prevDetails,
+        category: selectedCategory,
+      }));      
+    }
 
     // Function to handle submit button press
     const handleSubmit = () => {
@@ -88,7 +94,9 @@ export default function MyAddParking ({navigation}) {
           <FillPersonalDetails 
             sendDataToParent={handleInputChange} 
             sendStartDateToParent={handleStartDateChange}
-            sendEndDateToParent={handleEndDateChange}/>
+            sendEndDateToParent={handleEndDateChange}
+            sendCatToParent={handleCategoryChange}
+            />
 
           {/*<TouchableOpacity style={styles.finishButton} onPress={() => navigation.navigate("signIn")}>
             <Text style={styles.buttonText}>SignIn-page</Text>
