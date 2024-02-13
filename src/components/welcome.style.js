@@ -59,11 +59,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
   },
-  buttonText: {
-    color: COLORS.black, 
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  
   errorText: {
     color: 'red',
     fontSize: 10,
@@ -78,6 +74,33 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: SIZES.medium,
   },
+  btn: {
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'left',
+    //justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: 'transparent',
+    borderColor: '#266EF1',
+  },
+  uploadImgButton: {
+    backgroundColor: COLORS.lightgrey,
+    paddingVertical: 15,
+    paddingHorizontal: 35,
+    borderRadius: 10,
+    alignSelf: 'left',
+    marginTop: 20,
+    marginLeft: 8,
+    height: 50,
+    
+},
+buttonText: {
+  color: COLORS.similarToBlack, 
+  fontWeight: 'bold',
+  fontSize: 16,
+},
   container: {
     padding: 24,
     flexGrow: 1,
@@ -129,10 +152,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputLabel: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '600',
     color: '#222',
     marginBottom: 8,
+    marginLeft: 12,
   },
   inputControl: {
     height: 44,
@@ -159,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     fontWeight: '600',
-    color: '#fff',
+    color: '#222',
   },
   btnSecondary: {
     flexDirection: 'row',

@@ -10,21 +10,27 @@ import {
   Image,
   ScrollView,
   Text,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import NextBackBtn from '../components/nextAndBackBtn';
 
 export default function MyAddParking ({navigation}) {
   
+    // State to hold the entered details
     const [details, setDetails] = useState({
         ownerName: "",
+        productName: "",
+        category: "",  // add choose from list
         city: "",
-        street: "",
-        houseNumber: "",
+        //street: "",
+        //houseNumber: "",
         price: "",
         phoneNumber: "",
         from: "",
-        until: ""
-      });
+        until: "",  // range of days
+        productDescription: "",
+    });
 
     const handleStartDateChange = (startDate) => {
         const start = startDate ? startDate.toLocaleString() : 'Not selected';
@@ -71,6 +77,12 @@ export default function MyAddParking ({navigation}) {
   
   
     return (
+      <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+    >
+      
+      
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
         <ScrollView>
           <FillPersonalDetails 
@@ -92,16 +104,18 @@ export default function MyAddParking ({navigation}) {
           />    
         
         </ScrollView>   
-      </SafeAreaView>   
+      </SafeAreaView>  
+      </KeyboardAvoidingView> 
     );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
+    padding: 17,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    backgroundColor: COLORS.lightWhite,
   },
   header: {
     flexDirection: 'row',

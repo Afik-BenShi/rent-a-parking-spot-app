@@ -13,11 +13,15 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
+import ExpandableImage from "../components/ExpandableImage";
+
+const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
 
 
 
 export default function SubmitDetails({ navigation, route }) {
         const { detailsList } = route.params;
+        const { categoryList } = route.params;
 
         const onGoBackPress = () =>{
             navigation.goBack();
@@ -30,7 +34,7 @@ export default function SubmitDetails({ navigation, route }) {
                         <View style={styles.header}>
                             <View style={styles.headerAction}>
                             </View>
-                            <Text style={styles.title}>Your Parking Spot</Text>
+                            <Text style={styles.title}>Your product</Text>
                             <View
                                 style={[styles.headerAction, { alignItems: 'flex-end' }]} />
                             </View>
@@ -40,47 +44,48 @@ export default function SubmitDetails({ navigation, route }) {
                             showsVerticalScrollIndicator={false}>
 
                             <View style={styles.receiptLogo}>
-                                <AnotherIcon color={COLORS.lightWhite} name="car" size={32} />
+                                {<Icon color={COLORS.lightWhite} name="account-details" size={32} />}
                             </View>
 
-                            <Text style={styles.receiptSubtitle}></Text>
+                            
                             
                             {/*******/}
                             <View style={styles.divider}>
                                 <View style={styles.dividerInset} /></View>
 
                             <View style={styles.details}>
-                                <Text style={styles.detailsTitle}>Parking spot details</Text>
+                                <Text style={styles.detailsTitle}>Product details</Text>
 
                                 <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Full Name</Text>
+                                    <Text style={styles.detailsField}>Owner full name</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.ownerName}</Text>
                                 </View>
 
                                 <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>City</Text>
+                                    <Text style={styles.detailsField}>Product name</Text>
+
+                                    <Text style={styles.detailsValue}>{detailsList.productName}</Text>
+                                </View>
+
+                                <View style={styles.detailsRow}>
+                                    <Text style={styles.detailsField}>Location</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.city}</Text>
                                 </View>
 
                                 <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Parking Street</Text>
+                                    <Text style={styles.detailsField}>Category</Text>
 
-                                    <Text style={styles.detailsValue}>{detailsList.street}</Text>
+                                    <Text style={styles.detailsValue}>{categoryList}</Text>
                                 </View>
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>House Number</Text>
-
-                                    <Text style={styles.detailsValue}>{detailsList.houseNumber}</Text>
-                                </View>
 
                                 <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Hourly Price</Text>
+                                    <Text style={styles.detailsField}>Daily Price</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.price} 
-                                        <Icon name="currency-ils" size={14} color="#000" /> per hour</Text>
+                                        <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
                                 </View>
 
                                 <View style={styles.detailsRow}>
@@ -90,17 +95,25 @@ export default function SubmitDetails({ navigation, route }) {
                                 </View>
 
                                 <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Parking availability</Text>
+                                    <Text style={styles.detailsField}>Days of availability</Text>
 
                                     <Text style={styles.detailsValue}>
                                     {detailsList.from} - {detailsList.until}
                                     </Text>
                                 </View>
                                 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Has Charger</Text>
+                                <View >
+                                    <Text style={styles.detailsField}>
+                                      {'\n'}Description: </Text>
 
-                                    <Text style={styles.detailsValue}></Text>
+                                    <Text style={styles.descriptionValue}>
+                                    {'\n'}{detailsList.productDescription}
+                                    </Text>
+                                </View>
+
+                                <View>
+                                    <Text style={styles.detailsField}>Image</Text>
+                                    <ExpandableImage source={productImage} initialHeight={250} />
                                 </View>
 
                             </View>
@@ -112,11 +125,11 @@ export default function SubmitDetails({ navigation, route }) {
                 <View style={styles.overlay}>
                       <Text style={styles.receiptDescription}>
                       By clicking Finish,{'\n'} 
-                      the parking will be available for rent by other users {'\n'}
-                      with the details you have entered
+                      your product will be available for rent by other users {'\n'}
+                      with the details you have provided
                       </Text>
 
-                      <NextBackBtn 
+                      <NextBackBtn
                         nextText="Finish"
                         backText="Back"
                         navigation={navigation}
@@ -132,11 +145,19 @@ export default function SubmitDetails({ navigation, route }) {
 
 
     /*
-    houseNumber: "",
-        price: "",
-        phoneNumber: "",
-        from: "",
-        until:
+    
+      ownerName: "",
+      productName: "",
+      category: "",  // add choose from list
+      city: "",
+      //street: "",
+      //houseNumber: "",
+      price: "",
+      phoneNumber: "",
+      from: "",
+      until: "",  // range of days
+      productDescription: "",
+    });
     */
 const styles = StyleSheet.create({
   container: {
@@ -206,37 +227,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  receiptTitle: {
-    fontSize: 21,
-    fontWeight: '600',
-    color: '#151515',
-    marginBottom: 2,
-  },
-  receiptSubtitle: {
-    fontSize: 13,
-    lineHeight: 20,
-    color: '#818181',
-    marginBottom: 12,
-  },
-  receiptPrice: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    marginBottom: 6,
-  },
-  receiptPriceText: {
-    fontSize: 30,
-    lineHeight: 38,
-    fontWeight: 'bold',
-    letterSpacing: 0.35,
-    color: '#8338ec',
-  },
   receiptDescription: {
     fontSize: 14,
     lineHeight: 20,
     color: '#818181',
     textAlign: 'center',
     marginBottom: 12,
+  },
+  descriptionValue: {    
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#444',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+    flexDirection: 'row',
   },
   /** Divider */
   divider: {

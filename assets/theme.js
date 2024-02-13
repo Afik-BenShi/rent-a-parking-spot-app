@@ -25,9 +25,11 @@ const COLORS = {
   lightgreen: '#1DE9B6',
   btnBlue: '#266EF1',   // the color of the home Page header
   searchGreen: '#5bd2bc',
+  similarToBlack: '#222',
 
   background: '#F2F2F2',
-  lightBackground: '#e8ecf4',  //light grey 
+  lightBackground: '#e8ecf4',  //light grey
+  inputTextGrey: '#f3eff6',   
 };
 
 const FONT = {

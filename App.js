@@ -3,11 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
 import homePage from './src/pages/homePage';
 import AddParking from './src/pages/AddParking'
-import NewAddParking from './src/pages/MyAddParking'
+import NewAddProduct from './src/pages/MyAddProduct'
 import ProductDetailsPage from './src/pages/productDetailsPage';
 import SignInGoogle from './src/pages/SignInGoogle';
 import SubmitPersonalDetails from './src/pages/submitDetails';
-import addParking from './src/pages/AddParking';
 
 import { View, Pressable } from 'react-native';
 import { Header, Icon, Text } from 'react-native-elements';
@@ -27,9 +26,9 @@ export default function App() {
           options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.lightWhite }}}
         />
         <Stack.Screen
-             name = "addParking"
-             component={NewAddParking}
-             options={{title: 'Add parking', headerStyle: { backgroundColor: COLORS.lightWhite }}}
+             name = "addProduct"
+             component={NewAddProduct}
+             options={{title: 'Add product', headerStyle: { backgroundColor: COLORS.lightWhite }}}
             />
         {/* <Stack.Screen
              name = "history"

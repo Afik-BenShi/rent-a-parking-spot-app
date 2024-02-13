@@ -4,9 +4,10 @@ import { Input, Divider } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
-import ExtraIcon from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {
   View,
@@ -16,32 +17,40 @@ import {
   FlatList,
   ScrollView,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 
 import styles from './welcome.style'
 import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
+import MultipleSelectListDropDown from "./MultipleSelectListDropDown";
 
  
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent }) => {
-  //const [detailsShow, setdetailsShow] = useState(false);
 
+  //
   // State to hold the entered details
   const [details, setDetails] = useState({
     ownerName: "",
+    productName: "",
+    category: "",  // add choose from list
     city: "",
-    street: "",
-    houseNumber: "",
+    //street: "",
+    //houseNumber: "",
     price: "",
     phoneNumber: "",
     from: "",
-    until: ""
+    until: "",  // range of days
+    productDescription: "",
   });
 
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [selectedCat, setSelectedCat] = useState([]);
+  
   //const [error, setError] = useState('');
 
   {/*const validateTimes = (start, end) => {
@@ -62,11 +71,19 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     </View>
   );
 
+  const onSelectCategory = (item) => {
+    updated = {...selectedCat, item};
+    setSelectedCat(updated);
+    //setSelectedCat(item);
+    console.log(updated);
+    sendDataToParent("category", selectedCat);
+  };
+
   const onStartDateChange = (selectedDate) => {
     setStartDate(selectedDate);
     const start = startDate ? startDate.toLocaleString() : 'Not selected';
     console.log(start);
-
+    
     sendStartDateToParent(selectedDate);
   };
 
@@ -100,19 +117,20 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
   };*/}
 
 return (
+  
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
         <View style={styles.container}>
 
         
             <View style={styles.header}>
-                <Text style={styles.title}>Add your parking spot </Text>
+                <Text style={styles.title}>Add your product here </Text>
             </View>
         </View>
 
         <ScrollView>
             <View>
                 <Input
-                    label="Full Name"
+                    label="Full name"
                     labelStyle={styles.inputLabel}
                     leftIcon={<MoreIcon name="person" size={18} />}
                     placeholder=" Enter your full name"
@@ -121,6 +139,23 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
 
+                <Input
+                    label="Product name"
+                    labelStyle={styles.inputLabel}
+                    //leftIcon={<MoreIcon name="product" size={18} />}
+                    placeholder=" Enter product name"
+                    onChangeText={(text) => sendDataToParent("productName", text)}
+                    inputStyle={styles.inputControl}
+                    inputContainerStyle={{ borderBottomWidth: 0 }} 
+                />
+                
+                <View style={{ flex: 1, padding: 20 }}>
+                <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product categories</Text>
+                <MultipleSelectListDropDown
+                      onSelectCategory = {onSelectCategory}
+                />
+                </View>
+                
                 <Input
                     label="Location"
                     labelStyle={styles.inputLabel}
@@ -131,26 +166,12 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
 
+                
                 <Input
-                    placeholder=" Enter Parking Street"
-                    leftIcon={<Icon name="street-view" size={18} />}
-                    onChangeText={(text) => sendDataToParent("street", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-                <Input
-                    placeholder=" Enter House Number"
-                    leftIcon={<ExtraIcon name="house" size={18} />}
-                    onChangeText={(text) => sendDataToParent("houseNumber", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-
-                <Input
-                    label="Hourly Price"
+                    label="Daily Price rate"
                     labelStyle={styles.inputLabel}
                     leftIcon={<AnotherIcon name="coins" size={18} />}
-                    placeholder=" Enter desired hourly price"
+                    placeholder=" Enter desired daily price"
                     onChangeText={(text) => sendDataToParent("price", text)}
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
@@ -167,40 +188,21 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
 
-                {/*<TouchableOpacity style={styles.SubmitButton} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-
-                {detailsShow && (
-                    <>
-                        <View>
-                            <Text>OwnerName: {details.ownerName}</Text>
-                            <Text>City: {details.city}</Text>
-                            <Text>Street: {details.street}</Text>
-                            <Text>HouseNumber: {details.houseNumber}</Text>
-                            <Text>price: {details.price}</Text>
-                            <Text>phone: {details.phoneNumber}</Text>
-                        </View>
-                    </>
-                )} */}
-
                 <Divider width={5} color={COLORS.lightgrey} marginTop={20} />
 
                 <View>
                     <View>
-                        {/*<MoreIcon name="calendar" size={40} color={COLORS.orenge} />*/}
-
-                        <Text style={styles.sectionTitle}>Select an availability range </Text>
+                        <Text style={styles.sectionTitle}>Choose a range of available days </Text>
                     </View>
-                    <Text style={styles.inputLabel}>   Start time : </Text>
+                    <Text style={styles.inputLabel}>  Start day : </Text>
                 </View>
 
                 <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange}/>
                 <Text> </Text>
 
                 <View>
-                    <Text style={styles.inputLabel}>   End time : </Text>
-                    <Text style={styles.errorText}>Note: end time must be greater than start time</Text>
+                    <Text style={styles.inputLabel}>  End day : </Text>
+                    {/*<Text style={styles.errorText}>Note: end time must be greater than start time</Text>*/}
                 </View>
 
                 <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} />
@@ -210,6 +212,30 @@ return (
                     <Text>start: {startDate ? startDate.toLocaleString() : 'Not selected'}</Text>
                     <Text>end: {endDate ? endDate.toLocaleString() : 'Not selected'}</Text>
                 </View>
+
+
+                
+                <Input
+                    //multiline
+                    //numberOfLines={4}
+                    label="Description"
+                    labelStyle={styles.inputLabel}
+                    //leftIcon={<AnotherIcon name="coins" size={18} />}
+                    placeholder=" Enter product description"
+                    onChangeText={(text) => sendDataToParent("productDescription", text)}
+                    inputStyle={styles.inputControl}
+                    inputContainerStyle={{ borderBottomWidth: 0 }} 
+                />
+
+                <TouchableOpacity style={styles.uploadImgButton} onPress={() => {}}>
+                  <Text style={styles.buttonText}> 
+                    {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
+                    Upload image</Text>
+                </TouchableOpacity>
+    
+
+
+
 
                 {/*
                 <Divider width={5} color={COLORS.lightgrey} marginTop={20} />
@@ -226,6 +252,8 @@ return (
             
             </ScrollView>
     </SafeAreaView>
+    
+   
 );
 }
 
