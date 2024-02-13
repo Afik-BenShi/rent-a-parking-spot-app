@@ -7,6 +7,7 @@ import NewAddProduct from './src/pages/MyAddProduct'
 import ProductDetailsPage from './src/pages/productDetailsPage';
 import SignInGoogle from './src/pages/SignInGoogle';
 import SubmitPersonalDetails from './src/pages/submitDetails';
+import Filters from './src/components/filters'
 
 import { View, Pressable } from 'react-native';
 import { Header, Icon, Text } from 'react-native-elements';
@@ -56,6 +57,11 @@ export default function App() {
           <Stack.Screen
             name="submitParkingDetails"
             component={SubmitPersonalDetails}
+            options={{ headerShown: false }} // to remove Stack header
+          />
+          <Stack.Screen
+            name="filters"
+            component={Filters}
             options={{ headerShown: false }} // to remove Stack header
           />
 
