@@ -22,7 +22,7 @@ const BottomBar = ({navigation}) => {
     return (
     <>
     <ButtonGroup
-      buttons={['Update Settings', 'History', 'Tenant', 'My current parking', 'Home']}
+      buttons={['Update Settings', 'History', 'Tenant', 'Upcoming orders', 'Home']}
       selectedIndex={selectedIndex}
       onPress={(value) => {
         setSelectedIndex(value);
