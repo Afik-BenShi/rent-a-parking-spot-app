@@ -19,7 +19,6 @@ const COLORS = {
   lightPurple: '#B39DDB',
 
   cream: '#FFE5B4',
-  orenge: '#FB8C00',
   darkBlue: '#1F4690',
   veryDarkBlue: '#130D33',
   lightgreen: '#1DE9B6',
@@ -29,7 +28,10 @@ const COLORS = {
 
   background: '#F2F2F2',
   lightBackground: '#e8ecf4',  //light grey
-  inputTextGrey: '#f3eff6',   
+  inputTextGrey: '#f3eff6', 
+  
+  cardBackground: '#f3f5f9',  
+  cartTitle: '#173153',
 };
 
 const FONT = {
