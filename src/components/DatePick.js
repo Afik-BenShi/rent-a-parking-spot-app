@@ -26,7 +26,7 @@ const DateTimePickerExample = ({ minDate, onDateChange }) => {
     };
     
     const formattedDate = date.toLocaleDateString();
-    const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    //const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return (
         <SafeAreaView style={styles.container}>
