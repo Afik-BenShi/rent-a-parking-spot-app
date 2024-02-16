@@ -1,12 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Pressable, View } from 'react-native';
+import { Header } from 'react-native-elements';
+import { FontAwesome } from '@expo/vector-icons';
+
 import Slider from './slider';
 import Button from './button'
 import Divider from './divider';
 
 
-const Filters = () => {
+
+const Filters = ({navigation}) => {
   return (
     <View> 
+      <Header
+        rightComponent={
+          <Pressable onPress={() => navigation.navigate('Home')}>
+            <FontAwesome name="filter" color="#fff" size={20} style={styles.filterIcon} />
+          </Pressable>
+        }
+      />
       <Slider minValue={"Distance"} maxValue={"Price"} title={"Sort By"}/>
       <Divider/>
       <Slider minValue={`Cheapest: \n 1`} maxValue={`Highest: \n 100`} title={"Price"}/>
@@ -20,6 +31,9 @@ const Filters = () => {
 }
 
 const styles = StyleSheet.create({
+  filterIcon: {
+      marginTop: 0,
+    },
     container: {
         alignSelf: 'flex-start',
         alignContent: 'center',

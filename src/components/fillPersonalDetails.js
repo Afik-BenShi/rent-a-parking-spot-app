@@ -1,27 +1,21 @@
 import { useState } from "react";
 import { Input, Divider } from '@rneui/themed';
-//import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   ScrollView,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform
 } from "react-native";
 
-import styles from './welcome.style'
+import styles from './addProduct.style'
 import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
@@ -37,8 +31,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     productName: "",
     category: "",  // add choose from list
     city: "",
-    //street: "",
-    //houseNumber: "",
     price: "",
     phoneNumber: "",
     from: "",
@@ -59,16 +51,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
       setError('');
     }
   };*/}
-
-  // Convert details object into an array of objects
-  const detailsArray = Object.entries(details).map(([category, value]) => ({ category, value }));
-
-  const renderItem = ({ item }) => (
-    <View>
-      <Text>{item.category}</Text>
-      <Text>{item.value}</Text>
-    </View>
-  );
 
 
   // this methods are not use. we use the same methods in the parent class called MyNewProduct
@@ -102,13 +84,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
   };
 
 
-  // Function to handle submit button press
-  {/*const handleSubmit = () => {
-    // Do something with the entered details, such as displaying them
-    console.log("Submitted Details:", details);
-    setdetailsShow(true);
-  };*/}
-
 return (
   
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -122,6 +97,8 @@ return (
 
         <ScrollView>
             <View>
+                
+                {/*
                 <Input
                     label="Full name"
                     labelStyle={styles.inputLabel}
@@ -131,6 +108,7 @@ return (
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
+              */}
 
                 <Input
                     label="Product name"
@@ -170,6 +148,7 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
 
+                {/*
                 <Input
                     label="Phone Number"
                     labelStyle={styles.inputLabel}
@@ -180,6 +159,7 @@ return (
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
+              */}
 
                 <Divider width={5} color={COLORS.lightgrey} marginTop={20} />
 
