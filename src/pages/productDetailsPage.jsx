@@ -1,43 +1,28 @@
 import React from "react";
-import { Button, Card, Text } from "@rneui/themed";
+import { Card, Text } from "@rneui/themed";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { OwnerDetailsBar } from "../components/ownerDetails";
 import { AvailabilityBox } from "../components/availabilityBox";
 import "./productDetailsPage.types";
 import GoogleMaps from "../components/GoogleMaps";
 import ExpandableImage from "../components/ExpandableImage";
+import { COLORS } from "../../assets/theme";
+import { ContactButtons } from "../components/contactButtons";
 
 /**
  *  @type {React.FC}
- *  @param {ParkingDetailsPageProps} Props
+ *  @param {ProductDetailsPageProps} Props
  */
 export default function ProductDetailsPage({ route, navigation }) {
-    const { details = mock, onReserveParking = (_) => {} } = route.params;
+    const { details = mock } = route.params;
 
     const productImage = details.image
         ? { uri: details.image }
-        : //@ts-expect-error
-          require("../../assets/parking-details-images/littleBlackDress.jpg");
+        // @ts-ignore
+        : require("../../assets/parking-details-images/littleBlackDress.jpg");
 
-    const parkingReserveHandler = () => {
-        /** @type {ProductReservation} */
-        const reservation = {
-            id: "1",
-            title: details.title,
-            parkingId: details.id,
-            scheduling: {
-                startTime: new Date(),
-            },
-            reservingUser: {
-                id: "4",
-                name: "Yonatan Mergui",
-                phoneNumber: "050-1112222",
-                carPlate: "989-27-864",
-            },
-        };
-        onReserveParking(reservation);
-        alert(`reserved! ${JSON.stringify(reservation, undefined, 2)}`);
-    };
+    const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
+
     return (
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
@@ -61,13 +46,16 @@ export default function ProductDetailsPage({ route, navigation }) {
                     movable
                 />
             </ScrollView>
-            <Button
-                title={`Start Renting for ${details.price.amount}${details.price.currency}/${details.price.duration}`}
-                titleStyle={{ fontSize: 30 }}
-                buttonStyle={styles.parkBtn}
-                containerStyle={styles.parkBtnContainer}
-                onPress={parkingReserveHandler}
-            />
+            <View style={styles.actionBarContainer}>
+                <Text
+                    h3
+                    style={styles.actionText}
+                >{`Rent for ${details.price.amount}${details.price.currency}/${details.price.duration}`}</Text>
+                <ContactButtons
+                    phoneNumber={details.owner.phoneNumber}
+                    text={contactMessage}
+                />
+            </View>
         </View>
     );
 }
@@ -76,8 +64,6 @@ const styles = StyleSheet.create({
     pageContainer: {
         flex: 1,
         position: "relative",
-        // borderWidth: 1,
-        // borderColor: "#000",
     },
     scrollable: {
         paddingTop: 12,
@@ -88,21 +74,21 @@ const styles = StyleSheet.create({
     text: { paddingHorizontal: 12 },
     description: {
         paddingHorizontal: 12,
-        marginBottom:7,
+        marginBottom: 7,
         fontSize: 16,
     },
-    parkBtn: {
-        height: "100%",
-        borderRadius: 0,
-        paddingBottom: 36,
+    actionText: {
+        color: COLORS.lightWhite,
     },
-    parkBtnContainer: {
-        alignSelf: "center",
+    actionBarContainer: {
+        flexDirection:"row",
         position: "absolute",
+        alignItems: "center",
+        justifyContent: "space-around",
         bottom: 0,
         width: "100%",
         height: 120,
-        borderRadius: 0,
+        backgroundColor: COLORS.btnBlue,
     },
     map: {
         marginTop: 12,
@@ -130,7 +116,7 @@ const mock = {
     owner: {
         id: "2",
         name: "Anna Zak",
-        phoneNumber: "052-5381648",
+        phoneNumber: "972522708541",
     },
     availability: {
         startTime: new Date("2024-02-14T10:00"),

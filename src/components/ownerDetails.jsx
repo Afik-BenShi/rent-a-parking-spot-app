@@ -1,28 +1,28 @@
 import React from "react";
 import { Avatar, Text } from "@rneui/themed";
-import { Pressable, StyleSheet, View, Linking } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { ContactButtons } from "./contactButtons";
+import { COLORS } from "../../assets/theme";
 
 export function OwnerDetailsBar({ owner }) {
-    const makePhoneCall = () => {
-        Linking.openURL(`tel:${owner.phoneNumber}`);
-    };
     const avatarLetters = getOwnerLetters(owner.name);
     return (
-        <Pressable style={{overflow:"visible"}}onPress={makePhoneCall}>
-            <View style={barStyles.container}>
-                <Avatar
-                    size={48}
-                    rounded={true}
-                    title={avatarLetters}
-                    containerStyle={{ backgroundColor: "#46a" }}
-                />
-                <View style={barStyles.nameAndPhoneContainer}>
-                    <Text h4>{owner.name}</Text>
-                    <Text>{owner.phoneNumber}</Text>
-                </View>
-                <Text>📞</Text>
+        <View style={barStyles.container}>
+            <Avatar
+                size={48}
+                rounded={true}
+                title={avatarLetters}
+                containerStyle={{ backgroundColor: "#46a" }}
+            />
+            <View style={barStyles.nameAndPhoneContainer}>
+                <Text h4>{owner.name}</Text>
+                <Text>{owner.phoneNumber}</Text>
             </View>
-        </Pressable>
+            <ContactButtons
+                phoneNumber={owner.phoneNumber}
+                color={COLORS.similarToBlack}
+            />
+        </View>
     );
 }
 
@@ -45,7 +45,7 @@ const barStyles = StyleSheet.create({
         gap: 12,
         alignItems: "center",
         borderTopWidth: 1,
-        borderBottomWidth:1,
+        borderBottomWidth: 1,
         borderColor: "rgba(0,0,0,0.1)",
     },
     nameAndPhoneContainer: {

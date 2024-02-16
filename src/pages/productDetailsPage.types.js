@@ -46,8 +46,9 @@
 
 /**
  * @typedef {import('@react-navigation/native-stack').NativeStackScreenProps<{
- *  productDetails:{
- *      details: ProductDetails,
- *      onReserveParking?: (reservation: ProductReservation) => void | Promise<void>,
- * }}, "productDetails">} ParkingDetailsPageProps
+ *   productDetails: {
+ *     details: ProductDetails,
+ *     onReserveParking?: (reservation: ProductReservation) => void | Promise<void>,
+ *   },
+ * }, "productDetails">} ProductDetailsPageProps
  */

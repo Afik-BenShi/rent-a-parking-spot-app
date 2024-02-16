@@ -12,6 +12,7 @@ import Filters from './src/components/filters'
 import { View, Pressable } from 'react-native';
 import { Header, Icon, Text } from 'react-native-elements';
 import { COLORS} from "./assets/theme";
+import MyProductPage from './src/pages/myProductPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,10 @@ export default function App() {
           <Stack.Screen
             name="productDetails"
             component={ProductDetailsPage}
+            />
+          <Stack.Screen
+            name="myProduct"
+            component={MyProductPage}
           />
           <Stack.Screen
             name="signIn"
