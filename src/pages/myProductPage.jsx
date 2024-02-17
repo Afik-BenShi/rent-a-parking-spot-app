@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Text } from "@rneui/themed";
 import { ScrollView, StyleSheet, View } from "react-native";
 import ExpandableImage from "../components/ExpandableImage";
 import "./productDetailsPage.types";
 import ReservationTable from "../components/ReservationsTable";
-
 
 export default function MyProductPage({ route, navigation }) {
     /** @type {{details: ProductDetails}} */
@@ -26,7 +25,14 @@ export default function MyProductPage({ route, navigation }) {
                 <Card.Divider />
                 <Text style={styles.description}>{details.description}</Text>
                 <ExpandableImage source={productImage} initialHeight={200} />
-                <ReservationTable />
+                <ReservationTable
+                    dateRangeList={mockReservations.next}
+                    heading="Next reservations"
+                />
+                <ReservationTable
+                    dateRangeList={mockReservations.prev}
+                    heading="Previous reservations"
+                />
             </ScrollView>
         </View>
     );
@@ -75,4 +81,18 @@ const mock = {
         startTime: new Date("2024-02-14T10:00"),
         endTime: new Date("2024-02-17T18:00"),
     },
+};
+
+const mockReservations = {
+    next: [
+        {id:"1", startTime: new Date('2026-08-12T15:45:00Z'), endTime: new Date('2026-09-05T12:00:00Z')},
+        {id:"2", startTime: new Date('2027-11-08T08:30:00Z'), endTime: new Date('2027-11-25T18:20:00Z')},
+        {id:"3", startTime: new Date('2025-03-25T10:15:00Z'), endTime: new Date('2025-04-10T20:30:00Z')},
+    ],
+    prev: [
+        {id:"4", startTime: new Date('2022-05-10T08:00:00Z'), endTime: new Date('2022-06-01T16:20:00Z')},
+        {id:"5", startTime: new Date('2023-08-15T12:30:00Z'), endTime:new Date('2023-09-02T18:45:00Z')},
+        {id:"6", startTime: new Date('2021-11-20T14:45:00Z'), endTime: new Date('2021-12-05T22:10:00Z')},
+        {id:"7", startTime: new Date('2023-9-06T14:45:00Z'), endTime: new Date('2023-9-06T22:12:00Z')},
+    ],
 };
