@@ -237,12 +237,12 @@ const styles = StyleSheet.create({
     },
     // header
     headerContainer: {
-        backgroundColor: COLORS.cardBackground,
+        backgroundColor: '#fff',
         justifyContent: 'flex-start',
         height: 110,
         marginTop: -30,
-        borderBottomWidth: 1,
-        borderBottomColor: COLORS.grey2,
+        borderBottomWidth: 2,
+        borderBottomColor: COLORS.lightgrey,
       },
       headerText: {
         color: COLORS.cartTitle,

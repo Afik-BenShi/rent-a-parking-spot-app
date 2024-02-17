@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Pressable,
 } from 'react-native';
+import { Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
 //import { rentalItems } from '../../assets/mockData';
@@ -23,6 +26,25 @@ export default function MyProductsPage ({navigation}) {
 
     return (
         <SafeAreaView style={styles.layout}>
+            
+            <Header
+                leftComponent={
+                <Pressable onPress={() => console.log('Menu button pressed!')}>
+                    <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
+                </Pressable>
+                }
+                
+                rightComponent={
+                    <View style={{alignContent:'flex-start', flexDirection: 'row'}}>
+                    <Pressable onPress={() => navigation.navigate('addProduct')}>
+                        <FontAwesome name="plus-square-o" color={COLORS.btnBlue} size={30} style={styles.filterIcon} />
+                    </Pressable>
+                    </View>
+                }
+                containerStyle={styles.headerContainer}
+                />  
+
+
             <View style={styles.container}>
                 <CardList
                     items={ownerRentalItems}
@@ -31,6 +53,7 @@ export default function MyProductsPage ({navigation}) {
                 
             </View>
             
+            {/*
             <View style={styles.btnContainer}>
                 <TouchableOpacity
                     style={styles.addProductBtn}
@@ -38,6 +61,7 @@ export default function MyProductsPage ({navigation}) {
                     <Icon name='add' size={30} color={COLORS.white} />
                 </TouchableOpacity>
                 </View>
+                */}
         </SafeAreaView>
     );
 }
@@ -76,5 +100,36 @@ const styles = StyleSheet.create({
             height: 1,
         },
     },
-
+    // header styles
+    headerContainer: {
+        backgroundColor: 'transparent',
+        justifyContent: 'flex-start',
+        height: 95,
+        marginTop: -40,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.lightgrey,
+      },
+      headerText: {
+        color: COLORS.cartTitle,
+        fontWeight: '700',
+        fontSize: 24,
+        fontFamily: 'Roboto',
+        textAlign: 'center',
+        marginTop: 0,
+      },
+      centerHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      logoIcon: {
+        marginRight: 5,
+      },
+      menuIcon: {
+        marginTop: 0,
+        marginLeft: 15,
+      },
+      filterIcon: {
+        marginTop: 0,
+        marginRight: 20,
+      },
 });
