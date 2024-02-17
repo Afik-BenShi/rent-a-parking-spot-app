@@ -30,16 +30,15 @@
  * @typedef {{
  *  id: string,
  *  title: string,
- *  parkingId: string,
+ *  productId: string,
  *  scheduling: {
  *      startTime: Date,
- *      endTime?: Date,
+ *      endTime: Date,
  *  },
  *  reservingUser: {
  *      id: string,
  *      name: string,
  *      phoneNumber:string,
- *      carPlate: string,
  *  },
  * }} ProductReservation
  */

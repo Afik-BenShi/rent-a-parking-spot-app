@@ -44,9 +44,9 @@ const barStyles = StyleSheet.create({
         padding: 12,
         gap: 12,
         alignItems: "center",
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: "rgba(0,0,0,0.1)",
+        // borderTopWidth: 1,
+        // borderBottomWidth: 1,
+        // borderColor: "rgba(0,0,0,0.1)",
     },
     nameAndPhoneContainer: {
         flex: 2,

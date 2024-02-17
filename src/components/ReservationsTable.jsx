@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { AvailabilityBox } from "./availabilityBox";
 import { Card, Icon, Text } from "@rneui/themed";
-import { Pressable, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View } from "react-native";
+import ReservationBox from "./reservationBox";
 
 /**
  * @param {{
- * dateRangeList: {id:string, startTime: Date, endTime: Date}[],
+ * editMode: boolean,
+ * reservations: ProductReservation[],
  * heading:string,
  * initialExpanded?:boolean,
  * }} props
  */
 export default function ReservationTable({
-    dateRangeList,
+    editMode,
+    reservations,
     heading,
     initialExpanded = false,
 }) {
@@ -19,7 +21,7 @@ export default function ReservationTable({
 
     return (
         <>
-            <Pressable
+            <TouchableOpacity
                 style={styles.headingBox}
                 onPress={() => toggleExpand((prev) => !prev)}
             >
@@ -28,12 +30,12 @@ export default function ReservationTable({
                     name={isExpanded ? "chevron-up" : "chevron-down"}
                     type="feather"
                 />
-            </Pressable>
+            </TouchableOpacity>
             <Card.Divider />
             {isExpanded ? (
                 <>
-                    {dateRangeList.map((dateRange) => (
-                        <AvailabilityBox key={dateRange.id} availability={dateRange} />
+                    {reservations.map((rsv) => (
+                        <ReservationBox editMode={editMode} onChange={()=>{}} key={rsv.id} reservation={rsv} />
                     ))}
                     <Card.Divider />
                 </>
