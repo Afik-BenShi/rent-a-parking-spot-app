@@ -11,8 +11,8 @@ import MyProductsPage from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
 import NoOrdersYet from './src/pages/noOrdersYetPage';
 import Filters from './src/components/filters';
-import settingPersonal from './src/pages/settingPersonal';
-import User from './src/pages/user';
+import EditProfile from './src/pages/settingPersonal';
+import Profile from './src/pages/user';
 
 import { Icon } from 'react-native-elements';
 import { COLORS} from "./assets/theme";
@@ -51,13 +51,15 @@ function MyProStackScreen() {
   return (
     <MyProductsStack.Navigator>
       <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage} 
-        options={{title:'My products'}}/>
+        options={{title:'My products', headerShown: false}}
+        />
 
       <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }}/>
       <MyProductsStack.Screen name="productDetails" component={ProductDetailsPage} />
       <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails} 
           options={{ headerShown: false }} // to remove Stack header 
           />
+      
     </MyProductsStack.Navigator>
   );
 }
@@ -65,10 +67,13 @@ function MyProStackScreen() {
 const SettingsStack = createNativeStackNavigator();
 
 function SettingsStackScreen() {
+  const pd = {ownerName: " ", city: " ", phoneNumber: " "};
+  
   return (
     <SettingsStack.Navigator>
-      <SettingsStack.Screen name="Setting" component={settingPersonal} />
-      <SettingsStack.Screen name="userProfile" component={User} />
+    
+      <SettingsStack.Screen name="userProfile" component={Profile} data={{}}  />
+      
     </SettingsStack.Navigator>
   );
 }

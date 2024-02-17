@@ -1,3 +1,4 @@
+// not used
 import React, { useState } from 'react';
 import { COLORS} from "../../assets/theme";
 
@@ -20,35 +21,24 @@ import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default function AddProductPage ({navigation}) {
+export default function EditProfile ({navigation, route}) {
   
-    // State to hold the entered details
-    const [personalDetails, setPersonalDetails] = useState({
-        ownerName: "",
-        city: "",
-        phoneNumber: "",
-    });
+  const { currentPersonalDetails } = route.params;
+  const { onChangeData } = route.params;
 
+  var holder = currentPersonalDetails;
+  if (!currentPersonalDetails) {
+    console.log("no data");
+  }
+  else {
+    console.log("currentPersonalDetails: ", currentPersonalDetails);
+  }
 
-
-    // Function to handle input change and update details state
-    const handleInputChange = (field, value) => {
-        setPersonalDetails((prevDetails) => ({
-            ...prevDetails,
-            [field]: value,
-        }));
-    };
-
-
-    // Function to handle 'next' button press
+    // Function to handle 'save' button press
     const handleSave = () => {
-        console.log("Submitted Details:", personalDetails);
-        const pd = {name: "Noa erez", city: "Tel aviv", phoneNumber: "0541234567"};
-        navigation.navigate('userProfile', { profileDetails: pd });
+        navigation.goBack();
     };
-    
 
-  
   
     return (
       <KeyboardAvoidingView
@@ -60,17 +50,18 @@ export default function AddProductPage ({navigation}) {
           <ScrollView>
             
             <View style={moreStyles.container}>
-                <Text style={styles.title}>Update Setting</Text>
+                <Text style={styles.title}>Edit your Profile</Text>
             </View>
 
                 <Input
-                    label="Full name"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<MoreIcon name="person" size={18} />}
-                    placeholder=" Enter your full name"
-                    onChangeText={(text) => handleInputChange("ownerName", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
+                  label="Full name"
+                  labelStyle={styles.inputLabel}
+                  leftIcon={<MoreIcon name="person" size={18} />}
+                  placeholder=" Enter your full name"
+                  onChangeText={(text) => onChangeData("ownerName", text)}
+                  inputStyle={styles.inputControl}
+                  inputContainerStyle={{ borderBottomWidth: 0 }}
+                  //value={holder.ownerName}
                 />
 
                 <Input
@@ -78,9 +69,10 @@ export default function AddProductPage ({navigation}) {
                     labelStyle={styles.inputLabel}
                     leftIcon={<MoreIcon name="location-outline" size={18} />}
                     placeholder=" Enter your City"
-                    onChangeText={(text) => handleInputChange("city", text)}
+                    onChangeText={(text) => onChangeData("city", text)}
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
+                    //value={holder.city}
                 />
 
                 <Input
@@ -89,9 +81,10 @@ export default function AddProductPage ({navigation}) {
                     leftIcon={<AnotherIcon name="phone-alt" size={18} />}
                     placeholder=" Enter your phone number"
                     keyboardType="phone-pad"
-                    onChangeText={(text) => handleInputChange("phoneNumber", text)}
+                    onChangeText={(text) => onChangeData("phoneNumber", text)}
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
+                    //value={holder.phoneNumber}
                 />
 
                 <TouchableOpacity style={moreStyles.finishButton} onPress={handleSave}>
@@ -222,5 +215,46 @@ backButton: {
   left: 2,
   zIndex: 1,
 },
+btn: {
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
+    borderColor: '#266EF1',
+  },
+  btnGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: -6,
+    marginTop: 18,
+  },
+  btnText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#266EF1',
+  },
+  btnPrimary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: '#266EF1',
+    borderColor: '#266EF1',
+  },
+  btnPrimaryText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#fff',
+  },
 
 });
