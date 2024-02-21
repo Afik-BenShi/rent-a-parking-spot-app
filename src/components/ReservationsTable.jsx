@@ -35,7 +35,21 @@ export default function ReservationTable({
             {isExpanded ? (
                 <>
                     {reservations.map((rsv) => (
-                        <ReservationBox editMode={editMode} onChange={()=>{}} key={rsv.id} reservation={rsv} />
+                        <ReservationBox
+                            editMode={editMode}
+                            onChange={(newRsv) => {
+                                alert(
+                                    "changed \n" + JSON.stringify(newRsv, null, 2)
+                                );
+                            }}
+                            onDelete={(delRsv) => {
+                                alert(
+                                    "deleted \n" + JSON.stringify(delRsv, null, 2)
+                                );
+                            }}
+                            key={rsv.id}
+                            reservation={rsv}
+                        />
                     ))}
                     <Card.Divider />
                 </>
