@@ -1,78 +1,136 @@
-import { StyleSheet, Pressable, View } from 'react-native';
-import { Header } from 'react-native-elements';
+// Filter.jsx
+import React, { useState } from 'react';
+import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, View } from 'react-native';
+import { Header, Input, ButtonGroup, Text } from 'react-native-elements';
 import { FontAwesome } from '@expo/vector-icons';
-
-import Slider from './slider';
-import Button from './button'
 import Divider from './divider';
+import MultipleSelectListDropDown from './MultipleSelectListDropDown';
+import DatePicker from './DatePick';
 
+const Filter = ({ navigation }) => {
+  const [selectedOption, setSelectedOption] = useState(0);
+  const [selectedCategoriesAll, setSelectedCategoriesAll] = useState([]);
+  const [startDate, setStartDate] = useState(null); // State for start date
+  const [endDate, setEndDate] = useState(null); // State for end date
 
+  const buttonGroupOptions = ['Distance', 'Price'];
+  const categories = [
+    { id: '1', name: 'Category 1' },
+    { id: '2', name: 'Category 2' },
+    // Add more categories as needed
+  ];
 
-const Filters = ({navigation}) => {
   return (
-    <View> 
-      <Header
-        rightComponent={
-          <Pressable onPress={() => navigation.navigate('Home')}>
-            <FontAwesome name="filter" color="#fff" size={20} style={styles.filterIcon} />
-          </Pressable>
-        }
-      />
-      <Slider minValue={"Distance"} maxValue={"Price"} title={"Sort By"}/>
-      <Divider/>
-      <Slider minValue={`Cheapest: \n 1`} maxValue={`Highest: \n 100`} title={"Price"}/>
-      <Divider/>
-      <View style={styles.labelContainer}>
-        <Button title={"Choose start time"}/>
-        <Button title={"Choose end time"}/>
-      </View>
-    </View>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView>
+          {/* Assume you have a custom Header component */}
+          <Header
+            leftComponent={
+              <Pressable onPress={() => navigation.navigate('Home')}>
+                <FontAwesome name="times" color="#fff" size={20} style={styles.closeIcon} />
+              </Pressable>
+            }
+            centerComponent={{ text: 'Narrow your search', style: { color: '#fff', fontSize: 21, fontWeight: 'bold' ,marginTop: -20} }} 
+          />
+
+          {/* Price/Distance Button Group */}
+          <ButtonGroup
+            onPress={(selectedIndex) => setSelectedOption(selectedIndex)}
+            selectedIndex={selectedOption}
+            buttons={buttonGroupOptions}
+            containerStyle={styles.buttonGroupContainer}
+            selectedButtonStyle={styles.selectedButtonStyle}
+            innerBorderStyle={styles.innerBorderStyle}
+            buttonStyle={styles.buttonStyle} // Rounded edges
+          />
+          <Divider />
+
+          {/* Multi-Select List for Categories (All Categories) */}
+          <MultipleSelectListDropDown
+            data={categories}
+            selectedData={selectedCategoriesAll}
+            onSelectData={(selected) => setSelectedCategoriesAll(selected)}
+            title="Choose from all Categories"
+          />
+          <Divider />
+
+          {/* Location Input */}
+          <View style={styles.locationContainer}>
+            <Text h4 style={styles.locationTitle}>Where to search:</Text>
+            <Input
+              placeholder="Use my current location"
+              defaultValue="Use my current location"
+              leftIcon={{ type: 'font-awesome', name: 'map-marker', color: '#86939e' }}
+            />
+          </View>
+          <Divider />
+
+          {/* Date Picker for Start Date */}
+          <Text style={styles.dateTitle}>Start Date:</Text>
+          <DatePicker
+            label="Start Date"
+            value={startDate}
+            onChange={(date) => setStartDate(date)}
+          />
+          <Divider />
+
+          {/* Date Picker for End Date */}
+          <Text style={styles.dateTitle}>Finish Date:</Text>
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            onChange={(date) => setEndDate(date)}
+          />
+          <Divider />
+
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  filterIcon: {
-      marginTop: 0,
-    },
-    container: {
-        alignSelf: 'flex-start',
-        alignContent: 'center',
-        justifyContent: 'center',
-        width: '80%',
-        marginTop: 100,
-        marginBottom: 10,
-        paddingHorizontal: 20,
-      },
-    textLeft: {
-        left: 60,
-        bottom: 10,
-        textAlign: 'center',
-      },
-    textRight: {
-        right: -80,
-        bottom: 10,
-        textAlign: 'center',
-      },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 20,
-      },
-    slider: {
-      width: '80%', // Adjust to match the width of labelContainer
-      height: 40, 
-      marginLeft: 70,
-      marginBottom: 15,
-      marginTop: 30,
-    },
-    labelContainer: {
-        flexDirection: 'row',
-        marginLeft: 30,
-        marginTop: 20,
-        justifyContent: 'space-between',
-        width: '80%', // Match the width with the slider for alignment
-      },  
-    });
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+    marginTop: 50,
+  },
+  closeIcon: {
+    marginBottom: 30,
+    marginTop: -45,
+    marginLeft: 10,
+  },
+  buttonGroupContainer: {
+    height: 40,
+    marginTop: 30,
+    marginVertical: 10,
+    borderRadius: 15, // Rounded edges for the whole button group
+    overflow: 'hidden', // Ensure the rounded edges are applied
+  },
+  selectedButtonStyle: {
+    backgroundColor: '#266EF1',
+  },
+  innerBorderStyle: {
+    color: 'transparent', // Hide the border between buttons
+  },
+  buttonStyle: {
+    borderRadius: 15, // Rounded edges for individual buttons
+  },
+  locationContainer: {
+    marginBottom: 0,
+  },
+  locationTitle: {
+    fontSize: 10,
+    color:'#266EF1',
+    marginBottom: 8,
+  },
+  dateTitle: {
+    fontSize: 16,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+});
 
-
-export default Filters;
+export default Filter;
