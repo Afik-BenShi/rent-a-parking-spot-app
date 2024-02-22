@@ -13,6 +13,7 @@ import NoOrdersYet from './src/pages/noOrdersYetPage';
 import Filters from './src/components/filters';
 import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
+import Filters from './src/components/filters'
 
 import { Icon } from 'react-native-elements';
 import { COLORS} from "./assets/theme";
