@@ -32,7 +32,7 @@ function getOwnerLetters(name) {
         return "NA";
     }
     const first = words[0].charAt(0);
-    const second = words[1]?.charAt(0);
+    const second = words[1]?.charAt(0)?? words[0].charAt(1);
     return (first + second).toUpperCase();
 }
 

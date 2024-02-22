@@ -14,7 +14,7 @@ import { ContactButtons } from "../components/contactButtons";
  *  @param {ProductDetailsPageProps} Props
  */
 export default function ProductDetailsPage({ route, navigation }) {
-    const { details = mock } = route.params;
+    const details = parseItem(route.params);
 
     const productImage = details.image
         ? { uri: details.image }
@@ -96,6 +96,24 @@ const styles = StyleSheet.create({
         width: "auto",
     },
 });
+
+// TODO use consistent data instead of parsing
+/** @returns {ProductDetails} */
+function parseItem({details:item}){
+    const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+    return Object.assign(mock, {
+        id,
+        title:name,
+        description:details,
+        availability:{
+            startTime: new Date(startDate),
+            endTime: new Date(endDate),
+        },
+        image:img,
+        price: Object.assign(mock.price,{ amount:price }),
+        owner: Object.assign(mock.owner, { name:owner }),
+    });
+}
 
 /**@type {ProductDetails} */
 const mock = {

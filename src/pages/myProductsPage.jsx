@@ -49,6 +49,7 @@ export default function MyProductsPage ({navigation}) {
                 <CardList
                     items={ownerRentalItems}
                     title="My Products"
+                    onItemPressed={(details) => navigation.navigate('ownerProduct', {details})}
                 />
                 
             </View>

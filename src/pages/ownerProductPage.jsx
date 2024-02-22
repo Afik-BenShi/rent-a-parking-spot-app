@@ -7,9 +7,9 @@ import ReservationTable from "../components/ReservationsTable";
 import { EditableText } from "../components/editableComponents";
 import { COLORS } from "../../assets/theme";
 
-export default function MyProductPage({ route, navigation }) {
-    /** @type {{details: ProductDetails}} */
-    const { details = mock } = route.params;
+export default function OwnerProductPage({ route, navigation }) {
+    /** @type {ProductDetails} */
+    const details = parseItem(route.params);
     const [editMode, setEditMode] = useState(false);
     const editClickHandler = () => {
         setEditMode((edit) => !edit);
@@ -86,6 +86,24 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
+
+// TODO use consistent data instead of parsing
+/** @returns {ProductDetails} */
+function parseItem({details:item}){
+    const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+    return Object.assign(mock, {
+        id,
+        title:name,
+        description:details,
+        availability:{
+            startTime: new Date(startDate),
+            endTime: new Date(endDate),
+        },
+        image:img,
+        price: Object.assign(mock.price,{ amount:price }),
+        owner: Object.assign(mock.owner, { name:owner }),
+    });
+}
 
 /**@type {ProductDetails} */
 const mock = {
