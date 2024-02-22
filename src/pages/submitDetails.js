@@ -137,7 +137,7 @@ export default function SubmitDetails({ navigation, route }) {
                         nextText="Finish"
                         backText="Back"
                         navigation={navigation}
-                        onNextPress={()  => { /* handle back press */ }}
+                        onNextPress={()  => {navigation.navigate("My Products cardList")}}
                         paddingBottom={0}
                       />   
                     </View>
@@ -154,8 +154,6 @@ export default function SubmitDetails({ navigation, route }) {
       productName: "",
       category: "",  // add choose from list
       city: "",
-      //street: "",
-      //houseNumber: "",
       price: "",
       phoneNumber: "",
       from: "",
@@ -180,8 +178,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     paddingTop: 12,
-    paddingHorizontal: 16,
-    paddingBottom: 48,
+    paddingHorizontal: 12,
+    paddingBottom: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

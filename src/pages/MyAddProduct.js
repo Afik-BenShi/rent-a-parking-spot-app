@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
 import {
   StyleSheet,
@@ -11,11 +12,11 @@ import {
   ScrollView,
   Text,
   KeyboardAvoidingView,
-  Platform
 } from 'react-native';
 import NextBackBtn from '../components/nextAndBackBtn';
+import { Header } from 'react-native-elements';
 
-export default function MyAddParking ({navigation}) {
+export default function AddProductPage ({navigation}) {
   
     // State to hold the entered details
     const [details, setDetails] = useState({
@@ -23,8 +24,6 @@ export default function MyAddParking ({navigation}) {
         productName: "",
         category: [],  // add choose from list
         city: "",
-        //street: "",
-        //houseNumber: "",
         price: "",
         phoneNumber: "",
         from: "",
@@ -71,9 +70,8 @@ export default function MyAddParking ({navigation}) {
       }));      
     }
 
-    // Function to handle submit button press
+    // Function to handle 'next' button press
     const handleSubmit = () => {
-        // Do something with the entered details, such as displaying them
         console.log("Submitted Details:", details);
         navigation.navigate("submitParkingDetails" ,{ detailsList: details });
         //setdetailsShow(true);
@@ -86,33 +84,33 @@ export default function MyAddParking ({navigation}) {
       <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
-    >
+        >
       
-      
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-        <ScrollView>
-          <FillPersonalDetails 
-            sendDataToParent={handleInputChange} 
-            sendStartDateToParent={handleStartDateChange}
-            sendEndDateToParent={handleEndDateChange}
-            sendCatToParent={handleCategoryChange}
-            />
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
+          
+          <ScrollView>
 
-          {/*<TouchableOpacity style={styles.finishButton} onPress={() => navigation.navigate("signIn")}>
-            <Text style={styles.buttonText}>SignIn-page</Text>
-          </TouchableOpacity>
-    */}
-        
+          <TouchableOpacity style={styles.backButton} onPress={() => {navigation.goBack();}}>
+                <Icon name='chevron-back' size={24} color={COLORS.black} />
+            </TouchableOpacity>
 
-          <NextBackBtn
-            nextText="Next"
-            backText="Back"
-            navigation={navigation}
-            onNextPress={handleSubmit}
-          />    
-        
-        </ScrollView>   
-      </SafeAreaView>  
+            <FillPersonalDetails 
+              sendDataToParent={handleInputChange} 
+              sendStartDateToParent={handleStartDateChange}
+              sendEndDateToParent={handleEndDateChange}
+              sendCatToParent={handleCategoryChange}
+              />
+          
+
+            <NextBackBtn
+              nextText="Next"
+              backText="Back"
+              navigation={navigation}
+              onNextPress={handleSubmit}
+            />    
+          
+          </ScrollView>   
+        </SafeAreaView>  
       </KeyboardAvoidingView> 
     );
 }
@@ -212,6 +210,12 @@ btnPrimaryText: {
   lineHeight: 20,
   fontWeight: '600',
   color: '#fff',
+},
+backButton: {
+  position: 'absolute',
+  top: 20,
+  left: 2,
+  zIndex: 1,
 },
 
 });

@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    color: COLORS.darkBlue,
+    color: COLORS.cartTitle,
     fontWeight: 'bold',
     marginTop: 20,
     margin: 10,
@@ -110,7 +110,7 @@ buttonText: {
   title: {
     fontSize: 27,
     fontWeight: '700',
-    color: COLORS.darkBlue,
+    color: COLORS.cartTitle,
     marginBottom: 6,
     textAlign: 'center',
   },
@@ -122,7 +122,7 @@ buttonText: {
   },
   /** Header */
   header: {
-    marginVertical: 36,
+    marginVertical: 10,
   },
   headerImg: {
     width: 80,
