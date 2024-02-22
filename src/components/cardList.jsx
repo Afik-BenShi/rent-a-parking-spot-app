@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../assets/theme';
 
 
-export default function CardList({ items, title }) {
+export default function CardList({ items, title, onItemPressed = (_) => {} }) {
 
     return (
     <SafeAreaView style={{ backgroundColor: '#f3f5f9' }}>
@@ -27,14 +27,13 @@ export default function CardList({ items, title }) {
         <View style={styles.row}>
         
           {items.map(
-            ({ id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img }, index) => {
+            (item, index) => {
+              const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
               return (
 
                 <View key={index} style={styles.cardContainer}>
                   <TouchableOpacity
-                    onPress={() => {
-                      // handle onPress on card
-                    }}>
+                    onPress={() => onItemPressed(item)}>
                     <View style={styles.card}>
                       <Image
                         alt=""

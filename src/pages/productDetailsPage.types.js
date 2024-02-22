@@ -30,24 +30,24 @@
  * @typedef {{
  *  id: string,
  *  title: string,
- *  parkingId: string,
+ *  productId: string,
  *  scheduling: {
  *      startTime: Date,
- *      endTime?: Date,
+ *      endTime: Date,
  *  },
  *  reservingUser: {
  *      id: string,
  *      name: string,
  *      phoneNumber:string,
- *      carPlate: string,
  *  },
  * }} ProductReservation
  */
 
 /**
  * @typedef {import('@react-navigation/native-stack').NativeStackScreenProps<{
- *  productDetails:{
- *      details: ProductDetails,
- *      onReserveParking?: (reservation: ProductReservation) => void | Promise<void>,
- * }}, "productDetails">} ParkingDetailsPageProps
+ *   productDetails: {
+ *     details: ProductDetails,
+ *     onReserveParking?: (reservation: ProductReservation) => void | Promise<void>,
+ *   },
+ * }, "productDetails">} ProductDetailsPageProps
  */

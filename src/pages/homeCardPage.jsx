@@ -141,6 +141,7 @@ export default function HomeCardPage ({navigation}) {
                             refreshing={refreshing}
                             onRefresh={onRefresh}
                         />}
+                    onItemPressed={(details) => navigation.navigate("productDetails", {details})}
                 />
             </View>
                 

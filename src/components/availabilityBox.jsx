@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Card, Text } from "@rneui/themed";
 import { dateRangeFormat } from "../utils/dateTime";
 
+/** @param {{availability: {startTime: Date, endTime: Date}}} props */
 export function AvailabilityBox({ availability }) {
     const parkingAvailability = dateRangeFormat(
         availability.startTime,

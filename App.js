@@ -3,32 +3,29 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator} from '@react-navigation/native-stack';
 
 // pages
-import homePage from './src/pages/homePage';
 import AddProduct from './src/pages/MyAddProduct'
 import ProductDetailsPage from './src/pages/productDetailsPage';
 import SubmitPersonalDetails from './src/pages/submitDetails';
+import OwnerProductPage from './src/pages/ownerProductPage';
 import MyProductsPage from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
 import NoOrdersYet from './src/pages/noOrdersYetPage';
 import Filters from './src/components/filters';
 import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
-import Filters from './src/components/filters'
 
 import { Icon } from 'react-native-elements';
 import { COLORS} from "./assets/theme";
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-//const Stack = createNativeStackNavigator();
-
 const HomeStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
     <HomeStack.Navigator
-      //screenOptions={{ headerShown: false }}
-      >
+    //screenOptions={{ headerShown: false }}
+    >
       <HomeStack.Screen name="HomeCard" 
         component={homeCardPage} 
         options={{ headerShown: false }}
@@ -42,6 +39,7 @@ function HomeStackScreen() {
             //options={{ headerShown: false }} // to remove Stack header
           />
 
+      <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
     </HomeStack.Navigator>
   );
 }
@@ -56,7 +54,7 @@ function MyProStackScreen() {
         />
 
       <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }}/>
-      <MyProductsStack.Screen name="productDetails" component={ProductDetailsPage} />
+      <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
       <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails} 
           options={{ headerShown: false }} // to remove Stack header 
           />
@@ -132,65 +130,6 @@ export default function App() {
           
         
       </Tab.Navigator>
-    </NavigationContainer>
-  );
-}
-
-
-{/*
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        //screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={CardList}
-          options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.lightWhite }}}
-        />
-        <Stack.Screen
-             name = "addProduct"
-             component={NewAddProduct}
-             options={{title: 'Add product', headerStyle: { backgroundColor: COLORS.lightWhite }}}
-            />*/}
-
-        {/* <Stack.Screen
-             name = "history"
-             component={historyComponent}
-             options={{title: 'history parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-            /> */}
-        {/* <Stack.Screen
-             name = "changeType"
-             component={changeTypeComponent}
-             options={{title: 'change type', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-            /> */}
-        {/* <Stack.Screen
-             name = "current"
-             component={currentComponent}
-             options={{title: 'My Current Parking', headerStyle: { backgroundColor: COLORS.lightPurple }}}
-            /> */}
-          
-          {/*<Stack.Screen
-            name="productDetails"
-            component={ProductDetailsPage}
-          />
-          <Stack.Screen
-            name="signIn"
-            component={SignInGoogle}
-          />
-          <Stack.Screen
-            name="submitParkingDetails"
-            component={SubmitPersonalDetails}
-            options={{ headerShown: false }} // to remove Stack header
-          />
-          <Stack.Screen
-            name="filters"
-            component={Filters}
-            options={{ headerShown: false }} // to remove Stack header
-          />
-
-      </Stack.Navigator>
     </NavigationContainer>
   );
 }
