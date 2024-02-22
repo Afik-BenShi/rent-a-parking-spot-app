@@ -1,5 +1,3 @@
-// mockData.js
-
 export const rentalItems = [
   {
     id: 1,
