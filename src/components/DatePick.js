@@ -115,11 +115,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-
-    dateSelctor: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
     /** Picker */
     picker: {
         marginTop: 12,
@@ -152,7 +147,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#4c6cfd",
     },
-
     selectedDate: {
         margin: 10,
         fontSize: 16,
@@ -160,30 +154,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         alignSelf: "flex-start",
     },
-    cancelButton: {
-        height: 50,
-        width: 150,
-        backgroundColor: COLORS.white,
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        margin: 10,
-    },
-    button: {
-        height: 50,
-        width: 300,
-        backgroundColor: "oldlace", // Use your desired button background color
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        margin: 10,
-    },
-    buttonText: {
-        color: COLORS.black,
-        fontWeight: "bold",
-        fontSize: 16,
-    },
-
     iosPicker: {
         flexDirection: "row",
         alignItems: "center",
