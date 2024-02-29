@@ -45,18 +45,17 @@ export function EditableText({
 
 /**
  * @typedef {{
-*  editMode: boolean,
-*  children: string,
-*  onChange: (newText: string) => any,
-*  inputStyle?:  {},
-*  textStyle?: import("react-native").TextStyle,
-*  h1?: boolean,
-*  h2?: boolean,
-*  h3?: boolean,
-*  h4?: boolean,
-* }} EditableTextProps
-*/
-
+ *  editMode: boolean,
+ *  children: string,
+ *  onChange: (newText: string) => any,
+ *  inputStyle?:  {},
+ *  textStyle?: import("react-native").TextStyle,
+ *  h1?: boolean,
+ *  h2?: boolean,
+ *  h3?: boolean,
+ *  h4?: boolean,
+ * }} EditableTextProps
+ */
 
 /**
  * @type {React.FC}
@@ -76,10 +75,14 @@ export function EditableDateRange({
         start,
         end
     );
-    const debouncedOnChange = useCallback(debounce(onRangeChange), [onRangeChange]);
-    const dateChangeHandler = (setFunc) => (newDate) => {
-        setFunc(newDate);
-        debouncedOnChange(start, end);
+    const changeCallback = useCallback(onRangeChange, [onRangeChange]);
+    const startChangedHandler = (newDate) => {
+        setStart(newDate);
+        changeCallback(newDate, end);
+    };
+    const endChangedHandler = (newDate) => {
+        setEnd(newDate);
+        changeCallback(start, newDate);
     };
     return !editMode ? (
         <Text {...textProps}>
@@ -90,12 +93,14 @@ export function EditableDateRange({
             <Text {...textProps}>Start Date</Text>
             <DateTimePickerExample
                 minDate={minDate}
-                onDateChange={dateChangeHandler(setStart)}
-            />
+                onDateChange={startChangedHandler}
+                initialDate={dateRange.startTime}
+                />
             <Text {...textProps}>End Date</Text>
             <DateTimePickerExample
                 minDate={minDate}
-                onDateChange={dateChangeHandler(setEnd)}
+                onDateChange={endChangedHandler}
+                initialDate={dateRange.endTime}
             />
         </>
     );
@@ -110,4 +115,3 @@ export function EditableDateRange({
  *  onRangeChange: (newStart:Date, newEnd:Date) => any,
  * }} EditableDateRangeProps
  */
-
