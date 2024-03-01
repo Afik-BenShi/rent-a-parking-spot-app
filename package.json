@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.4.3",
     "@google-cloud/spanner": "^7.3.0",
     "@react-native-community/datetimepicker": "^7.6.2",
     "@react-navigation/bottom-tabs": "^6.5.12",
@@ -19,13 +20,15 @@
     "expo": "~50.0.5",
     "expo-status-bar": "~1.11.1",
     "express": "^4.18.2",
+    "firebase": "^10.8.0",
+    "firebase-admin": "^12.0.0",
     "react": "18.2.0",
     "react-native": "0.73.2",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-elements": "^3.4.3",
     "react-native-maps": "^1.10.1",
-    "react-native-raw-bottom-sheet": "^2.2.0",
-    "react-native-multiple-select": "^0.5.12"
+    "react-native-multiple-select": "^0.5.12",
+    "react-native-raw-bottom-sheet": "^2.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

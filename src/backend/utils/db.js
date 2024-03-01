@@ -1,33 +1,67 @@
-const { Spanner } = require('@google-cloud/spanner');
-let spanner, instance, database
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+
+
+let db;
 
 const init = () => {
-    const projectId = 'careful-result-414608';
-    const instanceId = 'rental-wize';
-    const databaseId = 'rental-wizeDB';
+    const serviceAccount = require('../../../rental-wize-firebase-adminsdk.json');
 
-    // Creates a client
-    spanner = new Spanner({
-        projectId: projectId,
+    initializeApp({
+        credential: cert(serviceAccount)
     });
 
-    // Gets a reference to a Cloud Spanner instance and database
-    instance = spanner.instance(instanceId);
-    database = instance.database(databaseId);
+    db = getFirestore();
 }
 
+const getById = async ({ collection, id }) => {
+    try {
 
-const runQuery = async (statment) => {
-    const query = { sql: statment };
+        const docRef = db.collection(collection).doc(id);
+        const docSnapshot = await docRef.get();
 
-    const [rows] = await database.run(query);
-    const result = rows.map(row => row.toJSON());
+        return docSnapshot.exists ? { id: docSnapshot.id, data: docSnapshot.data() } : null;
+    }
+    catch (err) {
+        return null
+    }
+}
 
-    return result;
+const getMyProductsDb = async (userId) => {
+    try {
+
+        const docRef = db.collection("products").where("ownerId", "==", userId);
+        const result = await docRef.get();
+        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+    }
+    catch (err) {
+        return null
+    }
+}
+
+const getProductsDb = async (filters) => {
+    try {
+        // const { startDate, endDate, price, category } = filters;
+        // ;
+        const price = 35;
+        const category = "1";
+
+        const docRef = db.collection("products").where("subCategoryId", "==", category).where("price", "<=", price);
+        const result = await docRef.get();
+        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+    }
+    catch (err) {
+        return null
+    }
+}
+
+const runQuery = async (collection, params) => {
+    const snapshot = await db.collection('users').get();
+    return snapshot;
 }
 
 const closeConnection = async () => {
     await database.close();
 }
 
-module.exports = { init, closeConnection, runQuery }
+module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb }

@@ -1,22 +1,17 @@
 
 const dayjs = require("dayjs");
-const { runQuery } = require("../utils/db")
+
+const { runQuery, getById, getMyProductsDb, getProductsDb } = require("../utils/db")
+
 
 const getProducts = async (filters) => {
-    let { productId, startTime, endTime } = filters || {}
-    if (!endTime)
-        endTime = dayjs();
-    let query = `SELECT * FROM products 
-                WHERE endTime < ${endTime}`
-    if (startTime) {
-        query += `and startTime > ${startTime}`
-    }
-    if (productId) {
-        query += `and id = ${productId}`
-    }
-    // const result = await runQuery(query);
-    return query;
-    // return result;
+    const results = await getProductsDb();
+    return results;
 };
 
-module.exports = { getProducts }
+const getMyProducts = async (userId) => {
+    const result = await getMyProductsDb(userId);
+    return result;
+}
+
+module.exports = { getProducts, getMyProducts, getProducts }

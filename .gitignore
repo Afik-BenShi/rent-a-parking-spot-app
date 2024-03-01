@@ -35,3 +35,4 @@ yarn-error.*
 *.tsbuildinfo
 
 AndroidManifest.xml
+rental-wize-firebase-adminsdk.json
