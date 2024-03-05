@@ -5,7 +5,7 @@ const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/
 let db;
 
 const init = () => {
-    const serviceAccount = require('../../../rental-wize-firebase-adminsdk.json');
+    const serviceAccount = require('/Users/yonatanshay/Documents/Yonatan/rent-a-parking-spot-app/src/backend/rental-wize-firebase-adminsdk.json');
 
     initializeApp({
         credential: cert(serviceAccount)
@@ -39,21 +39,29 @@ const getMyProductsDb = async (userId) => {
     }
 }
 
-const getProductsDb = async (filters) => {
+
+
+
+const getProductsDb = async (maxPrice, subCategory) => {
     try {
+
         // const { startDate, endDate, price, category } = filters;
         // ;
-        const price = 35;
-        const category = "1";
+        // const price = 30;
+        // const category = "1";
 
-        const docRef = db.collection("products").where("subCategoryId", "==", category).where("price", "<=", price);
+        const docRef = db.collection("products")
+            .where("subCategoryId", "==", subCategory)
+            .where("pricePerDay", "<=", maxPrice);
+
         const result = await docRef.get();
-        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+    } catch (err) {
+        console.error("Error fetching products from the database:", err);
+        return null;
     }
-    catch (err) {
-        return null
-    }
-}
+};
+
 
 const runQuery = async (collection, params) => {
     const snapshot = await db.collection('users').get();
