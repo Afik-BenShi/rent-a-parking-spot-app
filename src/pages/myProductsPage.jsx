@@ -1,59 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-  Pressable,
+    StyleSheet,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+    Image,
+    Pressable,
 } from 'react-native';
 import { Header } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-
-//import { rentalItems } from '../../assets/mockData';
-
-// Import the mock data for owner products page:
-import { ownerRentalItems } from '../../assets/personalProductsMockData'; 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 
+export default function MyProductsPage({ navigation }) {
+    const [myItems, setMyItems] = useState([]);
 
-export default function MyProductsPage ({navigation}) {
+    useEffect(() => {
+        const fetchProducts = async () => {
+            //TODO: need to extract it from the param.
+            const userId = "1";
+            const response = await axios.get('http://0.0.0.0:3000/myProducts', { params: { userId } });
+            setMyItems(response.data);
+        };
+
+        fetchProducts();
+    }, []);
 
     return (
         <SafeAreaView style={styles.layout}>
-            
+
             <Header
                 leftComponent={
-                <Pressable onPress={() => console.log('Menu button pressed!')}>
-                    <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
-                </Pressable>
-                }
-                
-                rightComponent={
-                    <View style={{alignContent:'flex-start', flexDirection: 'row'}}>
-                    <Pressable onPress={() => navigation.navigate('addProduct')}>
-                        <FontAwesome name="plus-square-o" color={COLORS.btnBlue} size={30} style={styles.filterIcon} />
+                    <Pressable onPress={() => console.log('Menu button pressed!')}>
+                        <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
                     </Pressable>
+                }
+
+                rightComponent={
+                    <View style={{ alignContent: 'flex-start', flexDirection: 'row' }}>
+                        <Pressable onPress={() => navigation.navigate('addProduct')}>
+                            <FontAwesome name="plus-square-o" color={COLORS.btnBlue} size={30} style={styles.filterIcon} />
+                        </Pressable>
                     </View>
                 }
                 containerStyle={styles.headerContainer}
-                />  
+            />
 
 
             <View style={styles.container}>
                 <CardList
-                    items={ownerRentalItems}
+                    items={myItems}
                     title="My Products"
-                    onItemPressed={(details) => navigation.navigate('ownerProduct', {details})}
+                    onItemPressed={(details) => navigation.navigate('ownerProduct', { details })}
                 />
-                
             </View>
-            
+
             {/*
             <View style={styles.btnContainer}>
                 <TouchableOpacity
@@ -69,10 +75,10 @@ export default function MyProductsPage ({navigation}) {
 
 const styles = StyleSheet.create({
     layout: {
-        flex: 1, 
-        backgroundColor: COLORS.lightWhite, 
+        flex: 1,
+        backgroundColor: COLORS.lightWhite,
         alignContent: 'center',
-        justifyContent: 'center',        
+        justifyContent: 'center',
     },
     addProductBtn: {
         backgroundColor: COLORS.btnBlue,
@@ -84,8 +90,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-        flex: 1, 
-        justifyContent: 'center', 
+        flex: 1,
+        justifyContent: 'center',
         flexDirection: 'column',
     },
     btnContainer: {
@@ -109,28 +115,28 @@ const styles = StyleSheet.create({
         marginTop: -40,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.lightgrey,
-      },
-      headerText: {
+    },
+    headerText: {
         color: COLORS.cartTitle,
         fontWeight: '700',
         fontSize: 24,
         fontFamily: 'Roboto',
         textAlign: 'center',
         marginTop: 0,
-      },
-      centerHeader: {
+    },
+    centerHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-      },
-      logoIcon: {
+    },
+    logoIcon: {
         marginRight: 5,
-      },
-      menuIcon: {
+    },
+    menuIcon: {
         marginTop: 0,
         marginLeft: 15,
-      },
-      filterIcon: {
+    },
+    filterIcon: {
         marginTop: 0,
         marginRight: 20,
-      },
+    },
 });
