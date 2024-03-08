@@ -6,9 +6,10 @@ const products = require("./services/products")
 db.init();
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
 app.get('/products', async (req, res) => {
+  
   const { maxPrice, subCategory } = req.query;
 
   // Convert maxPrice to a number if provided
@@ -16,7 +17,6 @@ app.get('/products', async (req, res) => {
   
   const result = await products.getProducts(parsedMaxPrice, subCategory);
   res.send(result);
-
 });
 
 app.get('/myProducts', async (req, res) => {
