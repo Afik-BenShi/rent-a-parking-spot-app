@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -8,6 +8,7 @@ import {
   View,
   Pressable,
   RefreshControl,
+  
 } from 'react-native';
 import { Header, Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
@@ -16,7 +17,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Import the mock data for home page:
-import { rentalItems } from '../../assets/mockData';
+import { rentalItems } from '../../assets/personalProductsMockData';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
@@ -50,10 +51,13 @@ export default function HomeCardPage ({navigation}) {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-    
+        
+        fetchAllProducts();
+
         setTimeout(() => {
           setRefreshing(false);
         }, 1000);
+
       }, []);
     
 
@@ -65,7 +69,40 @@ export default function HomeCardPage ({navigation}) {
         sheet.current.close();
         //setShowSelectBtn(false);
         setShowSelectedCategory(true);
-    }
+    };
+
+
+    // Initialize products  with an empty array
+    // product saved all the product data from the backend
+    const [products, setProducts] = useState([]); 
+
+    // Fetch products from the backend
+    const fetchAllProducts = () => {
+      fetch('http://192.168.1.39:3000/products')
+          .then(response => response.json())
+          .then(data => {
+            console.log("products data", data);
+            
+            // data.forEach(product => {
+            //   const productData = product.data;
+            //   console.log("Product ID:", product.id);
+            //   console.log("Product Title:", productData.title);
+            //   console.log("Product Description:", productData.description);
+            //   console.log("Product Price:", productData.pricePerDay);
+            // });
+1
+            const itemsList = data.map(product => product.data);
+
+            setProducts(itemsList); // Update products state with received data
+            console.log("itemList in home page: ");
+            console.log(itemsList);
+          })
+          .catch(error => console.error('Error fetching products:', error));
+    };
+
+    useEffect(() => {
+      fetchAllProducts();
+    }, []);
     
 
     return(
@@ -134,7 +171,9 @@ export default function HomeCardPage ({navigation}) {
                                     
             <View style={styles.container}>
                 <CardList
-                    items={rentalItems}
+                    //items={rentalItems}     // TODO : change to products - data from the backend
+                    items={products}    
+          
                     title=""
                     refreshControl={
                         <RefreshControl

@@ -3,6 +3,9 @@ import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
+// import axios from 'axios'; 
+//const axios = require('axios').default;
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,7 +23,7 @@ export default function AddProductPage ({navigation}) {
   
     // State to hold the entered details
     const [details, setDetails] = useState({
-        ownerName: "",
+        ownerId: "",    // get the owner ID from the data base
         productName: "",
         category: [],  // add choose from list
         city: "",
@@ -71,10 +74,60 @@ export default function AddProductPage ({navigation}) {
     }
 
     // Function to handle 'next' button press
-    const handleSubmit = () => {
+    const handleSubmit = async (event) => {
+
+        event.preventDefault();
+
         console.log("Submitted Details:", details);
+
+        // Send a POST request to your server
+        // const demoProduct = {
+        //   title: details.productName,
+        //   pricePerDay: details.price,
+        //   ownerId: 1, // Replace with the actual owner ID
+        //   description: details.productDescription,
+        //   subCategoryId: 1,  // Replace with the actual category ID - get the category ID from the category name
+        //   startDate: details.from,
+        //   endDate: details.until,
+        // };
+
+        // //console.log(JSON.stringify(demoProduct));
+        
+        // const response = fetch('http://192.168.1.39:3000/myProducts/add', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify(demoProduct)
+        // })
+        //   .then(response => {
+        //     console.log("success to post new product")
+        //     console.log("Response from server:", response.ok);
+        //   })
+        //   .catch(error => {
+        //     console.error("Error while posting new product:", error);
+        //   });
+
+        // axios.post('http://localhost:3000/myProducts/add', { 
+        //       title: details.productName,
+        //       pricePerDay: details.price,
+        //       ownerId: "1", // Replace with the actual owner ID
+        //       description: details.productDescription,
+        //       subCategoryId: details.category,
+        //       startDate: details.from,
+        //       endDate: details.until,
+        //       })
+
+        // .then(response => {
+        //     console.log("Response from server:", response.data);
+        //     // Handle response from server if needed
+        // })
+        // .catch(error => {
+        //     console.error("Error:", error);
+        // });
+
         navigation.navigate("submitParkingDetails" ,{ detailsList: details });
-        //setdetailsShow(true);
+        
     };
     
 

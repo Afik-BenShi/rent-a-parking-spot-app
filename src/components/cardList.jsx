@@ -11,10 +11,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-//import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
 import { COLORS } from '../../assets/theme';
 
+import RentalItems from '../../assets/personalProductsMockData';
 
 export default function CardList({ items, title, onItemPressed = (_) => {} }) {
 
@@ -25,10 +24,12 @@ export default function CardList({ items, title, onItemPressed = (_) => {} }) {
         <Text style={styles.title}>{title}</Text>
 
         <View style={styles.row}>
-        
+          
           {items.map(
             (item, index) => {
-              const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+              const { id, title, city, pricePerDay, startDate, endDate, description, ownerId, imageUrl } = item;
+            
+
               return (
 
                 <View key={index} style={styles.cardContainer}>
@@ -38,20 +39,20 @@ export default function CardList({ items, title, onItemPressed = (_) => {} }) {
                       <Image
                         alt=""
                         resizeMode="cover"
-                        source={{ uri: img }}
+                        source={{ uri: imageUrl }}
                         style={styles.cardImg}
                       />
                       <View style={styles.cardBody}>
                         
                         <Text>
-                          <Text style={styles.cardTitle}>{name.length > 25 ? name.substring(0, 22) + '...' : name}</Text>
+                          <Text style={styles.cardTitle}>{title.length > 25 ? title.substring(0, 22) + '...' : title}</Text>
                             {'\n'}
                           <Text style={styles.cardCity}>{city}</Text>
                         </Text>
                         <Text style={styles.cardPrice}>
                           <Text style={styles.cardPriceValue}>
                             <Icon name="currency-ils" style={styles.shekel}/>
-                            {price.toLocaleString('en-US')}{' '}
+                            {pricePerDay.toLocaleString('en-US')}{' '}
                           </Text>
                           <Text style={styles.cardPriceCurrency}>/day</Text>
                         </Text>

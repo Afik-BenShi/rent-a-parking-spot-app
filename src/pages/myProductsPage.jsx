@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -14,18 +15,49 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
-//import { rentalItems } from '../../assets/mockData';
-
 // Import the mock data for owner products page:
-import { ownerRentalItems } from '../../assets/personalProductsMockData'; 
+// import { mockData } from '../../assets/personalProductsMockData'; 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 
 
 export default function MyProductsPage ({navigation}) {
+    
+    
+    // Fetch user's products from the backend
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const userId = 1; // Hardcoded user ID for now
+
+
+    const fetchUserProducts = () => {
+        fetch(`http://192.168.1.39:3000/myProducts?userId=${userId}`)
+        
+        //fetch(`http://192.168.1.39:3000/products`)
+          .then(response => response.json())
+          .then(data => {
+            console.log("products data", data);
+            const itemsList = data.map(product => product.data);
+            
+            console.log("itemsList", itemsList);
+
+            setProducts(itemsList);
+            setIsLoading(false); // Set isLoading to false after data is fetched
+          })
+          .catch(error => {
+            console.error('Error fetching products:', error);
+            setIsLoading(false); // Set isLoading to false on error
+          });
+      };
+  
+      useEffect(() => {
+        fetchUserProducts();
+      }, []);
 
     return (
-        <SafeAreaView style={styles.layout}>
+        <View style={styles.layout}>
+        <SafeAreaView >
             
             <Header
                 leftComponent={
@@ -44,15 +76,16 @@ export default function MyProductsPage ({navigation}) {
                 containerStyle={styles.headerContainer}
                 />  
 
-
-            <View style={styles.container}>
-                <CardList
-                    items={ownerRentalItems}
-                    title="My Products"
-                    onItemPressed={(details) => navigation.navigate('ownerProduct', {details})}
-                />
+        </SafeAreaView>
+            
+            <CardList
+                items={products}
+                title="My Products"
+                onItemPressed={(details) => navigation.navigate('ownerProduct', {details})}
+            />
                 
-            </View>
+            
+            
             
             {/*
             <View style={styles.btnContainer}>
@@ -63,16 +96,19 @@ export default function MyProductsPage ({navigation}) {
                 </TouchableOpacity>
                 </View>
                 */}
-        </SafeAreaView>
+        </View>
+        
     );
 }
 
 const styles = StyleSheet.create({
     layout: {
         flex: 1, 
-        backgroundColor: COLORS.lightWhite, 
-        alignContent: 'center',
-        justifyContent: 'center',        
+        backgroundColor: '#f3f5f9',  // background color 
+        //alignContent: 'center',
+        justifyContent: 'flex-start', // Align items at the top
+        flexDirection: 'column',  
+        //marginBottom: -40,
     },
     addProductBtn: {
         backgroundColor: COLORS.btnBlue,
@@ -84,10 +120,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-        flex: 1, 
-        justifyContent: 'center', 
-        flexDirection: 'column',
-    },
+        backgroundColor: 'blue',
+        //backgroundColor: '#f3f5f9',  // background color 
+        justifyContent: 'flex-start', // Align items at the top
+        flexDirection: 'column', 
+        flex: 1,
+  },
     btnContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -106,9 +144,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         justifyContent: 'flex-start',
         height: 95,
-        marginTop: -40,
+        marginTop: -30,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.lightgrey,
+        backgroundColor: '#fff',
       },
       headerText: {
         color: COLORS.cartTitle,

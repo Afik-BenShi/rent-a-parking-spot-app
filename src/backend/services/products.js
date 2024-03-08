@@ -1,7 +1,7 @@
 
 const dayjs = require("dayjs");
 
-const { runQuery, getById, getMyProductsDb, getProductsDb } = require("../utils/db")
+const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDB } = require("../utils/db")
 
 
 const getProducts = async (filters) => {
@@ -14,4 +14,9 @@ const getMyProducts = async (userId) => {
     return result;
 }
 
-module.exports = { getProducts, getMyProducts, getProducts }
+const addMyProduct = async (newProductData) => {
+    const result = await addMyProductDB(newProductData);
+    return result;
+}
+
+module.exports = { getProducts, getMyProducts, getProducts, addMyProduct }

@@ -16,7 +16,7 @@ const init = () => {
 
 const getById = async ({ collection, id }) => {
     try {
-
+        
         const docRef = db.collection(collection).doc(id);
         const docSnapshot = await docRef.get();
 
@@ -29,7 +29,7 @@ const getById = async ({ collection, id }) => {
 
 const getMyProductsDb = async (userId) => {
     try {
-
+        //const demoId = "1";
         const docRef = db.collection("products").where("ownerId", "==", userId);
         const result = await docRef.get();
         return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
@@ -42,18 +42,40 @@ const getMyProductsDb = async (userId) => {
 const getProductsDb = async (filters) => {
     try {
         // const { startDate, endDate, price, category } = filters;
-        // ;
+        
         const price = 35;
         const category = "1";
 
-        const docRef = db.collection("products").where("subCategoryId", "==", category).where("price", "<=", price);
+        //const docRef = db.collection("products").where("subCategoryId", "==", category).where("pricePerDay", "<=", price);
+        const docRef = db.collection("products");
+        
         const result = await docRef.get();
+        
         return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
     }
     catch (err) {
         return null
     }
 }
+
+
+
+const addMyProductDB = async (newProductData) => {
+    try {
+        const docRef = db.collection("products").doc();
+        const newProduct = {
+            ...newProductData,
+            createdAt: FieldValue.serverTimestamp()
+        }
+        await docRef.set(newProduct);
+        return { id: docRef.id, data: newProduct }
+
+    } catch (error) {
+        console.error("Error adding product:", error);
+        throw error;
+    }
+}
+
 
 const runQuery = async (collection, params) => {
     const snapshot = await db.collection('users').get();
@@ -64,4 +86,5 @@ const closeConnection = async () => {
     await database.close();
 }
 
-module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb }
+module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb
+            ,addMyProductDB }
