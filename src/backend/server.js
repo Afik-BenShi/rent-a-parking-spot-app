@@ -9,8 +9,13 @@ const app = express();
 const port = 3000;
 
 app.get('/products', async (req, res) => {
-  const { filters } = req.query;
-  const result = await products.getProducts(filters);
+  
+  const { maxPrice, subCategory } = req.query;
+
+  // Convert maxPrice to a number if provided
+  const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
+  
+  const result = await products.getProducts(parsedMaxPrice, subCategory);
   res.send(result);
 });
 
