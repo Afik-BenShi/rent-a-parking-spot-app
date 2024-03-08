@@ -1,11 +1,26 @@
 const { default: axios } = require("axios");
+const createRateLimit = require("../utils/rateLimiter");
+const createCache = require("../utils/cache");
 
 const MAPS_ENDPOINT = "https://nominatim.openstreetmap.org";
 const RESPONSES = {
     noQuery: { status: 400, response: "Requset must have query data" },
     noUserData: { status: 400, response: "Request must have user data" },
     serverError: { status: 500, response: "Server error" },
+    rateExceeded(/** @type {number} */ waitTime) {
+        return {
+            status: 429,
+            err: `Rate limit exceeded. Try again in ${waitTime} milliseconds.`,
+        };
+    },
 };
+const rateLimitedGet = createRateLimit(
+    1,
+    1000,
+    axios.get,
+    RESPONSES.rateExceeded
+);
+const getAndCacheLimited = createCache(rateLimitedGet, 5*60);
 
 /**
  * @template {userQuery} Q
@@ -46,11 +61,11 @@ const getGeocodeStructured = locationRequest(async (query) => {
     }
 
     const queryString = queryArray.join("&");
-    const { status, data } = await axios.get(
+    const { status, data, err } = await getAndCacheLimited(
         MAPS_ENDPOINT + "search?limit=3&format=json&" + queryString
     );
-
-    const response = data.map(locationFormat);
+    
+    const response = err ?? data.map(locationFormat);
     return { status, response };
 });
 
@@ -61,11 +76,11 @@ const getGeocode = locationRequest(async (query) => {
     }
 
     const queryString = `q=${encodeURI(query.q)}`;
-    const { status, data } = await axios.get(
+    const { status, data, err } = await getAndCacheLimited(
         MAPS_ENDPOINT + "/search?limit=3&format=json&" + queryString
     );
-    
-    const response = data.map(locationFormat);
+
+    const response = err ?? data.map(locationFormat);
     return { status, response };
 });
 

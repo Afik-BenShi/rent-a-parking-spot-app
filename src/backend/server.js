@@ -26,13 +26,13 @@ app.post('/myProducts/add', (req, res) => { });
 app.get('/products/:id', (req, res) => { });
 
 
-app.get('location/geocode', async (req, res) => {
+app.get('/location/geocode', async (req, res) => {
   const query = req.query;
   const {status, response} = await location.getGeocode(query);
   res.status(status).send(response);
 });
 
-app.get('location/geocode/structured', async (req, res) => {
+app.get('/location/geocode/structured', async (req, res) => {
   const query = req.query;
   const {status, response} = await location.getGeocodeStructured(query);
   res.status(status).send(response);
