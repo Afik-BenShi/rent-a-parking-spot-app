@@ -1,5 +1,6 @@
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+const { v4: uuidv4 } = require('uuid');
 
 
 let db;
@@ -55,6 +56,12 @@ const getProductsDb = async (filters) => {
     }
 }
 
+const upsertDocument = async ({ collection, docId, data }) => {
+    const id = docId || `${collection}_${uuidv4()}`
+    await db.collection(collection).doc(id).set(data);
+    return id;
+}
+
 const runQuery = async (collection, params) => {
     const snapshot = await db.collection('users').get();
     return snapshot;
@@ -64,4 +71,4 @@ const closeConnection = async () => {
     await database.close();
 }
 
-module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb }
+module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb, upsertDocument }

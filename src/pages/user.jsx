@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -19,148 +21,156 @@ import styles from '../components/addProduct.style';
 import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 
-export default function Profile({ navigation , data}) {
+export default function Profile({ navigation, data }) {
 
-    var curData = data ? data :
-     {ownerName: "default name", city: "default city", phoneNumber: "default phone number"};
-    
-    
-    const [profileData, setProfileData] = useState(curData);
-    const [showEditProfile, setShowEditProfile] = useState(false);
-    const [lastProfileData, setLastProfileData] = useState(curData);
+  let curData = data ? data :
+    { fullName: "default name", city: "default city", phoneNumber: "default phone number" };
 
-    const handleDataChange = (field, value) => {
-      setProfileData((prevDetails) => ({
-          ...prevDetails,
-          [field]: value,
-      }));
-      console.log("profileDetails: ", profileData);
-    };
 
-    // Function to handle navigation to EditProfile screen
-    const goToEditProfile = () => {
-      setLastProfileData(profileData);  // save the current data before editing
-      setShowEditProfile(true);
-    };
+  const [userId, setUserId] = useState("");
+  const [profileData, setProfileData] = useState(curData);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [lastProfileData, setLastProfileData] = useState(curData);
 
-    // Function to handle 'save' button press
-    const handleSave = () => {
-      setShowEditProfile(false);
-    };
+  const handleDataChange = (field, value) => {
+    setProfileData((prevDetails) => ({
+      ...prevDetails,
+      [field]: value,
+    }));
+    console.log("profileDetails: ", profileData);
+  };
 
-    const handleCancel = () => {
-      setProfileData(lastProfileData);
-      setShowEditProfile(false);
-    };
+  // Function to handle navigation to EditProfile screen
+  const goToEditProfile = () => {
+    setLastProfileData(profileData);  // save the current data before editing
+    setShowEditProfile(true);
+  };
 
-    return (
+  // Function to handle 'save' button press
+  const handleSave = async () => {
+    console.log('lastProfileData', lastProfileData)
+    const response = await axios({
+      method: 'post',
+      url: 'http://10.100.102.13:3000/users/upsert',
+      data: lastProfileData
+    })
+    setUserId(response);
+    setShowEditProfile(false);
+  };
 
-    <SafeAreaView style={{ flex: 1, backgroundColor:COLORS.lightWhite }}>
+  const handleCancel = () => {
+    setProfileData(lastProfileData);
+    setShowEditProfile(false);
+  };
+
+  return (
+
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
       <View style={moreStyles.main_container}>
-        
-      {!showEditProfile && 
-      (
-        <View style={moreStyles.profile}>
-       
-          <View style={moreStyles.profileHeader}>
-            <Image
-              alt=""
-              source={require('../../assets/avatarImg.jpg')}
-              style={moreStyles.profileAvatar} 
-              resizeMode="cover"
-              />
 
-            <View>
-              <Text style={moreStyles.profileName}>{profileData.ownerName}</Text>
+        {!showEditProfile &&
+          (
+            <View style={moreStyles.profile}>
 
-              <Text style={moreStyles.profileHandle}>{profileData.city}</Text>
+              <View style={moreStyles.profileHeader}>
+                <Image
+                  alt=""
+                  source={require('../../assets/avatarImg.jpg')}
+                  style={moreStyles.profileAvatar}
+                  resizeMode="cover"
+                />
 
-              <Text style={moreStyles.profileHandle}>{profileData.phoneNumber}</Text>
-            </View>
-          </View>
+                <View>
+                  <Text style={moreStyles.profileName}>{profileData.fullName}</Text>
 
-          
-          
-            <TouchableOpacity
-              onPress={goToEditProfile}
-              >
-              <View style={moreStyles.profileAction}>
-                <Text style={moreStyles.profileActionText}>Edit Profile</Text>
+                  <Text style={moreStyles.profileHandle}>{profileData.city}</Text>
 
-                <FeatherIcon color="#fff" name="edit-3" size={16} />
+                  <Text style={moreStyles.profileHandle}>{profileData.phoneNumber}</Text>
+                </View>
               </View>
-            </TouchableOpacity>
-            
-        </View>
-        )}
-      
-        
-      {showEditProfile && 
-        ( 
-          <View style={moreStyles.editPage}>
-            <KeyboardAvoidingView
-              style={moreStyles.container}
-              behavior="padding"
-                >
-                  <ScrollView>
-      
-              <SafeAreaView style={moreStyles.container}>
-                
-                  
-                  <View >
+
+
+
+              <TouchableOpacity
+                onPress={goToEditProfile}
+              >
+                <View style={moreStyles.profileAction}>
+                  <Text style={moreStyles.profileActionText}>Edit Profile</Text>
+
+                  <FeatherIcon color="#fff" name="edit-3" size={16} />
+                </View>
+              </TouchableOpacity>
+
+            </View>
+          )}
+
+
+        {showEditProfile &&
+          (
+            <View style={moreStyles.editPage}>
+              <KeyboardAvoidingView
+                style={moreStyles.container}
+                behavior="padding"
+              >
+                <ScrollView>
+
+                  <SafeAreaView style={moreStyles.container}>
+
+
+                    <View >
                       <Text style={moreStyles.title}>Edit your Profile</Text>
-                  </View>
+                    </View>
 
-                      <View style={{flex:1, alignContent:'center'}}>
+                    <View style={{ flex: 1, alignContent: 'center' }}>
                       <Image
-                          alt=""
-                          source={require('../../assets/avatarImg.jpg')}
-                          style={moreStyles.profileAvatar_editMode} 
-                          resizeMode="cover"
-                          />
-                          <TouchableOpacity style={moreStyles.cameraIcon} onPress={() => {}/* handle change img */}>
-                            <MoreIcon name="camera" size={24} color={COLORS.btnBlue} style={moreStyles.cameraIcon} />
-                          </TouchableOpacity>
-                      </View>
-
-
-                      <Input
-                        label="Full name"
-                        labelStyle={styles.inputLabel}
-                        leftIcon={<MoreIcon name="person" size={18} />}
-                        placeholder=" Enter your full name"
-                        onChangeText={(text) => handleDataChange("ownerName", text)}
-                        inputStyle={styles.inputControl}
-                        inputContainerStyle={{ borderBottomWidth: 0 }}
-                        value={profileData.ownerName}
+                        alt=""
+                        source={require('../../assets/avatarImg.jpg')}
+                        style={moreStyles.profileAvatar_editMode}
+                        resizeMode="cover"
                       />
+                      <TouchableOpacity style={moreStyles.cameraIcon} onPress={() => { }/* handle change img */}>
+                        <MoreIcon name="camera" size={24} color={COLORS.btnBlue} style={moreStyles.cameraIcon} />
+                      </TouchableOpacity>
+                    </View>
 
-                      <Input
-                          label="Location"
-                          labelStyle={styles.inputLabel}
-                          leftIcon={<MoreIcon name="location-outline" size={18} />}
-                          placeholder=" Enter your City"
-                          onChangeText={(text) => handleDataChange("city", text)}
-                          inputStyle={styles.inputControl}
-                          inputContainerStyle={{ borderBottomWidth: 0 }} 
-                          value={profileData.city}
-                      />
 
-                      <Input
-                          label="Phone Number"
-                          labelStyle={styles.inputLabel}
-                          leftIcon={<AnotherIcon name="phone-alt" size={18} />}
-                          placeholder=" Enter your phone number"
-                          keyboardType="phone-pad"
-                          onChangeText={(text) => handleDataChange("phoneNumber", text)}
-                          inputStyle={styles.inputControl}
-                          inputContainerStyle={{ borderBottomWidth: 0 }} 
-                          value={profileData.phoneNumber}
-                      />
+                    <Input
+                      label="Full name"
+                      labelStyle={styles.inputLabel}
+                      leftIcon={<MoreIcon name="person" size={18} />}
+                      placeholder=" Enter your full name"
+                      onChangeText={(text) => handleDataChange("fullName", text)}
+                      inputStyle={styles.inputControl}
+                      inputContainerStyle={{ borderBottomWidth: 0 }}
+                      value={profileData.fullName}
+                    />
 
-                      
+                    <Input
+                      label="Location"
+                      labelStyle={styles.inputLabel}
+                      leftIcon={<MoreIcon name="location-outline" size={18} />}
+                      placeholder=" Enter your City"
+                      onChangeText={(text) => handleDataChange("city", text)}
+                      inputStyle={styles.inputControl}
+                      inputContainerStyle={{ borderBottomWidth: 0 }}
+                      value={profileData.city}
+                    />
 
-                      {/*
+                    <Input
+                      label="Phone Number"
+                      labelStyle={styles.inputLabel}
+                      leftIcon={<AnotherIcon name="phone-alt" size={18} />}
+                      placeholder=" Enter your phone number"
+                      keyboardType="phone-pad"
+                      onChangeText={(text) => handleDataChange("phoneNumber", text)}
+                      inputStyle={styles.inputControl}
+                      inputContainerStyle={{ borderBottomWidth: 0 }}
+                      value={profileData.phoneNumber}
+                    />
+
+
+
+                    {/*
                       <NextBackBtn
                         backText={"Cancel"}
                         nextText={"Save"}
@@ -172,14 +182,14 @@ export default function Profile({ navigation , data}) {
                         />
                       */}
 
-              
-                   
-              </SafeAreaView>
-              </ScrollView>  
-            </KeyboardAvoidingView>
-            
-            <View>
-              <View style={moreStyles.btnGroup}>
+
+
+                  </SafeAreaView>
+                </ScrollView>
+              </KeyboardAvoidingView>
+
+              <View>
+                <View style={moreStyles.btnGroup}>
                   <TouchableOpacity
                     onPress={handleCancel}
                     style={{ flex: 1, paddingHorizontal: 6 }}>
@@ -187,7 +197,7 @@ export default function Profile({ navigation , data}) {
                       <Text style={moreStyles.btnText}>Cancel</Text>
                     </View>
                   </TouchableOpacity>
-                  
+
                   <TouchableOpacity
                     onPress={handleSave}
                     style={{ flex: 1, paddingHorizontal: 6 }}>
@@ -197,13 +207,13 @@ export default function Profile({ navigation , data}) {
                   </TouchableOpacity>
                 </View>
 
+              </View>
+
+
             </View>
+          )}
 
 
-          </View>
-        )}
-
-        
 
 
       </View>
@@ -223,7 +233,7 @@ const moreStyles = StyleSheet.create({
   editPage: {
     backgroundColor: COLORS.lightWhite,
     padding: 17,
-    flex:2,
+    flex: 2,
     paddingVertical: 0,
   },
   /** Profile */
@@ -235,17 +245,17 @@ const moreStyles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#e3e3e3',
-    marginLeft:20,
-    marginRight:20,
+    marginLeft: 20,
+    marginRight: 20,
     borderRadius: 12,
     elevation: 2, // Android shadow
-        shadowColor: '#000', // iOS shadow
-        shadowOpacity: 0.1, // iOS shadow
-        shadowRadius: 2, // iOS shadow
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
   },
   profileHeader: {
     flexDirection: 'row',
@@ -283,8 +293,8 @@ const moreStyles = StyleSheet.create({
   cameraIcon: {
     backgroundColor: 'transparent',
     borderRadius: 9999,
-    
-    position:'absolute',
+
+    position: 'absolute',
     left: 100,
     top: 30,
     padding: 0,
@@ -315,13 +325,13 @@ const moreStyles = StyleSheet.create({
     color: '#fff',
   },
   layout: {
-        flex: 1, 
-        backgroundColor: COLORS.lightWhite, 
-        alignContent: 'center',
-        justifyContent: 'center',        
-    },
+    flex: 1,
+    backgroundColor: COLORS.lightWhite,
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: COLORS.lightWhite,
     paddingVertical: 10,
     alignContent: 'flex-start',
@@ -355,53 +365,53 @@ const moreStyles = StyleSheet.create({
     marginTop: 20,
     height: 50,
     elevation: 5, // Android shadow
-        shadowColor: '#000', // iOS shadow
-        shadowOpacity: 0.1, // iOS shadow
-        shadowRadius: 2, // iOS shadow
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-},
-btn: {
-  borderWidth: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 8,
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  backgroundColor: 'transparent',
-  borderColor: '#266EF1',
-},
-btnGroup: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginHorizontal: -6,
-  marginTop: 18,
-},
-btnText: {
-  fontSize: 14,
-  lineHeight: 20,
-  fontWeight: '600',
-  color: '#266EF1',
-},
-btnPrimary: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 8,
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  borderWidth: 1,
-  backgroundColor: '#266EF1',
-  borderColor: '#266EF1',
-},
-btnPrimaryText: {
-  fontSize: 14,
-  lineHeight: 20,
-  fontWeight: '600',
-  color: '#fff',
-},
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+  },
+  btn: {
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
+    borderColor: '#266EF1',
+  },
+  btnGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: -6,
+    marginTop: 18,
+  },
+  btnText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#266EF1',
+  },
+  btnPrimary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: '#266EF1',
+    borderColor: '#266EF1',
+  },
+  btnPrimaryText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#fff',
+  },
 });

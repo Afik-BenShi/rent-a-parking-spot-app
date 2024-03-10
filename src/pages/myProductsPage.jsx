@@ -11,13 +11,10 @@ import {
     Pressable,
 } from 'react-native';
 import { Header } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
-
-// import { getMyProducts } from '../backend/services/products'
 
 export default function MyProductsPage({ navigation }) {
     const [myItems, setMyItems] = useState([]);
