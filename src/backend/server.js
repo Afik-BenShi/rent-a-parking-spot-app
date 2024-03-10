@@ -44,8 +44,6 @@ app.get('/myProducts', async (req, res) => {
 
 app.post('/myProducts/add', async (req, res) => { 
   
-  console.log("body from submit : ", req.body);
-
   const newProductData = {
     title : req.body.title, 
     ownerId : req.body.ownerId.toString(),
