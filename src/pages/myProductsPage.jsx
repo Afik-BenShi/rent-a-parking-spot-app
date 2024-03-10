@@ -16,18 +16,23 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 
+const MyServerIPAddress = '192.168.1.39';
+
 export default function MyProductsPage({ navigation }) {
     const [myItems, setMyItems] = useState([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             //TODO: need to extract it from the param.
-            const userId = "1";
+            const userId = 1; // Hardcoded user ID for now
             try {
-                const response = await axios.get('http://10.100.102.13:3000/myProducts', { params: { userId } });
+                //const response = await axios.get('http://',{MyServerIPAddress},':3000/myProducts', { params: { userId } });
+                const response = await axios.get('http://192.168.1.39:3000/products');
+                
                 setMyItems(response.data);
             }
             catch (err) {
+                console.log('Error fetching products:', err);
                 console.log(JSON.stringify(err))
             }
         };

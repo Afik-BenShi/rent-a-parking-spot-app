@@ -34,6 +34,8 @@ const getMyProductsDb = async (userId) => {
         const docRef = db.collection("products").where("ownerId", "==", userId);
         const result = await docRef.get();
         return result.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+        // why not-
+        // return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
     }
     catch (err) {
         return null
@@ -53,6 +55,22 @@ const getProductsDb = async (filters) => {
     }
     catch (err) {
         return null
+    }
+}
+
+const addMyProductDB = async (newProductData) => {
+    try {
+        const docRef = db.collection("products").doc();
+        const newProduct = {
+            ...newProductData,
+            createdAt: FieldValue.serverTimestamp()
+        }
+        await docRef.set(newProduct);
+        return { id: docRef.id, data: newProduct }
+
+    } catch (error) {
+        console.error("Error adding product:", error);
+        throw error;
     }
 }
 

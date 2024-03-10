@@ -16,8 +16,46 @@ import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
 
 const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
+const MyServerIPAddress = '192.168.1.39';
+
+const onClickFinish = ({ navigation, detailsList }) => {
+    console.log("Product details submitted: ", detailsList);
+
+    // Send the details to the backend
+    // Send a POST request to your server
+    
+    const ownerId = 1; // TODO: change it to the actual ownerId, Hardcoded user ID for now
+    
+    const newProduct = {
+      title: detailsList.productName,
+      pricePerDay: detailsList.price,
+      ownerId: ownerId,
+      description: detailsList.productDescription,
+      subCategoryId: 1,  // TODO: Replace with the actual category ID 
+      startDate: detailsList.from,
+      endDate: detailsList.until,
+      city: detailsList.city,
+    };
+
+    fetch('http://',{MyServerIPAddress},':3000/myProducts/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newProduct)
+    })
+      .then(response => {
+        console.log("success to post new product")
+        console.log("Response from server:", response.ok);
+      })
+      .catch(error => {
+        console.error("Error while posting new product:", error);
+      });
 
 
+    navigation.navigate("My Products cardList");
+
+};
 
 export default function SubmitDetails({ navigation, route }) {
         const { detailsList } = route.params;
@@ -55,11 +93,12 @@ export default function SubmitDetails({ navigation, route }) {
                             <View style={styles.details}>
                                 <Text style={styles.detailsTitle}>Product details</Text>
 
-                                <View style={styles.detailsRow}>
+                                {/*<View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Owner full name</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.ownerName}</Text>
                                 </View>
+                                */}
 
                                 <View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Product name</Text>
@@ -77,9 +116,8 @@ export default function SubmitDetails({ navigation, route }) {
                                     <Text style={styles.detailsField}>Category</Text>
 
                                     <View>
-                                        {detailsList.category.map((category, index) => (
-                                          <Text key={index} style={styles.detailsValue}>{category}</Text>
-                                        ))}
+                                    <Text style={styles.detailsValue}>{detailsList.category}</Text> 
+                                    {/*    TODO: get the category name from the category id !!!! */}
                                     </View>
                                      
                                 </View>
@@ -92,11 +130,13 @@ export default function SubmitDetails({ navigation, route }) {
                                         <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
                                 </View>
 
+                                {/*
                                 <View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Phone Number</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.phoneNumber}</Text>
                                 </View>
+                              */}
 
                                 <View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Days of availability</Text>
@@ -137,7 +177,9 @@ export default function SubmitDetails({ navigation, route }) {
                         nextText="Finish"
                         backText="Back"
                         navigation={navigation}
-                        onNextPress={()  => {navigation.navigate("My Products cardList")}}
+                        //onNextPress={()  => {navigation.navigate("My Products cardList")}}
+                        onNextPress={() => onClickFinish({ navigation, detailsList })}
+                        
                         paddingBottom={0}
                       />   
                     </View>

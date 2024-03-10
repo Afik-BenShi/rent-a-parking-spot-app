@@ -38,6 +38,7 @@ const items = [
   
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
+const MyServerIPAddress = '192.168.1.39';
   
 
 export default function HomeCardPage ({navigation}) {

@@ -21,6 +21,8 @@ import styles from '../components/addProduct.style';
 import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 
+const MyServerIPAddress = '192.168.1.39';
+
 export default function Profile({ navigation, data }) {
 
   let curData = data ? data :
@@ -51,7 +53,7 @@ export default function Profile({ navigation, data }) {
     console.log('lastProfileData', lastProfileData)
     const response = await axios({
       method: 'post',
-      url: 'http://10.100.102.13:3000/users/upsert',
+      url : `http://${MyServerIPAddress}:3000/users/upsert`,
       data: lastProfileData
     })
     setUserId(response);

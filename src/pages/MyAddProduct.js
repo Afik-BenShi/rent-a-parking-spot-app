@@ -3,6 +3,9 @@ import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
+// import axios from 'axios'; 
+//const axios = require('axios').default;
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,7 +23,7 @@ export default function AddProductPage ({navigation}) {
   
     // State to hold the entered details
     const [details, setDetails] = useState({
-        ownerName: "",
+        ownerId: "",    // get the owner ID from the data base
         productName: "",
         category: [],  // add choose from list
         city: "",
@@ -71,10 +74,14 @@ export default function AddProductPage ({navigation}) {
     }
 
     // Function to handle 'next' button press
-    const handleSubmit = () => {
+    const handlePressNext = async (event) => {
+
+        event.preventDefault();
+
         console.log("Submitted Details:", details);
+
         navigation.navigate("submitParkingDetails" ,{ detailsList: details });
-        //setdetailsShow(true);
+        
     };
     
 
@@ -106,7 +113,7 @@ export default function AddProductPage ({navigation}) {
               nextText="Next"
               backText="Back"
               navigation={navigation}
-              onNextPress={handleSubmit}
+              onNextPress={handlePressNext}
             />    
           
           </ScrollView>   

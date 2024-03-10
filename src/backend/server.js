@@ -5,11 +5,34 @@ const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
 
+const cors = require('cors');
+
 db.init();
 
 const app = express();
 app.use(express.json());
 const port = 3000;
+
+// ---------------------------
+// Allow requests from the frontend domain
+app.use(cors({
+  origin: 'http://localhost:8081',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
+
+// Middleware to log incoming requests
+app.use((req, res, next) => {
+  // Creating a wrapper around res.send to intercept the response
+  const originalSend = res.send;
+  res.send = function(data) {
+      console.log("Response data:", data); // Print the response data
+      originalSend.call(this, data); // Call the original res.send method
+  };
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// ---------------------------
 
 app.get('/products', async (req, res) => {
 
@@ -28,7 +51,22 @@ app.get('/myProducts', async (req, res) => {
   res.send(result);
 });
 
-app.post('/myProducts/add', (req, res) => { });
+app.post('/myProducts/add', async (req, res) => { 
+  
+  const newProductData = {
+    title : req.body.title, 
+    ownerId : req.body.ownerId.toString(),
+    description : req.body.description,
+    subCategotyId: req.body.subCategoryId.toString(),
+    startDay: req.body.startDate,
+    endDay: req.body.endDate,
+    pricePerDay: req.body.pricePerDay.toString(),
+    city: req.body.city,
+  }
+
+  result = await products.addMyProduct(newProductData);
+  res.send(result);
+});
 
 app.get('/products/:id', (req, res) => { });
 
