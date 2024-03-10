@@ -16,34 +16,39 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 
+const MyServerIPAdress = "192.168.1.39";
+
 export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
 
+    const fetchProducts = async () => {
+        try {
+            const response = await axios.get("http://" + MyServerIPAdress +":3000/myProducts", { params: { userId } });
+            setMyItems(response.data);
+        }
+        catch (err) {
+            console.log(JSON.stringify(err))
+        }
+    };
 
+    
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get('http://10.100.102.13:3000/myProducts', { params: { userId } });
-                setMyItems(response.data);
-            }
-            catch (err) {
-                console.log(JSON.stringify(err))
-            }
-        };
-
         fetchProducts();
-    }, []);
+    }, [myItems]);
 
     return (
         <SafeAreaView style={styles.layout}>
 
             <Header
+                
                 leftComponent={
-                    <Pressable onPress={() => console.log('Menu button pressed!')}>
+                    {/*<Pressable onPress={() => console.log('Menu button pressed!')}>
                         <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
-                    </Pressable>
+                </Pressable>*/}
                 }
+                
+            
 
                 rightComponent={
                     <View style={{ alignContent: 'flex-start', flexDirection: 'row' }}>
