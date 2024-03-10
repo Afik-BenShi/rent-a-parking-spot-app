@@ -5,7 +5,11 @@ const { runQuery, getById, getMyProductsDb, getProductsDb } = require("../utils/
 
 
 const getProducts = async (filters) => {
-    const results = await getProductsDb();
+    const results = await getProductsDb(filters);
+    const orderedProducts = [...results].sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+    );
+
     return results;
 };
 

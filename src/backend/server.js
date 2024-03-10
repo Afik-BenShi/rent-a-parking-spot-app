@@ -15,10 +15,10 @@ app.get('/products', async (req, res) => {
 
   const { maxPrice, subCategory } = req.query;
 
-  // Convert maxPrice to a number if provided
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
 
-  const result = await products.getProducts(parsedMaxPrice, subCategory);
+  const filters = { maxPrice: parsedMaxPrice, subCategory }
+  const result = await products.getProducts(filters);
   res.send(result);
 });
 

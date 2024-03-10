@@ -42,14 +42,11 @@ const getMyProductsDb = async (userId) => {
 
 const getProductsDb = async (filters) => {
     try {
-        // const { startDate, endDate, price, category } = filters;
-        // ;
-        const price = 35;
-        const category = "1";
+        const { startDate, endDate, maxPrice, subCategory } = filters;
 
-        const docRef = db.collection("products").where("subCategoryId", "==", category).where("price", "<=", price);
+        const docRef = db.collection("products").where("subCategoryId", "==", subCategory).where("pricePerDay", "<=", maxPrice);
         const result = await docRef.get();
-        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        return result.docs.map(doc => (doc.data()))
     }
     catch (err) {
         return null
