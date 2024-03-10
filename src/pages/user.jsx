@@ -21,13 +21,13 @@ import styles from '../components/addProduct.style';
 import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 
-export default function Profile({ navigation, data }) {
+export default function Profile({ navigation, route }) {
 
-  let curData = data ? data :
+  const curData =
     { fullName: "default name", city: "default city", phoneNumber: "default phone number" };
 
 
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(route.params.userId);
   const [profileData, setProfileData] = useState(curData);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [lastProfileData, setLastProfileData] = useState(curData);
@@ -48,13 +48,11 @@ export default function Profile({ navigation, data }) {
 
   // Function to handle 'save' button press
   const handleSave = async () => {
-    console.log('lastProfileData', lastProfileData)
-    const response = await axios({
+    await axios({
       method: 'post',
       url: 'http://10.100.102.13:3000/users/upsert',
-      data: lastProfileData
+      data: { ...profileData, id: userId }
     })
-    setUserId(response);
     setShowEditProfile(false);
   };
 

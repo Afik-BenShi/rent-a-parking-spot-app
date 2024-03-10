@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { v4 as uuidv4 } from 'uuid';
+
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
@@ -15,9 +17,9 @@ import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
 
 import { Icon } from 'react-native-elements';
-import { COLORS} from "./assets/theme";
+import { COLORS } from "./assets/theme";
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -26,18 +28,18 @@ function HomeStackScreen() {
     <HomeStack.Navigator
     //screenOptions={{ headerShown: false }}
     >
-      <HomeStack.Screen name="HomeCard" 
-        component={homeCardPage} 
+      <HomeStack.Screen name="HomeCard"
+        component={homeCardPage}
         options={{ headerShown: false }}
-        //options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.btnBlue }}}
-        
-        />
-      
+      //options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.btnBlue }}}
+
+      />
+
       <HomeStack.Screen
-            name="filters"
-            component={Filters}
-            //options={{ headerShown: false }} // to remove Stack header
-          />
+        name="filters"
+        component={Filters}
+      //options={{ headerShown: false }} // to remove Stack header
+      />
 
       <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
     </HomeStack.Navigator>
@@ -46,33 +48,36 @@ function HomeStackScreen() {
 
 const MyProductsStack = createNativeStackNavigator();
 
-function MyProStackScreen() {
+function MyProStackScreen({ route }) {
+  const { userId } = route.params;
+
   return (
     <MyProductsStack.Navigator>
-      <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage} 
-        options={{title:'My products', headerShown: false}}
-        />
+      <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
+        options={{ title: 'My products', headerShown: false }} initialParams={{ userId }}
 
-      <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }}/>
+      />
+
+      <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} />
       <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
-      <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails} 
-          options={{ headerShown: false }} // to remove Stack header 
-          />
-      
+      <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails}
+        options={{ headerShown: false }} // to remove Stack header 
+      />
+
     </MyProductsStack.Navigator>
   );
 }
 
 const SettingsStack = createNativeStackNavigator();
 
-function SettingsStackScreen() {
-  const pd = {ownerName: " ", city: " ", phoneNumber: " "};
-  
+function SettingsStackScreen({ route }) {
+  const { userId } = route.params;
+
   return (
     <SettingsStack.Navigator>
-    
-      <SettingsStack.Screen name="userProfile" component={Profile} data={{}}  />
-      
+
+      <SettingsStack.Screen name="userProfile" component={Profile} initialParams={{ userId }} />
+
     </SettingsStack.Navigator>
   );
 }
@@ -82,7 +87,7 @@ const MyOrdersStack = createNativeStackNavigator();
 function MyOrdersStackScreen() {
   return (
     <MyOrdersStack.Navigator>
-      <MyOrdersStack.Screen name="Orders" component={NoOrdersYet} options={{ headerShown: false }}  />
+      <MyOrdersStack.Screen name="Orders" component={NoOrdersYet} options={{ headerShown: false }} />
     </MyOrdersStack.Navigator>
   );
 }
@@ -90,10 +95,12 @@ function MyOrdersStackScreen() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [userId, setuserId] = useState('1')
+
   return (
     <NavigationContainer>
 
-      <Tab.Navigator 
+      <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -117,18 +124,19 @@ export default function App() {
         initialRouteName="Home"
       >
 
-        <Tab.Screen name="Settings" component={SettingsStackScreen} 
-          options={{ headerShown: false }} />
-        
-        <Tab.Screen name='My Products' component={MyProStackScreen}
-          options={{ headerShown: false }}/>
+        <Tab.Screen name="Settings" component={SettingsStackScreen}
+          options={{ headerShown: false }} initialParams={{ userId }}
+        />
 
-        <Tab.Screen name='My Orders' component={MyOrdersStackScreen}/>
+        <Tab.Screen name='My Products' component={MyProStackScreen}
+          options={{ headerShown: false }} initialParams={{ userId }} />
+
+        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} />
 
         <Tab.Screen name="Home" component={HomeStackScreen}
           options={{ headerShown: false }} />
-          
-        
+
+
       </Tab.Navigator>
     </NavigationContainer>
   );
