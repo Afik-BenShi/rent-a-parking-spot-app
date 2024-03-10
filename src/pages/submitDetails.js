@@ -17,6 +17,8 @@ import ExpandableImage from "../components/ExpandableImage";
 
 const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
 
+const MyServerIPAdress = "192.168.1.39";
+
 const onClickFinish = ({ navigation, detailsList }) => {
     console.log("Product details submitted: ", detailsList);
 
@@ -36,7 +38,7 @@ const onClickFinish = ({ navigation, detailsList }) => {
       city: detailsList.city,
     };
 
-    fetch('http://192.168.1.39:3000/myProducts/add', {
+    fetch("http://" + MyServerIPAdress + ":3000/myProducts/add", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
