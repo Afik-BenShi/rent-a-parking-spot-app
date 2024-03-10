@@ -19,7 +19,7 @@ import styles from './addProduct.style'
 import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
-import MultipleSelectListDropDown from "./MultipleSelectListDropDown";
+import SingleSelectedDropDown from "./SingleSelectListDropDown";
 
  
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
@@ -121,8 +121,8 @@ return (
                 />
                 
                 <View style={{ flex: 1, padding: 20 }}>
-                <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product categories</Text>
-                <MultipleSelectListDropDown
+                <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product category</Text>
+                <SingleSelectedDropDown
                       onSelectCategory = {sendCatToParent}
                 />
                 </View>
@@ -131,11 +131,12 @@ return (
                     label="Location"
                     labelStyle={styles.inputLabel}
                     leftIcon={<MoreIcon name="location-outline" size={18} />}
-                    placeholder=" Enter your City"
+                    placeholder=" Enter your location"
                     onChangeText={(text) => sendDataToParent("city", text)}
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
+          
 
                 
                 <Input
@@ -143,6 +144,7 @@ return (
                     labelStyle={styles.inputLabel}
                     leftIcon={<AnotherIcon name="coins" size={18} />}
                     placeholder=" Enter desired daily price"
+                    keyboardType="phone-pad"
                     onChangeText={(text) => sendDataToParent("price", text)}
                     inputStyle={styles.inputControl}
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
@@ -231,4 +233,3 @@ return (
 }
 
 export default FillPersonalDetails;
-

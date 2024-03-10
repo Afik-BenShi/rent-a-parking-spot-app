@@ -56,6 +56,22 @@ const getProductsDb = async (filters) => {
     }
 }
 
+const addMyProductDb = async (newProductData) => {
+    try {
+        const docRef = db.collection("products").doc();
+        const newProduct = {
+            ...newProductData,
+            createdAt: FieldValue.serverTimestamp()
+        }
+        await docRef.set(newProduct);
+        return { id: docRef.id, data: newProduct }
+
+    } catch (error) {
+        console.error("Error adding product:", error);
+        throw error;
+    }
+}
+
 const upsertDocument = async ({ collection, docId, data }) => {
     const id = docId || `${collection}_${uuidv4()}`
     await db.collection(collection).doc(id).set(data);
@@ -71,4 +87,4 @@ const closeConnection = async () => {
     await database.close();
 }
 
-module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb, upsertDocument }
+module.exports = { init, closeConnection, runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb, upsertDocument }

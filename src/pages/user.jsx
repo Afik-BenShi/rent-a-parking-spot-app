@@ -21,6 +21,8 @@ import styles from '../components/addProduct.style';
 import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 
+const MyServerIPAdress = "192.168.1.39";
+
 export default function Profile({ navigation, route }) {
 
   const curData =
@@ -50,7 +52,7 @@ export default function Profile({ navigation, route }) {
   const handleSave = async () => {
     await axios({
       method: 'post',
-      url: 'http://10.100.102.13:3000/users/upsert',
+      url: ("http://" + MyServerIPAdress +":3000/users/upsert"),
       data: { ...profileData, id: userId }
     })
     setShowEditProfile(false);

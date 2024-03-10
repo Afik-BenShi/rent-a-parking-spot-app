@@ -4,14 +4,15 @@ import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, 
 import { Header, Input, ButtonGroup, Text } from 'react-native-elements';
 import { FontAwesome } from '@expo/vector-icons';
 import Divider from './divider';
-import MultipleSelectListDropDown from './MultipleSelectListDropDown';
+import SingleSelectListDropDown from './SingleSelectListDropDown';
 import DatePicker from './DatePick';
 
 const Filter = ({ navigation }) => {
   const [selectedOption, setSelectedOption] = useState(0);
   const [selectedCategoriesAll, setSelectedCategoriesAll] = useState([]);
-  const [startDate, setStartDate] = useState(null); // State for start date
-  const [endDate, setEndDate] = useState(null); // State for end date
+  const [startDate, setStartDate] = useState(new Date()); // State for start date
+  const [endDate, setEndDate] = useState(new Date());  // State for end date
+
 
   const buttonGroupOptions = ['Distance', 'Price'];
   const categories = [
@@ -46,11 +47,11 @@ const Filter = ({ navigation }) => {
           />
           <Divider />
 
-          {/* Multi-Select List for Categories (All Categories) */}
-          <MultipleSelectListDropDown
+          {/* Single-Select List for Categories (All Categories) */}
+          <SingleSelectListDropDown
             data={categories}
             selectedData={selectedCategoriesAll}
-            onSelectData={(selected) => setSelectedCategoriesAll(selected)}
+            onSelectCategory={(selected) => setSelectedCategoriesAll(selected)}
             title="Choose from all Categories"
           />
           <Divider />
@@ -71,7 +72,8 @@ const Filter = ({ navigation }) => {
           <DatePicker
             label="Start Date"
             value={startDate}
-            onChange={(date) => setStartDate(date)}
+            onDateChange={(date) => setStartDate(date)}
+            minDate={new Date()}
           />
           <Divider />
 
@@ -80,7 +82,8 @@ const Filter = ({ navigation }) => {
           <DatePicker
             label="End Date"
             value={endDate}
-            onChange={(date) => setEndDate(date)}
+            onDateChange={(date) => setEndDate(date)}
+            minDate={startDate}
           />
           <Divider />
 
