@@ -3,6 +3,9 @@ import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
+// import axios from 'axios'; 
+//const axios = require('axios').default;
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,12 +23,11 @@ export default function AddProductPage ({navigation}) {
   
     // State to hold the entered details
     const [details, setDetails] = useState({
-        ownerName: "",
+        ownerId: "",    // get the owner ID from the data base
         productName: "",
-        category: [],  // add choose from list
+        category: "",  
         city: "",
         price: "",
-        phoneNumber: "",
         from: "",
         until: "",  // range of days
         productDescription: "",
@@ -55,7 +57,7 @@ export default function AddProductPage ({navigation}) {
     // Function to handle input change and update details state
     const handleInputChange = (field, value) => {
     
-        const parsedValue = field === "price" || field === "houseNumber" ? parseInt(value) : value;
+        const parsedValue = field === "price" ? parseInt(value) : value;
 
         setDetails((prevDetails) => ({
             ...prevDetails,
@@ -71,10 +73,33 @@ export default function AddProductPage ({navigation}) {
     }
 
     // Function to handle 'next' button press
-    const handleSubmit = () => {
-        console.log("Submitted Details:", details);
-        navigation.navigate("submitParkingDetails" ,{ detailsList: details });
-        //setdetailsShow(true);
+    const handlePressNext = async (event) => {
+
+        //event.preventDefault();
+
+        console.log("Submitted Details (before submit):", details);
+
+        // axios.post('http://localhost:3000/myProducts/add', { 
+        //       title: details.productName,
+        //       pricePerDay: details.price,
+        //       ownerId: "1", // Replace with the actual owner ID
+        //       description: details.productDescription,
+        //       subCategoryId: details.category,
+        //       startDate: details.from,
+        //       endDate: details.until,
+        //       })
+
+        // .then(response => {
+        //     console.log("Response from server:", response.data);
+        //     // Handle response from server if needed
+        // })
+        // .catch(error => {
+        //     console.error("Error:", error);
+        // });
+
+        navigation.navigate("submitParkingDetails" ,{ 
+            detailsList: details });
+        
     };
     
 
@@ -106,7 +131,7 @@ export default function AddProductPage ({navigation}) {
               nextText="Next"
               backText="Back"
               navigation={navigation}
-              onNextPress={handleSubmit}
+              onNextPress={handlePressNext}
             />    
           
           </ScrollView>   
