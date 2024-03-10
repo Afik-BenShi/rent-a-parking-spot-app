@@ -16,19 +16,19 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../assets/theme';
 
 
-export default function CardList({ items, title, onItemPressed = (_) => {} }) {
+export default function CardList({ items, title, onItemPressed = (_) => { } }) {
 
-    return (
+  return (
     <SafeAreaView style={{ backgroundColor: '#f3f5f9' }}>
-      <ScrollView 
-            contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}>
         <Text style={styles.title}>{title}</Text>
 
         <View style={styles.row}>
-        
+
           {items.map(
             (item, index) => {
-              const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+              const { id, title, pricePerDay, startDate, endDate, description, ownerId, city, distanceFromMe, imageUrl } = item;
               return (
 
                 <View key={index} style={styles.cardContainer}>
@@ -38,28 +38,28 @@ export default function CardList({ items, title, onItemPressed = (_) => {} }) {
                       <Image
                         alt=""
                         resizeMode="cover"
-                        source={{ uri: img }}
+                        source={{ uri: imageUrl }}
                         style={styles.cardImg}
                       />
                       <View style={styles.cardBody}>
-                        
+
                         <Text>
-                          <Text style={styles.cardTitle}>{name.length > 25 ? name.substring(0, 22) + '...' : name}</Text>
-                            {'\n'}
+                          <Text style={styles.cardTitle}>{title.length > 25 ? title.substring(0, 22) + '...' : title}</Text>
+                          {'\n'}
                           <Text style={styles.cardCity}>{city}</Text>
                         </Text>
                         <Text style={styles.cardPrice}>
                           <Text style={styles.cardPriceValue}>
-                            <Icon name="currency-ils" style={styles.shekel}/>
-                            {price.toLocaleString('en-US')}{' '}
+                            <Icon name="currency-ils" style={styles.shekel} />
+                            {pricePerDay.toLocaleString('en-US')}{' '}
                           </Text>
                           <Text style={styles.cardPriceCurrency}>/day</Text>
                         </Text>
                       </View>
                     </View>
                   </TouchableOpacity>
-                  
-                  
+
+
                 </View>
               );
             },
@@ -67,7 +67,7 @@ export default function CardList({ items, title, onItemPressed = (_) => {} }) {
         </View>
       </ScrollView>
     </SafeAreaView>
-    
+
   );
 }
 
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1, // Shadow opacity
     shadowRadius: 5, // Shadow radius
     shadowOffset: {
-        width: 0, // Shadow offset width
-        height: 2, // Shadow offset height
+      width: 0, // Shadow offset width
+      height: 2, // Shadow offset height
     },
   },
   cardImg: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#173153',
   },
-  shekel:{
+  shekel: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#173153',
@@ -154,5 +154,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#6f61c4',
   },
-  
+
 });
