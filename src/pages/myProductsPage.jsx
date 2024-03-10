@@ -16,13 +16,13 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 
-export default function MyProductsPage({ navigation }) {
+export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
+    const [userId, setUserId] = useState(route.params.userId);
+
 
     useEffect(() => {
         const fetchProducts = async () => {
-            //TODO: need to extract it from the param.
-            const userId = "1";
             try {
                 const response = await axios.get('http://10.100.102.13:3000/myProducts', { params: { userId } });
                 setMyItems(response.data);
