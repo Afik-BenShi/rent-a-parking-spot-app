@@ -4,6 +4,7 @@ const db = require("./utils/db")
 const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
+const orders = require("./services/orders");
 
 db.init();
 
@@ -78,6 +79,17 @@ app.get('/location/geocode/structured', async (req, res) => {
 app.post('/users/upsert', async (req, res) => {
   const response = await users.upsertPersonalDetails(req.body)
   res.send(response);
+});
+
+app.get('/orders/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { status, response } = await orders.getMyOrders(userId, req.body);
+  res.status(status).send(response);
+});
+
+app.post('/orders/add', async (req, res) => {
+  const { status, response } = await orders.addNewOrder(req.body);
+  res.status(status).send(response);
 });
 
 
