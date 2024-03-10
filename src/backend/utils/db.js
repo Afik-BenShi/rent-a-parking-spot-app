@@ -32,7 +32,7 @@ const getMyProductsDb = async (userId) => {
 
         const docRef = db.collection("products").where("ownerId", "==", userId);
         const result = await docRef.get();
-        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        return result.docs.map(doc => ({ ...doc.data(), id: doc.id }))
     }
     catch (err) {
         return null
