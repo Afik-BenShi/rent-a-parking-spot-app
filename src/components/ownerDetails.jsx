@@ -27,12 +27,12 @@ export function OwnerDetailsBar({ owner }) {
 }
 
 function getOwnerLetters(name) {
-    const words = name.split(" ");
+    const words = name?.split(" ");
     if (!words.length) {
         return "NA";
     }
     const first = words[0].charAt(0);
-    const second = words[1]?.charAt(0)?? words[0].charAt(1);
+    const second = words[1]?.charAt(0) ?? words[0].charAt(1);
     return (first + second).toUpperCase();
 }
 

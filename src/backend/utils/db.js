@@ -40,16 +40,39 @@ const getMyProductsDb = async (userId) => {
     }
 }
 
+async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
+    let productsWithEmptySlots = [];
+
+    for (const productId of productIds) {
+        const slotsRef = collection(db, "products", productId, "slots");
+        const q = query(slotsRef, where("date", ">=", startDate), where("date", "<=", endDate), where("isEmpty", "==", true));
+
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            // This product has at least one empty slot in the date range
+            productsWithEmptySlots.push(productId);
+        }
+    }
+    return productsWithEmptySlots;
+}
+
 const getProductsDb = async (filters) => {
     try {
-        // const { startDate, endDate, price, category } = filters;
-        // ;
-        const price = 35;
-        const category = "1";
+        const { startDate, endDate, maxPrice, subCategory, city } = filters;
 
-        const docRef = db.collection("products").where("subCategoryId", "==", category).where("price", "<=", price);
+        let docRef = db.collection("products")
+        if (subCategory) {
+            docRef = docRef.where("subCategoryId", "==", subCategory)
+        }
+        if (maxPrice) {
+            docRef = docRef.where("pricePerDay", "<=", maxPrice);
+        }
+        if (city) {
+            docRef = docRef.where("city", "==", city);
+        }
+        //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
-        return result.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        return result.docs.map(doc => (doc.data()))
     }
     catch (err) {
         return null
@@ -57,6 +80,16 @@ const getProductsDb = async (filters) => {
 }
 
 const addMyProductDb = async (newProductData) => {
+    async function addSlot(parentDocId, date, userId) {
+        const slotDocRef = doc(db, "parentCollection", parentDocId, "slots", userId);
+
+        await setDoc(slotDocRef, {
+            date: date,
+            userId: userId,
+            isEmpty: true
+        });
+    }
+
     try {
         const docRef = db.collection("products").doc();
         const newProduct = {

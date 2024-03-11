@@ -5,8 +5,12 @@ const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb } = re
 
 
 const getProducts = async (filters) => {
-    const results = await getProductsDb();
-    return results;
+    const results = await getProductsDb(filters);
+    const orderedProducts = [...results].sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+    );
+
+    return orderedProducts;
 };
 
 const getMyProducts = async (userId) => {
