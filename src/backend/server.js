@@ -1,4 +1,5 @@
 const express = require("express");
+const { port } = require("./config");
 
 const db = require("./utils/db")
 const products = require("./services/products")
@@ -9,16 +10,15 @@ db.init();
 
 const app = express();
 app.use(express.json());
-const port = 3000;
 
 //---------------------------------------------------------
 // Middleware to log incoming requests
 app.use((req, res, next) => {
   // Creating a wrapper around res.send to intercept the response
   const originalSend = res.send;
-  res.send = function(data) {
-      console.log("Response data:", data); // Print the response data
-      originalSend.call(this, data); // Call the original res.send method
+  res.send = function (data) {
+    console.log("Response data:", data); // Print the response data
+    originalSend.call(this, data); // Call the original res.send method
   };
   console.log(`${req.method} ${req.url}`);
   next();
@@ -28,11 +28,11 @@ app.use((req, res, next) => {
 
 app.get('/products', async (req, res) => {
 
-  const { maxPrice, subCategory } = req.query;
+  const { maxPrice, selectedCategory: subCategory, city, endDate, startDate } = req.query.filters || {};
 
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
 
-  const filters = { maxPrice: parsedMaxPrice, subCategory }
+  const filters = { maxPrice: parsedMaxPrice, subCategory, city, startDate, endDate }
   const result = await products.getProducts(filters);
   res.send(result);
 });
@@ -43,17 +43,18 @@ app.get('/myProducts', async (req, res) => {
   res.send(result);
 });
 
-app.post('/myProducts/add', async (req, res) => { 
-  
+app.post('/myProducts/add', async (req, res) => {
+  const { title, ownerId, description, subCategoryId, startDate, endDate, pricePerDay, city } = req.body
+
   const newProductData = {
-    title : req.body.title, 
-    ownerId : req.body.ownerId.toString(),
-    description : req.body.description,
-    subCategotyId: req.body.subCategoryId.toString(),
-    startDay: req.body.startDate,
-    endDay: req.body.endDate,
-    pricePerDay: req.body.pricePerDay.toString(),
-    city: req.body.city,
+    title,
+    ownerId: ownerId.toString(),
+    description,
+    subCategotyId: subCategoryId.toString(),
+    startDate,
+    endDate,
+    pricePerDay: pricePerDay.toString(),
+    city
   }
 
   result = await products.addMyProduct(newProductData);

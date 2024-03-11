@@ -58,9 +58,9 @@ function MyProStackScreen({ route }) {
 
       />
 
-      <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} />
+      <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} initialParams={{ userId }} />
       <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
-      <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails}
+      <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails} initialParams={{ userId }}
         options={{ headerShown: false }} // to remove Stack header 
       />
 

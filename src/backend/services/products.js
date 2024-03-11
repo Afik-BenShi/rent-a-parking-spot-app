@@ -10,7 +10,7 @@ const getProducts = async (filters) => {
         (a, b) => new Date(a.startDate) - new Date(b.startDate)
     );
 
-    return results;
+    return orderedProducts;
 };
 
 const getMyProducts = async (userId) => {
