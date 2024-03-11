@@ -15,7 +15,7 @@ import { ContactButtons } from "../components/contactButtons";
  */
 export default function ProductDetailsPage({ route, navigation }) {
     const details = parseItem(route.params);
-
+    console.log(details)
     const productImage = details.image
         ? { uri: details.image }
         // @ts-ignore
@@ -100,18 +100,18 @@ const styles = StyleSheet.create({
 // TODO use consistent data instead of parsing
 /** @returns {ProductDetails} */
 function parseItem({details:item}){
-    const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+    const { id, title, pricePerDay, startDate, endDate, description, ownerId, city, distanceFromMe, imageUrl } = item;
     return Object.assign(mock, {
         id,
-        title:name,
-        description:details,
+        title,
+        description,
         availability:{
             startTime: new Date(startDate),
             endTime: new Date(endDate),
         },
-        image:img,
-        price: Object.assign(mock.price,{ amount:price }),
-        owner: Object.assign(mock.owner, { name:owner }),
+        image:imageUrl,
+        price: Object.assign(mock.price,{ amount:pricePerDay }),
+        owner: Object.assign(mock.owner, { name:ownerId }),
     });
 }
 

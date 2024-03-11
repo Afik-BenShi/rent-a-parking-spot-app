@@ -43,7 +43,7 @@ export default function ReservationBox({
     return (
         <Card containerStyle={styles.availabilityCard}>
             <View style={styles.availabilityInner}>
-                <OwnerDetailsBar owner={rsv.reservingUser} />
+                {!!rsv.reservingUser && <OwnerDetailsBar owner={rsv.reservingUser} />}
                 <EditableDateRange
                     editMode={editMode}
                     dateRange={rsv.scheduling}
