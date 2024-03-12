@@ -6,6 +6,7 @@ const {
     Filter,
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
+const createCache = require("./cache");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -77,6 +78,8 @@ const getProductsDb = async (filters) => {
         //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
         return result.docs.map(doc => (doc.data()))
+    } catch (err) {
+        return null
     }
 };
 
@@ -152,6 +155,20 @@ const enrichWithReferencedId = async (docs, refKey, refCollection) => {
     return await Promise.all(enrichPromises);
 };
 
+const getUserSuggestions = async (q) => {
+    const collectionRef = db.collection('users');
+    const byName = collectionRef.where('fullName', '==', q);
+    const byPhoneNum = collectionRef.where('phoneNumber', '==', q);
+    const promises = [byName, byPhoneNum].map(async (query) => {
+        const {docs} = await query.get();
+        return docs.map((doc)=> ({...doc.data(), id:doc.id}));
+    });
+    const users = await Promise.all(promises);
+    return users.flat();
+}
+
+const getUserSuggestionsCached = createCache(getUserSuggestions, 300);
+
 const upsertDocument = async ({ collection, docId, data }) => {
     const id = docId || `${collection}_${uuidv4()}`;
     await db.collection(collection).doc(id).set(data);
@@ -177,4 +194,5 @@ module.exports = {
     addMyProductDb,
     upsertDocument,
     getMyOrders,
+    getUserSuggestionsCached,
 };

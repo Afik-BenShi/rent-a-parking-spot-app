@@ -62,6 +62,12 @@ app.post('/myProducts/add', async (req, res) => {
   res.send(result);
 });
 
+app.get('/users/suggestion', async (req, res) => {
+  const query = req.query;
+  const {status, response} = await users.getUserSuggestions(query);
+  res.status(status).send(response);
+})
+
 app.get('/products/:id', (req, res) => { });
 
 

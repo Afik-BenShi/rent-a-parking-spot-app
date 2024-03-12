@@ -28,10 +28,10 @@
 
 /**
  * @typedef {{
- *  id: string,
- *  title: string,
+ *  id?: string,
  *  productId: string,
- *  scheduling: {
+ *  ownerId: string,
+ *  scheduling:{
  *      startTime: Date,
  *      endTime: Date,
  *  },

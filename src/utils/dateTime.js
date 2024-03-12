@@ -1,9 +1,13 @@
 /**
- * @param {Date} startTime
- * @param {Date} endTime
+ * 
+ * @param {Date | Timestamp} _startTime
+ * @param {Date | Timestamp} _endTime
  * @returns {{startDay:string, endDay:string, startHour:string, endHour:string}}
  */
-export function dateRangeFormat(startTime, endTime) {
+export function dateRangeFormat(_startTime, _endTime) {
+    const startTime = _startTime instanceof Date? _startTime :  _startTime.toDate();
+    const endTime = _endTime instanceof Date? _endTime: _endTime.toDate();
+
     const locale = "en-gb";
     const dateFmt = Object.freeze({ day: "2-digit", month: "short" });
     const timeFmt = Object.freeze({ hour: "2-digit", minute: "2-digit" });
@@ -25,4 +29,18 @@ export function dateRangeFormat(startTime, endTime) {
     const endHour = endTime.toLocaleTimeString(locale, timeFmt);
 
     return { startDay, startHour, endDay, endHour };
+}
+
+/**
+ * @typedef {import("@firebase/firestore").Timestamp} Timestamp
+ * @param {Date | Timestamp | String} date */
+export function parseDate(date){
+    if (date instanceof Date){
+        return date;
+    } else if (typeof date === "string") {
+        return new Date(date);
+    } else {
+        date.toDate();
+    }
+    throw Error(`could not parse ${date} as date`);
 }

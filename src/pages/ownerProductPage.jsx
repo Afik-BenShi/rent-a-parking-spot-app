@@ -6,11 +6,13 @@ import "./productDetailsPage.types";
 import ReservationTable from "../components/ReservationsTable";
 import { EditableText } from "../components/editableComponents";
 import { COLORS } from "../../assets/theme";
+import AddOrder from "../components/addOrder";
 
 export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
     const details = parseItem(route.params);
     const [editMode, setEditMode] = useState(false);
+    const [userId, setUserId] = useState(route.params.userId);
     const editClickHandler = () => {
         setEditMode((edit) => !edit);
     };
@@ -51,6 +53,10 @@ export default function OwnerProductPage({ route, navigation }) {
                 <Card.Divider />
                 <EditableText textStyle={styles.description} editMode={editMode} onChange={()=>{}}>{details.description}</EditableText>
                 <ExpandableImage source={productImage} initialHeight={200} />
+                <AddOrder
+                userId={userId}
+                productId={details.id}
+                />
                 <ReservationTable
                     editMode={editMode}
                     reservations={mockReservations.next}

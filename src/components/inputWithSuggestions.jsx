@@ -1,36 +1,47 @@
 import { Input, Text } from "@rneui/themed";
 import { debounce } from "lodash";
 import React, { useCallback, useState } from "react";
-import { Touchable, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Touchable, TouchableOpacity, View } from "react-native";
+import { COLORS } from "../../assets/theme";
 
-export default function inputWithSuggestions({
-    onValueChange,
+export default function InputWithSuggestions({
+    onValueChange = (_)=>{},
     onChooseSuggestion,
-    value,
+    placeholder,
     suggestionsSupplier,
 }) {
-    const [_value, setValue] = useState(value);
-    const [suggestions, setSuggestions] = useState([]);
-    const _suggestionsSupplier = useCallback(
-        debounce(suggestionsSupplier, 1000),
+    const [_value, setValue] = useState("");
+    const [suggestionsOpen, setopenSuggestions] = useState(false);
+    const [suggestions, setSuggestions] = useState([{label:"loading..."}]);
+    const _suggestionsSupplier = useCallback(suggestionsSupplier,
         []
     );
-    const inputChangeHandler = async (text) => {
+    const inputChangeHandler = (text) => {
+        setValue(text);
         onValueChange(text);
         if (text.length >= 3) {
-            const newSuggestions = await _suggestionsSupplier();
-            setSuggestions(newSuggestions);
+            setSuggestions([{label:"loading..."}])
+            setopenSuggestions(true);
+            debouncedPart(text);
         }
-    };
+    }
+    const debouncedPart = debounce(async (text) => {
+        const newSuggestions = await _suggestionsSupplier(text);
+        setSuggestions(newSuggestions);
+    }, 1000);
+
     const pressSuggestion = (suggestion) => {
+        if (!suggestion.value) return;
         setValue(suggestion.label);
         onChooseSuggestion(suggestion);
+        setopenSuggestions(false);
     };
     return (
-        <View>
-            <Input value={_value} onChange={inputChangeHandler} />
-            {suggestions.map(({ label, value }) => (
+        <View style={styles.container}>
+            <Input  value={_value} onChangeText={inputChangeHandler} placeholder={placeholder}/>
+            {suggestionsOpen && suggestions.map(({ label, value }) => (
                 <TouchableOpacity
+                    style={styles.suggestion}
                     key={label}
                     onPress={() => pressSuggestion({ label, value })}
                 >
@@ -40,3 +51,18 @@ export default function inputWithSuggestions({
         </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    container:{
+        gap:-26.5,
+        alignItems:"center"
+    },
+    suggestion:{
+        width:"95%",
+        backgroundColor:"#fff",
+        padding: 12,
+        borderWidth:1,
+        borderColor:COLORS.grey2
+    }
+})

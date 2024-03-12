@@ -5,6 +5,7 @@ import { ContactButtons } from "./contactButtons";
 import { COLORS } from "../../assets/theme";
 
 export function OwnerDetailsBar({ owner }) {
+    console.log(owner);
     const avatarLetters = getOwnerLetters(owner.name);
     return (
         <View style={barStyles.container}>

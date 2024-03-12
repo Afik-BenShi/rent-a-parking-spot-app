@@ -12,7 +12,7 @@ import "../pages/productDetailsPage.types";
  * @param {{
  *      reservation:ProductReservation, editMode?:boolean,
  *      onDelete?: (rsv:ProductReservation) => any,
- *      onChange?: (rsv:ProductReservation) => any
+ *      onChange?: (rsv:ProductReservation) => any,
  * }} props
  */
 export default function ReservationBox({
@@ -43,7 +43,7 @@ export default function ReservationBox({
     return (
         <Card containerStyle={styles.availabilityCard}>
             <View style={styles.availabilityInner}>
-                {!!rsv.reservingUser && <OwnerDetailsBar owner={rsv.reservingUser} />}
+                <OwnerDetailsBar owner={rsv.reservingUser} />
                 <EditableDateRange
                     editMode={editMode}
                     dateRange={rsv.scheduling}
@@ -97,6 +97,107 @@ function ConfirmationDialog({ dialogState }) {
                         onPress={() => closeDialog("delete")}
                     >
                         Yes, Delete
+                    </Button>
+                </View>
+            </Dialog.Actions>
+        </DialogComponent>
+    );
+}
+
+/**
+ * @type {React.FC}
+ * @param {{
+ *      reservation:ProductReservation, editMode?:boolean,
+ *      onSubmit?: (rsv:ProductReservation) => any,
+ *      onChange?: (rsv:ProductReservation) => any,
+ * }} props
+ */
+export function NewReservationBox({
+    reservation,
+    editMode = false,
+    onSubmit,
+    onChange = () => {},
+}) {
+    const [rsv, setRsv] = useState(reservation);
+    const [submitText, setSubmitText] = useState("Submit");
+    const { openDialog, closeDialog, DialogComponent } = useDialog();
+
+    const handleDateChange = (startTime, endTime) => {
+        setRsv((oldRsv) =>
+            Object.assign(oldRsv, { scheduling: { startTime, endTime } })
+        );
+        onChange(rsv);
+    };
+
+    const handleSubmit = async () => {
+        const dialogPromise = openDialog();
+        const action = await dialogPromise;
+        if (action === "submit" && onSubmit) {
+            setSubmitText("Sending...");
+            const isSuccess = await onSubmit(rsv);
+            setSubmitText(isSuccess? "Saved": "Error");
+            setTimeout(()=> setSubmitText("Submit"), 5000);
+        }
+        console.log(action);
+    };
+
+    return (
+        <Card containerStyle={styles.availabilityCard}>
+            <View style={styles.availabilityInner}>
+                <OwnerDetailsBar owner={rsv.reservingUser} />
+                <EditableDateRange
+                    editMode={editMode}
+                    dateRange={rsv.scheduling}
+                    minDate={new Date()}
+                    onRangeChange={handleDateChange}
+                    textProps={{ style: styles.datePickerText }}
+                />
+                {editMode && (
+                    <Button color="primary" onPress={handleSubmit}>
+                        {submitText}
+                        {/* <Icon
+                           name="x-circle"
+                           type="feather"
+                           color={COLORS.white}
+                       /> */}
+                    </Button>
+                )}
+                <SubmitConfirmationDialog
+                    dialogState={{ openDialog, closeDialog, DialogComponent }}
+                />
+            </View>
+        </Card>
+    );
+}
+
+function SubmitConfirmationDialog({ dialogState }) {
+    const { DialogComponent, closeDialog } = dialogState;
+    return (
+        <DialogComponent overlayStyle={{ position: "relative" }}>
+            <View
+                style={{
+                    position: "absolute",
+                    top: 6,
+                    right: 6,
+                }}
+            >
+                <Pressable onPress={() => closeDialog()}>
+                    <Icon name="close" />
+                </Pressable>
+            </View>
+            <View style={{ alignSelf: "center" }}>
+                <Dialog.Title title="Are you sure you want to submit this reservation?" />
+            </View>
+            <Dialog.Actions>
+                <View style={styles.dialogActions}>
+                    <Button type="outline" onPress={() => closeDialog("close")}>
+                        No, go back
+                    </Button>
+                    <Button
+                        color="primary"
+                        onPress={() => closeDialog("submit")}
+                    >
+                        Yes, Submit
                     </Button>
                 </View>
             </Dialog.Actions>
