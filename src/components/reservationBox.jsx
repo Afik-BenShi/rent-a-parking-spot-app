@@ -24,9 +24,9 @@ export default function ReservationBox({
     const [rsv, setRsv] = useState(reservation);
     const { openDialog, closeDialog, DialogComponent } = useDialog();
 
-    const handleDateChange = (startTime, endTime) => {
+    const handleDateChange = (startDate, endDate) => {
         setRsv((oldRsv) =>
-            Object.assign(oldRsv, { scheduling: { startTime, endTime } })
+            Object.assign(oldRsv, { scheduling: { startDate, endDate } })
         );
         onChange(rsv);
     };
@@ -40,6 +40,7 @@ export default function ReservationBox({
         console.log(action);
     };
 
+    console.log(rsv.reservingUser);
     return (
         <Card containerStyle={styles.availabilityCard}>
             <View style={styles.availabilityInner}>
@@ -122,9 +123,9 @@ export function NewReservationBox({
     const [submitText, setSubmitText] = useState("Submit");
     const { openDialog, closeDialog, DialogComponent } = useDialog();
 
-    const handleDateChange = (startTime, endTime) => {
+    const handleDateChange = (startDate, endDate) => {
         setRsv((oldRsv) =>
-            Object.assign(oldRsv, { scheduling: { startTime, endTime } })
+            Object.assign(oldRsv, { scheduling: { startDate, endDate } })
         );
         onChange(rsv);
     };

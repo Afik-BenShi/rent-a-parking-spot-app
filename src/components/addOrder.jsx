@@ -5,8 +5,9 @@ import InputWithSuggestions from "./inputWithSuggestions";
 import config from "../backend/config";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Icon, Text } from "@rneui/themed";
+
 const SERVER = `http://${config.serverIp}:${config.port}`;
-export default function AddOrder({ userId, productId }) {
+export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
     const now = new Date();
     const [isExpanded, toggleExpand] = useState(false);
     const [user, setUser] = useState(false);
@@ -14,8 +15,8 @@ export default function AddOrder({ userId, productId }) {
         productId,
         ownerId: userId,
         scheduling: {
-            startTime: now,
-            endTime: now,
+            startDate: now,
+            endDate: now,
         },
         reservingUser: {
             id: "",
@@ -54,13 +55,15 @@ export default function AddOrder({ userId, productId }) {
     /** @param {ProductReservation} rsv */
     const onSubmitReservation = async (rsv) => {
         const payload = {
-            startDate:rsv.scheduling.startTime,
-            endDate: rsv.scheduling.endTime, 
+            ownerId: userId,
+            startDate:rsv.scheduling.startDate,
+            endDate: rsv.scheduling.endDate, 
             productId, 
-            userId: rsv.reservingUser.id,
+            renterId: rsv.reservingUser.id,
         }
         const response = await axios.post(SERVER + '/orders/add', payload);
         if (response.status === 200){
+            onSuccess(response.data);
             return true;
         }
         console.error(response.data);

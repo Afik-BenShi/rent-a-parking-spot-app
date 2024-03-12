@@ -20,8 +20,8 @@
  *  },
  *  image?: string,
  *  availability: {
- *      startTime: Date,
- *      endTime: Date,
+ *      startDate: Date,
+ *      endDate: Date,
  *  },
  * }} ProductDetails
  */
@@ -32,8 +32,8 @@
  *  productId: string,
  *  ownerId: string,
  *  scheduling:{
- *      startTime: Date,
- *      endTime: Date,
+ *      startDate: Date,
+ *      endDate: Date,
  *  },
  *  reservingUser: {
  *      id: string,

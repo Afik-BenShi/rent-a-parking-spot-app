@@ -3,25 +3,23 @@ import { StyleSheet, View } from "react-native";
 import { Card, Text } from "@rneui/themed";
 import { dateRangeFormat } from "../utils/dateTime";
 
-/** @param {{availability: {startTime: Date, endTime: Date}}} props */
+/** @param {{availability: {startDate: Date, endDate: Date}}} props */
 export function AvailabilityBox({ availability }) {
     const parkingAvailability = dateRangeFormat(
-        availability.startTime,
-        availability.endTime
+        availability.startDate,
+        availability.endDate
     );
     return (
         <Card containerStyle={styles.availabilityCard}>
             <View style={styles.availabilityInner}>
                 <View style={styles.timeBox}>
-                    <Text h4>{parkingAvailability.startDay}</Text>
-                    <Text h2>{parkingAvailability.startHour}</Text>
+                    <Text h2>{parkingAvailability.startDay}</Text>
                 </View>
                 <View>
                     <Text h1>-</Text>
                 </View>
                 <View style={styles.timeBox}>
-                    <Text h4>{parkingAvailability.endDay}</Text>
-                    <Text h2>{parkingAvailability.endHour}</Text>
+                    <Text h2>{parkingAvailability.endDay}</Text>
                 </View>
             </View>
         </Card>

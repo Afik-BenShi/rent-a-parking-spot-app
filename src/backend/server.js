@@ -88,9 +88,15 @@ app.post('/users/upsert', async (req, res) => {
   res.send(response);
 });
 
-app.get('/orders/:userId', async (req, res) => {
+app.get('/orders/owner/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { status, response } = await orders.getMyOrders(userId, req.body);
+  const { status, response } = await orders.getOrders(userId, {...req.query, type:"owner"});
+  res.status(status).send(response);
+});
+
+app.get('/orders/renter/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { status, response } = await orders.getOrders(userId, req.query);
   res.status(status).send(response);
 });
 

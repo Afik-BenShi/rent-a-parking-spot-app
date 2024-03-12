@@ -1,14 +1,14 @@
 const { Timestamp } = require('firebase-admin/firestore');
-const { getMyOrders: db_getMyOrders, upsertDocument} = require("../utils/db");
+const { getOrdersWithOptions, upsertDocument} = require("../utils/db");
 
-const getMyOrders = async (userId, { time }) => {
-    const response = await db_getMyOrders(userId, time);
+const getOrders = async (userId, options) => {
+    const response = await getOrdersWithOptions(userId, options);
     return { status:200, response:response };
 };
 
 const addNewOrder = async (reqBody) => {
-    const {startDate, endDate, productId, userId} = reqBody;
-    if (!(startDate && endDate && productId && userId)){
+    const {startDate, endDate, productId, ownerId, renterId} = reqBody;
+    if (!(startDate && endDate && productId && ownerId && renterId)) {
         return {status: 400, response:'Missing parameters on reequest'};
     }
     let data;
@@ -18,7 +18,8 @@ const addNewOrder = async (reqBody) => {
             endDate: Timestamp.fromDate(new Date(endDate)),
             orderDate: Timestamp.fromDate(new Date()),
             productId,
-            userId,
+            ownerId,
+            renterId,
         }   
     } catch (err) {
         console.error('[addNewOrder]', err);
@@ -36,4 +37,4 @@ const addNewOrder = async (reqBody) => {
     return {status, response};
 };
 
-module.exports = {getMyOrders, addNewOrder};
+module.exports = {getOrders, addNewOrder};
