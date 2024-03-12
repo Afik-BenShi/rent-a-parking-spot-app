@@ -20,20 +20,20 @@
  *  },
  *  image?: string,
  *  availability: {
- *      startTime: Date,
- *      endTime: Date,
+ *      startDate: Date,
+ *      endDate: Date,
  *  },
  * }} ProductDetails
  */
 
 /**
  * @typedef {{
- *  id: string,
- *  title: string,
+ *  id?: string,
  *  productId: string,
- *  scheduling: {
- *      startTime: Date,
- *      endTime: Date,
+ *  ownerId: string,
+ *  scheduling:{
+ *      startDate: Date,
+ *      endDate: Date,
  *  },
  *  reservingUser: {
  *      id: string,

@@ -8,6 +8,7 @@ import GoogleMaps from "../components/GoogleMaps";
 import ExpandableImage from "../components/ExpandableImage";
 import { COLORS } from "../../assets/theme";
 import { ContactButtons } from "../components/contactButtons";
+import { timeStampToDate } from "../utils/dateTime";
 
 /**
  *  @type {React.FC}
@@ -15,11 +16,11 @@ import { ContactButtons } from "../components/contactButtons";
  */
 export default function ProductDetailsPage({ route, navigation }) {
     const details = parseItem(route.params);
-
+    console.log(details)
     const productImage = details.image
         ? { uri: details.image }
         // @ts-ignore
-        : require("../../assets/parking-details-images/littleBlackDress.jpg");
+        : require("../../assets/parking-details-images/placeholder.png");
 
     const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
 
@@ -99,22 +100,35 @@ const styles = StyleSheet.create({
 
 // TODO use consistent data instead of parsing
 /** @returns {ProductDetails} */
-function parseItem({details:item}){
-    const { id, name, price, startDate, endDate, details, owner, city, distanceFromMe, img } = item;
+function parseItem({ details: item }) {
+    const {
+        id,
+        title,
+        pricePerDay,
+        startDate,
+        startDay,
+        endDate,
+        endDay,
+        description,
+        ownerId,
+        city,
+        distanceFromMe,
+        imageUrl,
+    } = item;
+    console.log("item:",item)
     return Object.assign(mock, {
         id,
-        title:name,
-        description:details,
-        availability:{
-            startTime: new Date(startDate),
-            endTime: new Date(endDate),
+        title,
+        description,
+        availability: {
+            startDate: timeStampToDate(startDay?? startDate),
+            endDate: timeStampToDate(endDay?? endDate),
         },
-        image:img,
-        price: Object.assign(mock.price,{ amount:price }),
-        owner: Object.assign(mock.owner, { name:owner }),
+        image: imageUrl,
+        price: Object.assign(mock.price, { amount: pricePerDay }),
+        owner: Object.assign(mock.owner, { name: ownerId }),
     });
 }
-
 /**@type {ProductDetails} */
 const mock = {
     id: "1",
@@ -137,7 +151,7 @@ const mock = {
         phoneNumber: "972522708541",
     },
     availability: {
-        startTime: new Date("2024-02-14T10:00"),
-        endTime: new Date("2024-02-17T18:00"),
+        startDate: new Date("2024-02-14T10:00"),
+        endDate: new Date("2024-02-17T18:00"),
     },
 };

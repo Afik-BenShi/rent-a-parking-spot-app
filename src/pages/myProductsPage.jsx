@@ -34,7 +34,7 @@ export default function MyProductsPage({ navigation, route }) {
 
     useEffect(() => {
         fetchProducts();
-    }, [myItems]);
+    }, [userId]);
 
     return (
         <SafeAreaView style={styles.layout}>
@@ -64,7 +64,7 @@ export default function MyProductsPage({ navigation, route }) {
                 <CardList
                     items={myItems}
                     title="My Products"
-                    onItemPressed={(details) => navigation.navigate('ownerProduct', { details })}
+                    onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
                 />
             </View>
 

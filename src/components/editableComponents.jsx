@@ -68,10 +68,10 @@ export function EditableDateRange({
     minDate,
     onRangeChange,
 }) {
-    const [start, setStart] = useState(dateRange.startTime);
-    const [end, setEnd] = useState(dateRange.endTime);
+    const [start, setStart] = useState(dateRange.startDate);
+    const [end, setEnd] = useState(dateRange.endDate);
 
-    const { startDay, startHour, endDay, endHour } = dateRangeFormat(
+    const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         start,
         end
     );
@@ -86,7 +86,7 @@ export function EditableDateRange({
     };
     return !editMode ? (
         <Text {...textProps}>
-            From {startDay} at {startHour} to {endDay} at {endHour}{" "}
+            From {startDay} to {endDay}
         </Text>
     ) : (
         <>
@@ -94,13 +94,13 @@ export function EditableDateRange({
             <DateTimePickerExample
                 minDate={minDate}
                 onDateChange={startChangedHandler}
-                initialDate={dateRange.startTime}
+                initialDate={dateRange.startDate}
                 />
             <Text {...textProps}>End Date</Text>
             <DateTimePickerExample
                 minDate={minDate}
                 onDateChange={endChangedHandler}
-                initialDate={dateRange.endTime}
+                initialDate={dateRange.endDate}
             />
         </>
     );
@@ -109,7 +109,7 @@ export function EditableDateRange({
 /**
  * @typedef {{
  *  editMode: boolean,
- *  dateRange: {startTime:Date, endTime:Date},
+ *  dateRange: {startDate:Date, endDate:Date},
  *  textProps?: import("react-native-elements").TextProps,
  *  minDate?: Date,
  *  onRangeChange: (newStart:Date, newEnd:Date) => any,
