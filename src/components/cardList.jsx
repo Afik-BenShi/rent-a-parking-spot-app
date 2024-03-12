@@ -17,7 +17,7 @@ import { COLORS } from '../../assets/theme';
 
 
 export default function CardList({ items, title, onItemPressed = (_) => { } }) {
-
+  const placeholderImage = require('../../assets/parking-details-images/placeholder.png');
   return (
     <SafeAreaView style={{ backgroundColor: '#f3f5f9' }}>
       <ScrollView
@@ -29,6 +29,7 @@ export default function CardList({ items, title, onItemPressed = (_) => { } }) {
           {items.map(
             (item, index) => {
               const { id, title, pricePerDay, startDate, endDate, description, ownerId, city, distanceFromMe, imageUrl } = item;
+              const image = imageUrl? { uri: imageUrl } : placeholderImage;
               return (
 
                 <View key={index} style={styles.cardContainer}>
@@ -38,7 +39,7 @@ export default function CardList({ items, title, onItemPressed = (_) => { } }) {
                       <Image
                         alt=""
                         resizeMode="cover"
-                        source={{ uri: imageUrl }}
+                        source={image}
                         style={styles.cardImg}
                       />
                       <View style={styles.cardBody}>
