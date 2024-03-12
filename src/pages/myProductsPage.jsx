@@ -15,8 +15,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
-
-const MyServerIPAdress = "192.168.1.39";
+import config from '../backend/config'
 
 export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
@@ -24,7 +23,7 @@ export default function MyProductsPage({ navigation, route }) {
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get("http://" + MyServerIPAdress +":3000/myProducts", { params: { userId } });
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, { params: { userId } });
             setMyItems(response.data);
         }
         catch (err) {
@@ -32,7 +31,7 @@ export default function MyProductsPage({ navigation, route }) {
         }
     };
 
-    
+
     useEffect(() => {
         fetchProducts();
     }, [myItems]);
@@ -41,14 +40,14 @@ export default function MyProductsPage({ navigation, route }) {
         <SafeAreaView style={styles.layout}>
 
             <Header
-                
+
                 leftComponent={
                     {/*<Pressable onPress={() => console.log('Menu button pressed!')}>
                         <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
                 </Pressable>*/}
                 }
-                
-            
+
+
 
                 rightComponent={
                     <View style={{ alignContent: 'flex-start', flexDirection: 'row' }}>

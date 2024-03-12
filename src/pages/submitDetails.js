@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,123 +15,124 @@ import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
 
+import config from '../backend/config'
+
 const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
 
-const MyServerIPAdress = "192.168.1.39";
+const onClickFinish = ({ navigation, detailsList, userId }) => {
+  console.log("Product details submitted: ", detailsList);
 
-const onClickFinish = ({ navigation, detailsList }) => {
-    console.log("Product details submitted: ", detailsList);
+  // Send the details to the backend
+  // Send a POST request to your server
 
-    // Send the details to the backend
-    // Send a POST request to your server
-    
-    const ownerId = 1; // Hardcoded user ID for now
-    
-    const newProduct = {
-      title: detailsList.productName,
-      pricePerDay: detailsList.price,
-      ownerId: ownerId,
-      description: detailsList.productDescription,
-      subCategoryId: 1,  // Replace with the actual category ID 
-      startDate: detailsList.from,
-      endDate: detailsList.until,
-      city: detailsList.city,
-    };
+  const newProduct = {
+    title: detailsList.productName,
+    pricePerDay: detailsList.price,
+    ownerId: userId,
+    description: detailsList.productDescription,
+    subCategoryId: 1,  // Replace with the actual category ID 
+    startDate: detailsList.from,
+    endDate: detailsList.until,
+    city: detailsList.city,
+  };
 
-    fetch("http://" + MyServerIPAdress + ":3000/myProducts/add", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newProduct)
+  console.log('newProduct', newProduct)
+
+  fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newProduct)
+  })
+    .then(response => {
+      console.log("success to post new product")
+      console.log("Response from server:", response.ok);
     })
-      .then(response => {
-        console.log("success to post new product")
-        console.log("Response from server:", response.ok);
-      })
-      .catch(error => {
-        console.error("Error while posting new product:", error);
-      });
+    .catch(error => {
+      console.error("Error while posting new product:", JSON.stringify(error));
+    });
 
-    // Navigate to the My Products page
-    navigation.navigate("My Products cardList");
+  // Navigate to the My Products page
+  navigation.navigate("My Products cardList");
 
 };
 
 export default function SubmitDetails({ navigation, route }) {
-        const { detailsList } = route.params;
+  const { detailsList, userId: user } = route.params;
+  const [userId, setUserId] = useState(user);
 
-        const onGoBackPress = () =>{
-            navigation.goBack();
-        };
+  const onGoBackPress = () => {
+    navigation.goBack();
+  };
 
-        return (
-            <View style={{ flex: 1 }}>
-                <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-                    <View style={styles.container}>
-                        <View style={styles.header}>
-                            <View style={styles.headerAction}>
-                            </View>
-                            <Text style={styles.title}>Your product</Text>
-                            <View
-                                style={[styles.headerAction, { alignItems: 'flex-end' }]} />
-                            </View>
+  return (
+    <View style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.headerAction}>
+            </View>
+            <Text style={styles.title}>Your product</Text>
+            <View
+              style={[styles.headerAction, { alignItems: 'flex-end' }]} />
+          </View>
 
-                        <ScrollView
-                            contentContainerStyle={styles.receipt}
-                            showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.receipt}
+            showsVerticalScrollIndicator={false}>
 
-                            <View style={styles.receiptLogo}>
-                                {<Icon color={COLORS.lightWhite} name="account-details" size={32} />}
-                            </View>
+            <View style={styles.receiptLogo}>
+              {<Icon color={COLORS.lightWhite} name="account-details" size={32} />}
+            </View>
 
-                            
-                            
-                            {/*******/}
-                            <View style={styles.divider}>
-                                <View style={styles.dividerInset} /></View>
 
-                            <View style={styles.details}>
-                                <Text style={styles.detailsTitle}>Product details</Text>
 
-                                {/*<View style={styles.detailsRow}>
+            {/*******/}
+            <View style={styles.divider}>
+              <View style={styles.dividerInset} /></View>
+
+            <View style={styles.details}>
+              <Text style={styles.detailsTitle}>Product details</Text>
+
+              {/*<View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Owner full name</Text>
 
                                     <Text style={styles.detailsValue}>{detailsList.ownerName}</Text>
                                 </View>
                                 */}
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Product name</Text>
+              <View style={styles.detailsRow}>
+                <Text style={styles.detailsField}>Product name</Text>
 
-                                    <Text style={styles.detailsValue}>{detailsList.productName}</Text>
-                                </View>
+                <Text style={styles.detailsValue}>{detailsList.productName}</Text>
+              </View>
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Location</Text>
+              <View style={styles.detailsRow}>
+                <Text style={styles.detailsField}>Location</Text>
 
-                                    <Text style={styles.detailsValue}>{detailsList.city}</Text>
-                                </View>
+                <Text style={styles.detailsValue}>{detailsList.city}</Text>
+              </View>
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Category</Text>
+              <View style={styles.detailsRow}>
+                <Text style={styles.detailsField}>Category</Text>
 
-                                    <View>
-                                    <Text style={styles.detailsValue}>{detailsList.category}</Text> 
-                                    {/*    TODO: get the category name from the category id !!!! */}
-                                    </View>
-                                     
-                                </View>
+                <View>
+                  <Text style={styles.detailsValue}>{detailsList.category}</Text>
+                  {/*    TODO: get the category name from the category id !!!! */}
+                </View>
+
+              </View>
 
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Daily Price</Text>
+              <View style={styles.detailsRow}>
+                <Text style={styles.detailsField}>Daily Price</Text>
 
-                                    <Text style={styles.detailsValue}>{detailsList.price} 
-                                        <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
-                                </View>
+                <Text style={styles.detailsValue}>{detailsList.price}
+                  <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
+              </View>
 
-                                {/*
+              {/*
                                 <View style={styles.detailsRow}>
                                     <Text style={styles.detailsField}>Phone Number</Text>
 
@@ -139,71 +140,71 @@ export default function SubmitDetails({ navigation, route }) {
                                 </View>
                               */}
 
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Days of availability</Text>
+              <View style={styles.detailsRow}>
+                <Text style={styles.detailsField}>Days of availability</Text>
 
-                                    <Text style={styles.detailsValue}>
-                                    {detailsList.from} - {detailsList.until}
-                                    </Text>
-                                </View>
-                                
-                                <View >
-                                    <Text style={styles.detailsField}>
-                                      {'\n'}Description: </Text>
+                <Text style={styles.detailsValue}>
+                  {detailsList.from} - {detailsList.until}
+                </Text>
+              </View>
 
-                                    <Text style={styles.descriptionValue}>
-                                    {'\n'}{detailsList.productDescription}
-                                    </Text>
-                                </View>
+              <View >
+                <Text style={styles.detailsField}>
+                  {'\n'}Description: </Text>
 
-                                <View>
-                                    <Text style={styles.detailsField}>Image</Text>
-                                    <ExpandableImage source={productImage} initialHeight={250} />
-                                </View>
+                <Text style={styles.descriptionValue}>
+                  {'\n'}{detailsList.productDescription}
+                </Text>
+              </View>
 
-                            </View>
-                        </ScrollView>
-                
-                    </View>
-                </SafeAreaView>
+              <View>
+                <Text style={styles.detailsField}>Image</Text>
+                <ExpandableImage source={productImage} initialHeight={250} />
+              </View>
 
-                <View style={styles.overlay}>
-                      <Text style={styles.receiptDescription}>
-                      By clicking Finish,{'\n'} 
-                      your product will be available for rent by other users {'\n'}
-                      with the details you have provided
-                      </Text>
-
-                      <NextBackBtn
-                        nextText="Finish"
-                        backText="Back"
-                        navigation={navigation}
-                        //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-                        onNextPress={() => onClickFinish({ navigation, detailsList })}
-                        
-                        paddingBottom={0}
-                      />   
-                    </View>
-
-                
             </View>
-        );
-    }
+          </ScrollView>
+
+        </View>
+      </SafeAreaView>
+
+      <View style={styles.overlay}>
+        <Text style={styles.receiptDescription}>
+          By clicking Finish,{'\n'}
+          your product will be available for rent by other users {'\n'}
+          with the details you have provided
+        </Text>
+
+        <NextBackBtn
+          nextText="Finish"
+          backText="Back"
+          navigation={navigation}
+          //onNextPress={()  => {navigation.navigate("My Products cardList")}}
+          onNextPress={() => onClickFinish({ navigation, detailsList, userId })}
+
+          paddingBottom={0}
+        />
+      </View>
 
 
-    /*
-    
-      ownerName: "",
-      productName: "",
-      category: "",  // add choose from list
-      city: "",
-      price: "",
-      phoneNumber: "",
-      from: "",
-      until: "",  // range of days
-      productDescription: "",
-    });
-    */
+    </View>
+  );
+}
+
+
+/*
+ 
+  ownerName: "",
+  productName: "",
+  category: "",  // add choose from list
+  city: "",
+  price: "",
+  phoneNumber: "",
+  from: "",
+  until: "",  // range of days
+  productDescription: "",
+});
+*/
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 0,
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-  descriptionValue: {    
+  descriptionValue: {
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '600',
