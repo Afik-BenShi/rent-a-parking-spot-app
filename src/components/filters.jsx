@@ -11,8 +11,8 @@ const Filter = ({ navigation, route }) => {
   const { onReturn } = route.params;
   console.log('onReturn', onReturn)
 
-  const [selectedOption, setSelectedOption] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(0);  // 0 for all products
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [startDate, setStartDate] = useState(new Date()); // State for start date
   const [endDate, setEndDate] = useState(new Date());  // State for end date
   const [city, setCity] = useState("")
@@ -20,11 +20,7 @@ const Filter = ({ navigation, route }) => {
 
 
   const buttonGroupOptions = ['Distance', 'Price'];
-  const categories = [
-    { id: '1', name: 'Category 1' },
-    { id: '2', name: 'Category 2' },
-    // Add more categories as needed
-  ];
+  
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -53,12 +49,14 @@ const Filter = ({ navigation, route }) => {
           <Divider />
 
           {/* Single-Select List for Categories (All Categories) */}
+          {/*
           <SingleSelectListDropDown
-            data={categories}
+            //data={categories}
             selectedData={selectedCategory}
             onSelectCategory={(selected) => setSelectedCategory(selected)}
             title="Choose from all Categories"
           />
+        */}
           <Divider />
 
           {/* Location Input */}
@@ -106,7 +104,7 @@ const Filter = ({ navigation, route }) => {
             <TouchableOpacity
               // onPress={() => { console.log({ startDate, endDate, selectedCategoriesAll, maxPrice, city }); navigation.goBack(); }}
 
-              onPress={() => { onReturn({ startDate, endDate, selectedCategory, maxPrice, city }); navigation.goBack(); }}
+              onPress={() => { onReturn({ startDate, endDate, maxPrice, city }); navigation.goBack(); }}
               style={{ flex: 1, paddingHorizontal: 6 }}>
               <View style={styles.btnPrimary}>
                 <Text style={styles.btnPrimaryText}>Save</Text>

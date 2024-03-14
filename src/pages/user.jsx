@@ -22,7 +22,6 @@ import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 import config from '../backend/config'
 
-const MyServerIPAdress = "192.168.1.39";
 
 export default function Profile({ navigation, route }) {
 

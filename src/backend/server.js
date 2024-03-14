@@ -29,14 +29,33 @@ app.use((req, res, next) => {
 
 app.get('/products', async (req, res) => {
 
-  const { maxPrice, selectedCategory: subCategory, city, endDate, startDate } = req.query.filters || {};
+  const { maxPrice, selectedCategory: mainCategory, city, endDate, startDate } = req.query.filters || {};
 
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
+  
+  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate, endDate }
+  console.log('filters from server :', filters);
 
-  const filters = { maxPrice: parsedMaxPrice, subCategory, city, startDate, endDate }
   const result = await products.getProducts(filters);
   res.send(result);
 });
+
+
+// app.get('/products/byCategory', async (req, res) => {
+
+//   const category = req.query.selectedCategory || 0;
+
+//   if (category == 0) {   // all products
+//     const result = await products.getProducts({});
+//     res.send(result);
+    
+//   }
+//   else{
+//     const result = await products.getProductsByCategory(category);
+//     res.send(result);
+//   }
+// });
+
 
 app.get('/myProducts', async (req, res) => {
   const { userId } = req.query;
@@ -51,10 +70,10 @@ app.post('/myProducts/add', async (req, res) => {
     title,
     ownerId: ownerId.toString(),
     description,
-    subCategotyId: subCategoryId.toString(),
+    mainCategoryId: subCategoryId.toString(),
     startDate,
     endDate,
-    pricePerDay: pricePerDay.toString(),
+    pricePerDay,
     city
   }
 

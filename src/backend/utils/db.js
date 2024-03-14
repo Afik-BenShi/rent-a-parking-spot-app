@@ -67,14 +67,16 @@ async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
 
 const getProductsDb = async (filters) => {
     try {
-        const { startDate, endDate, maxPrice, subCategory, city } = filters;
+        const { startDate, endDate, maxPrice, mainCategory, city } = filters;
 
-        let docRef = db.collection("products");
-        if (subCategory) {
-            docRef = docRef.where("subCategoryId", "==", subCategory);
+        let docRef = db.collection("products")
+
+        if (mainCategory && mainCategory != "0") {  // 0 for all products
+            console.log("enterd :    subCategory", mainCategory);
+            docRef = docRef.where("mainCategoryId", "==", mainCategory);
         }
         if (maxPrice) {
-            docRef = docRef.where("pricePerDay", "<=", maxPrice);
+            docRef = docRef.where("pricePerDay", "<=", parseFloat(maxPrice));
         }
         if (city) {
             docRef = docRef.where("city", "==", city);
@@ -82,10 +84,32 @@ const getProductsDb = async (filters) => {
         //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
         return result.docs.map((doc) => doc.data());
-    } catch (err) {
-        return null;
-    }
+    } catch (error) {
+        console.error("Error fetching product by category:", error);
+        throw error;
+   }
 };
+
+// const getProductsByCatgeoryDb = async (category) => {
+//     try {
+//         //const categoryStr = category.ToString();
+
+//         let docRef = db.collection("products")
+        
+//         if (category) {
+//             docRef = docRef.where("mainCategoryId", "==", category);
+//         }
+//         const result = await docRef.get();
+//         return result.docs.map((doc) => doc.data());
+    
+//     } catch (error) {
+//         console.error("Error fetching product by category:", error);
+//         throw error;
+//     }
+// };
+
+
+
 
 const addMyProductDb = async (newProductData) => {
     async function addSlot(parentDocId, date, userId) {

@@ -6,7 +6,7 @@ export default function MultipleSelectListDropDown({ onSelectCategory }) {
     const [selected, setSelected] = useState("");
     
     const data = [
-        {key:'1', value:'Outdoor'},
+        {key:'1', value:'Outdoor equipment'},
         {key:'2', value:'Entertainment & Events'},
         {key:'3', value:'Home Improvement'},
     ]
