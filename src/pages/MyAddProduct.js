@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import { Timestamp } from 'firebase/firestore';
 
 // import axios from 'axios'; 
 //const axios = require('axios').default;
@@ -29,29 +30,30 @@ export default function AddProductPage ({navigation}) {
         city: "",
         price: "",
         from: "",
-        until: "",  // range of days
+        until: "", 
         productDescription: "",
     });
 
     const handleStartDateChange = (startDate) => {
-        const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected'; 
-        console.log(start);
 
-        setDetails((prevDetails) => ({
-            ...prevDetails,
-            ["from"]: start,
-        }));
-    };
+      const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected'; 
+      console.log(start);
 
-    const handleEndDateChange = (endDate) => {
-        const end = endDate ? endDate.toLocaleDateString('en-GB') : 'Not selected';
-        console.log(end); 
+      setDetails((prevDetails) => ({
+          ...prevDetails,
+          ["from"]: start,
+      }));
+  };
 
-        setDetails((prevDetails) => ({
-            ...prevDetails,
-            ["until"]: end,
-        }));
-    };
+  const handleEndDateChange = (endDate) => {
+      const end = endDate ? endDate.toLocaleDateString('en-GB') : 'Not selected';
+      console.log(end); 
+      
+      setDetails((prevDetails) => ({
+          ...prevDetails,
+          ["until"]: end,
+      }));
+  };
 
 
     // Function to handle input change and update details state
@@ -79,31 +81,12 @@ export default function AddProductPage ({navigation}) {
 
         console.log("Submitted Details (before submit):", details);
 
-        // axios.post('http://localhost:3000/myProducts/add', { 
-        //       title: details.productName,
-        //       pricePerDay: details.price,
-        //       ownerId: "1", // Replace with the actual owner ID
-        //       description: details.productDescription,
-        //       subCategoryId: details.category,
-        //       startDate: details.from,
-        //       endDate: details.until,
-        //       })
-
-        // .then(response => {
-        //     console.log("Response from server:", response.data);
-        //     // Handle response from server if needed
-        // })
-        // .catch(error => {
-        //     console.error("Error:", error);
-        // });
-
         navigation.navigate("submitParkingDetails" ,{ 
             detailsList: details });
         
     };
     
 
-  
   
     return (
       <KeyboardAvoidingView

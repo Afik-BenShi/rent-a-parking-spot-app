@@ -19,6 +19,9 @@ import config from '../backend/config'
 
 const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
 
+
+
+
 const onClickFinish = ({ navigation, detailsList, userId }) => {
   console.log("Product details submitted: ", detailsList);
 
@@ -30,7 +33,7 @@ const onClickFinish = ({ navigation, detailsList, userId }) => {
     pricePerDay: detailsList.price,
     ownerId: userId,
     description: detailsList.productDescription,
-    subCategoryId: 1,  // Replace with the actual category ID 
+    mainCategoryId: detailsList.category,  
     startDate: detailsList.from,
     endDate: detailsList.until,
     city: detailsList.city,
@@ -57,6 +60,8 @@ const onClickFinish = ({ navigation, detailsList, userId }) => {
   navigation.navigate("My Products cardList");
 
 };
+
+
 
 export default function SubmitDetails({ navigation, route }) {
   const { detailsList, userId: user } = route.params;

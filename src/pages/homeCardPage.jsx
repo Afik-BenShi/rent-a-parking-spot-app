@@ -259,7 +259,7 @@ export default function HomeCardPage({ navigation, }) {
 
                   
                       <View style={styles.iconFrame}>
-                      <Pressable onPress={() => navigation.navigate('filters', { onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } })}>
+                      <Pressable onPress={() => navigation.navigate('filters', { onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
                       <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
                       </Pressable>
                       </View>

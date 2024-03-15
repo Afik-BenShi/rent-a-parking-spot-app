@@ -41,21 +41,6 @@ app.get('/products', async (req, res) => {
 });
 
 
-// app.get('/products/byCategory', async (req, res) => {
-
-//   const category = req.query.selectedCategory || 0;
-
-//   if (category == 0) {   // all products
-//     const result = await products.getProducts({});
-//     res.send(result);
-    
-//   }
-//   else{
-//     const result = await products.getProductsByCategory(category);
-//     res.send(result);
-//   }
-// });
-
 
 app.get('/myProducts', async (req, res) => {
   const { userId } = req.query;
@@ -64,18 +49,20 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, subCategoryId, startDate, endDate, pricePerDay, city } = req.body
+  const { title, ownerId, description, mainCategoryId, startDate, endDate, pricePerDay, city } = req.body
 
   const newProductData = {
     title,
     ownerId: ownerId.toString(),
     description,
-    mainCategoryId: subCategoryId.toString(),
+    mainCategoryId,
     startDate,
     endDate,
     pricePerDay,
     city
   }
+
+  console.log("newProductData", newProductData);
 
   result = await products.addMyProduct(newProductData);
   res.send(result);

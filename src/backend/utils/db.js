@@ -90,26 +90,6 @@ const getProductsDb = async (filters) => {
    }
 };
 
-// const getProductsByCatgeoryDb = async (category) => {
-//     try {
-//         //const categoryStr = category.ToString();
-
-//         let docRef = db.collection("products")
-        
-//         if (category) {
-//             docRef = docRef.where("mainCategoryId", "==", category);
-//         }
-//         const result = await docRef.get();
-//         return result.docs.map((doc) => doc.data());
-    
-//     } catch (error) {
-//         console.error("Error fetching product by category:", error);
-//         throw error;
-//     }
-// };
-
-
-
 
 const addMyProductDb = async (newProductData) => {
     async function addSlot(parentDocId, date, userId) {

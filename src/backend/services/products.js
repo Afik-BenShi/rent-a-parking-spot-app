@@ -14,14 +14,6 @@ const getProducts = async (filters) => {
     return orderedProducts;
 };
 
-// const getProductsByCategory = async (category) => {
-//     const results = await getProductsByCatgeoryDb(category);
-//     const orderedProducts = [...results].sort(
-//         (a, b) => new Date(a.startDate) - new Date(b.startDate)
-//     );
-
-//     return orderedProducts;
-// };
 
 const getMyProducts = async (userId) => {
     const result = await getMyProductsDb(userId);
