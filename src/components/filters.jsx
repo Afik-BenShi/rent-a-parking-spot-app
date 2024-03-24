@@ -8,23 +8,19 @@ import SingleSelectListDropDown from './SingleSelectListDropDown';
 import DatePicker from './DatePick';
 
 const Filter = ({ navigation, route }) => {
-  const { onReturn } = route.params;
+  const { onReturn, filters } = route.params;
   console.log('onReturn', onReturn)
 
-  const [selectedOption, setSelectedOption] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(0);  // 0 for all products
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [startDate, setStartDate] = useState(new Date()); // State for start date
   const [endDate, setEndDate] = useState(new Date());  // State for end date
-  const [city, setCity] = useState("")
-  const [maxPrice, setMaxPrice] = useState(1000)
+  const [city, setCity] = useState(filters.city ? filters.city.toString() : "");
+  const [maxPrice, setMaxPrice] = useState(filters.maxPrice ? filters.maxPrice : 5000);
 
 
   const buttonGroupOptions = ['Distance', 'Price'];
-  const categories = [
-    { id: '1', name: 'Category 1' },
-    { id: '2', name: 'Category 2' },
-    // Add more categories as needed
-  ];
+  
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -53,32 +49,63 @@ const Filter = ({ navigation, route }) => {
           <Divider />
 
           {/* Single-Select List for Categories (All Categories) */}
+          {/*
           <SingleSelectListDropDown
-            data={categories}
+            //data={categories}
             selectedData={selectedCategory}
             onSelectCategory={(selected) => setSelectedCategory(selected)}
             title="Choose from all Categories"
           />
+        */}
           <Divider />
 
           {/* Location Input */}
           <View style={styles.textFieldContainer}>
             <Text h4 style={styles.textFieldTitle}>Where to search:</Text>
             <Input
-              placeholder="Use my current location"
-              defaultValue="Use my current location"
+              placeholder= {"Use my current location"}
+              defaultValue= {city}
               leftIcon={{ type: 'font-awesome', name: 'map-marker', color: '#86939e' }}
-              onChangeText={setCity}
-
+              //onChangeText={setCity}
+              onChangeText={(newText) => {
+                if (newText == "") {
+                  if (filters.city != ""){
+                    setCity("");
+                  }
+                  else {
+                    setCity(filters.city);
+                  }
+                }
+                else {
+                  setCity(newText);  // Update the city in the state
+                }
+              }}
             />
           </View>
           <View style={styles.textFieldContainer}>
             <Text h4 style={styles.textFieldTitle}>Max price:</Text>
             <Input
-              placeholder="1000"
-              defaultValue={maxPrice}
+              placeholder={"5000"}
+              defaultValue={maxPrice} 
               leftIcon={{ type: 'font-awesome', name: 'map-marker', color: '#86939e' }}
-              onChangeText={setMaxPrice}
+              //onChangeText={setMaxPrice}
+              onChangeText={(newText) => {
+                if (newText == "") {
+                  // Update the maxPrice in the state
+                  if (filters.maxPrice != ""){
+                    setMaxPrice(5000);
+                  }
+                  else {
+                    setMaxPrice(filters.maxPrice);
+                  }
+                  
+                }
+                else {
+                  console.log('newText', newText)
+                  // Update the maxPrice in the state
+                  setMaxPrice(newText);
+                }
+              }}
             />
           </View>
           <Divider />
@@ -106,7 +133,7 @@ const Filter = ({ navigation, route }) => {
             <TouchableOpacity
               // onPress={() => { console.log({ startDate, endDate, selectedCategoriesAll, maxPrice, city }); navigation.goBack(); }}
 
-              onPress={() => { onReturn({ startDate, endDate, selectedCategory, maxPrice, city }); navigation.goBack(); }}
+              onPress={() => { onReturn({ startDate, endDate, maxPrice, city }); navigation.goBack(); }}
               style={{ flex: 1, paddingHorizontal: 6 }}>
               <View style={styles.btnPrimary}>
                 <Text style={styles.btnPrimaryText}>Save</Text>

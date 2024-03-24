@@ -7,6 +7,9 @@ const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
 
+const { firestore } = require("firebase-admin");
+const Timestamp = firestore.Timestamp;
+
 db.init();
 
 const app = express();
@@ -29,14 +32,18 @@ app.use((req, res, next) => {
 
 app.get('/products', async (req, res) => {
 
-  const { maxPrice, selectedCategory: subCategory, city, endDate, startDate } = req.query.filters || {};
+  const { maxPrice, selectedCategory: mainCategory, city, endDate, startDate } = req.query.filters || {};
 
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
+  
+  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate, endDate }
+  console.log('filters from server :', filters);
 
-  const filters = { maxPrice: parsedMaxPrice, subCategory, city, startDate, endDate }
   const result = await products.getProducts(filters);
   res.send(result);
 });
+
+
 
 app.get('/myProducts', async (req, res) => {
   const { userId } = req.query;
@@ -45,18 +52,20 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, subCategoryId, startDate, endDate, pricePerDay, city } = req.body
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city } = req.body
 
   const newProductData = {
     title,
     ownerId: ownerId.toString(),
     description,
-    subCategotyId: subCategoryId.toString(),
-    startDate,
-    endDate,
-    pricePerDay: pricePerDay.toString(),
+    mainCategoryId,
+    startDate: Timestamp.fromDate(new Date(fromDate)),
+    endDate: Timestamp.fromDate(new Date(untilDate)),
+    pricePerDay,
     city
   }
+
+  console.log("newProductData after timestamp", newProductData);
 
   result = await products.addMyProduct(newProductData);
   res.send(result);

@@ -24,36 +24,12 @@ import SingleSelectedDropDown from "./SingleSelectListDropDown";
  
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
 
-  // not used
-  // State to hold the entered details
-  const [details, setDetails] = useState({
-    ownerName: "",
-    productName: "",
-    category: "",  // add choose from list
-    city: "",
-    price: "",
-    phoneNumber: "",
-    from: "",
-    until: "",  // range of days
-    productDescription: "",
-  });
-
 
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date())
+
+
   
-  //const [error, setError] = useState('');
-
-  {/*const validateTimes = (start, end) => {
-    if (start >= end) {
-      setError('End time must be greater than start time');
-    } else {
-      setError('');
-    }
-  };*/}
-
-
-  // this methods are not use. we use the same methods in the parent class called MyNewProduct
   const onStartDateChange = (selectedDate) => {
     setStartDate(selectedDate);
     const start = startDate ? startDate.toLocaleString() : 'Not selected';
@@ -72,18 +48,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
   };
 
 
-  // Function to handle input change and update details state
-  const onInputChange = (field, value) => {
-    
-    const parsedValue = field === "price" || field === "houseNumber" ? parseInt(value) : value;
-
-    setDetails((prevDetails) => ({
-      ...prevDetails,
-      [field]: parsedValue,
-    }));
-  };
-
-
+  
 return (
   
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
