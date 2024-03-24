@@ -7,6 +7,9 @@ const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
 
+const { firestore } = require("firebase-admin");
+const Timestamp = firestore.Timestamp;
+
 db.init();
 
 const app = express();
@@ -49,20 +52,20 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, mainCategoryId, startDate, endDate, pricePerDay, city } = req.body
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city } = req.body
 
   const newProductData = {
     title,
     ownerId: ownerId.toString(),
     description,
     mainCategoryId,
-    startDate,
-    endDate,
+    startDate: Timestamp.fromDate(new Date(fromDate)),
+    endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
     city
   }
 
-  console.log("newProductData", newProductData);
+  console.log("newProductData after timestamp", newProductData);
 
   result = await products.addMyProduct(newProductData);
   res.send(result);

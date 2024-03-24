@@ -20,8 +20,6 @@ import config from '../backend/config'
 const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
 
 
-
-
 const onClickFinish = ({ navigation, detailsList, userId }) => {
   console.log("Product details submitted: ", detailsList);
 
@@ -34,8 +32,8 @@ const onClickFinish = ({ navigation, detailsList, userId }) => {
     ownerId: userId,
     description: detailsList.productDescription,
     mainCategoryId: detailsList.category,  
-    startDate: detailsList.from,
-    endDate: detailsList.until,
+    fromDate: detailsList.fromDate,
+    untilDate: detailsList.untilDate,
     city: detailsList.city,
   };
 

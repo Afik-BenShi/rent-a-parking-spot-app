@@ -12,7 +12,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Header, Input } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -105,6 +105,7 @@ export default function HomeCardPage({ navigation, }) {
       setRefreshing(false);
     }, 1000);
 
+    fetchProducts();
 
   }, []);
 
@@ -156,15 +157,21 @@ export default function HomeCardPage({ navigation, }) {
   const formatKeyBeforeShow = (key) => {
     switch (key) {
       case 'startDate':
-        return 'Start Date';
+        return <FeatherIcon color="#000" name="calendar" size={18} />;
+        //return 'Start Date';
+
       case 'endDate':
-        return 'End Date';
+        return <FeatherIcon color="#000" name="calendar" size={18} />;
+        //return 'End Date';
+
       case 'maxPrice':
-        return 'Max Price';
+        return <Entypo color="#000" name="price-tag" size={18} />;
+        //return 'Max Price';
       case 'selectedCategory':
         return 'Category';
       case 'city':
-        return 'City';
+        return <Entypo color="#000" name="location-pin" size={18} />;
+        //return 'City';
       default:
         // If no specific formatting is needed, return the original key
         return key;
@@ -317,7 +324,7 @@ export default function HomeCardPage({ navigation, }) {
                     {/* Render key and value */}
                     <Text style={styles.cardLabel}>
                     <Text style={styles.keyText}> {formatKeyBeforeShow(key)}</Text> 
-                     {  } : {'\n'} {key === 'startDate' || key === 'endDate'
+                     {  } {key === 'startDate' || key === 'endDate'
                     ? formatDate(value) // Format date if key is 'startDate' or 'endDate'
                     : (key === 'selectedCategory'
                     ? selectedCategoryLabel // Render selectedCategoryLabel if key is 'selectedCategory'
@@ -654,14 +661,15 @@ const styles = StyleSheet.create({
       },
   },
   cardLabel: {
-    textAlign: 'center', 
+    textAlign: 'left', 
     textAlignVertical: 'center', 
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 15,
     color: 'black',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 10,
   },
   keyText: {
     fontSize: 14,    

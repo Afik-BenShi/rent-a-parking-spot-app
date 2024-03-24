@@ -79,8 +79,15 @@ const getProductsDb = async (filters) => {
             docRef = docRef.where("pricePerDay", "<=", parseFloat(maxPrice));
         }
         if (city) {
-            docRef = docRef.where("city", "==", city);
+
+            const capitalizedCity = city.replace(/\b\w/g, function(char) { return char.toUpperCase(); });
+            const loweredCity = city.replace(/\b\w/g, function(char) { return char.toLowerCase(); });
+            const AllCap = city.toUpperCase();
+            const AllLower = city.toLowerCase();
+            
+            docRef = docRef.where("city", 'in', [city, capitalizedCity, loweredCity, AllCap, AllLower]);
         }
+        
         //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
         return result.docs.map((doc) => doc.data());
@@ -110,6 +117,7 @@ const addMyProductDb = async (newProductData) => {
 
     try {
         const docRef = db.collection("products").doc();
+
         const newProduct = {
             ...newProductData,
             createdAt: FieldValue.serverTimestamp(),

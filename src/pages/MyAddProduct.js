@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
-import { Timestamp } from 'firebase/firestore';
 
 // import axios from 'axios'; 
 //const axios = require('axios').default;
@@ -32,6 +31,8 @@ export default function AddProductPage ({navigation}) {
         from: "",
         until: "", 
         productDescription: "",
+        fromDate: "",
+        untilDate: "",
     });
 
     const handleStartDateChange = (startDate) => {
@@ -42,6 +43,7 @@ export default function AddProductPage ({navigation}) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["from"]: start,
+          ["fromDate"]: startDate,
       }));
   };
 
@@ -52,6 +54,7 @@ export default function AddProductPage ({navigation}) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["until"]: end,
+          ["untilDate"]: endDate,
       }));
   };
 
