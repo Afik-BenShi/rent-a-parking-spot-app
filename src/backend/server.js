@@ -33,10 +33,16 @@ app.use((req, res, next) => {
 app.get('/products', async (req, res) => {
 
   const { maxPrice, selectedCategory: mainCategory, city, endDate, startDate } = req.query.filters || {};
+  console.log('startDate :', startDate);
+  console.log('endDate :', endDate);
 
   const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : null;
+  const parsedStartDate = startDate ? Timestamp.fromDate(new Date(startDate)) : null;
+  const parsedEndDate = endDate ? Timestamp.fromDate(new Date(endDate)) : null;
+  console.log('parsedStartDate :', parsedStartDate);
+  console.log('parsedEndDate :', parsedEndDate);
   
-  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate, endDate }
+  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate:parsedStartDate, endDate:parsedEndDate }
   console.log('filters from server :', filters);
 
   const result = await products.getProducts(filters);
@@ -54,6 +60,13 @@ app.get('/myProducts', async (req, res) => {
 app.post('/myProducts/add', async (req, res) => {
   const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city } = req.body
 
+  const loweredCity = city.replace(/\b\w/g, function(char) { return char.toLowerCase(); });
+  const words = city.split(' ');
+  const capitalizedWords = words.map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+  const parsedCity = capitalizedWords.join(' ');
+
   const newProductData = {
     title,
     ownerId: ownerId.toString(),
@@ -62,7 +75,7 @@ app.post('/myProducts/add', async (req, res) => {
     startDate: Timestamp.fromDate(new Date(fromDate)),
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
-    city
+    city: parsedCity
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -105,7 +118,7 @@ app.get('/orders/owner/:userId', async (req, res) => {
 
 app.get('/orders/renter/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { status, response } = await orders.getOrders(userId, req.query);
+  const { status, response } = await orders.getOrders(userId, {...req.query, type:"renter"});
   res.status(status).send(response);
 });
 

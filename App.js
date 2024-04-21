@@ -11,10 +11,11 @@ import SubmitPersonalDetails from './src/pages/submitDetails';
 import OwnerProductPage from './src/pages/ownerProductPage';
 import MyProductsPage from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
-import NoOrdersYet from './src/pages/noOrdersYetPage';
+import MyOrderAsRenterPage from './src/pages/MyOrdersAsRenter';
 import Filters from './src/components/filters';
 import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
+import ExtendedProduct from './src/pages/ExtendedProduct';
 
 import { Icon } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
@@ -84,10 +85,16 @@ function SettingsStackScreen({ route }) {
 
 const MyOrdersStack = createNativeStackNavigator();
 
-function MyOrdersStackScreen() {
+function MyOrdersStackScreen({ route }) {
+  const { userId } = route.params;
+
   return (
     <MyOrdersStack.Navigator>
-      <MyOrdersStack.Screen name="Orders" component={NoOrdersYet} options={{ headerShown: false }} />
+      <MyOrdersStack.Screen name="Orders" component={MyOrderAsRenterPage} initialParams={{ userId }}
+      options={{ headerShown: false }} />
+
+      <MyOrdersStack.Screen name="ExtendedProduct" component={ExtendedProduct} initialParams={{ userId }}
+      options={{ headerShown: false }} />
     </MyOrdersStack.Navigator>
   );
 }
@@ -95,7 +102,7 @@ function MyOrdersStackScreen() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [userId, setuserId] = useState('1')
+  const [userId, setUserId] = useState('1')
 
   return (
     <NavigationContainer>
@@ -131,7 +138,7 @@ export default function App() {
         <Tab.Screen name='My Products' component={MyProStackScreen}
           options={{ headerShown: false }} initialParams={{ userId }} />
 
-        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} />
+        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} initialParams={{ userId }} />
 
         <Tab.Screen name="Home" component={HomeStackScreen}
           options={{ headerShown: false }} />

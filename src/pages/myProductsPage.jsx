@@ -20,6 +20,7 @@ import config from '../backend/config'
 export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
+    const [refreshing, setRefreshing] = useState(false);
 
     const fetchProducts = async () => {
         try {
@@ -31,10 +32,19 @@ export default function MyProductsPage({ navigation, route }) {
         }
     };
 
-
     useEffect(() => {
         fetchProducts();
-    }, [userId]);
+        console.log("refresh - fetchProducts");
+
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 100);
+
+    }, [refreshing]);
+
+    const updateProducts = () => {
+        setRefreshing(true);
+    };
 
     return (
         <SafeAreaView style={styles.layout}>
@@ -51,7 +61,7 @@ export default function MyProductsPage({ navigation, route }) {
 
                 rightComponent={
                     <View style={{ alignContent: 'flex-start', flexDirection: 'row' }}>
-                        <Pressable onPress={() => navigation.navigate('addProduct')}>
+                        <Pressable onPress={() => navigation.navigate('addProduct', { updateProducts })}>
                             <FontAwesome name="plus-square-o" color={COLORS.btnBlue} size={30} style={styles.filterIcon} />
                         </Pressable>
                     </View>
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
         color: COLORS.cartTitle,
         fontWeight: '700',
         fontSize: 24,
-        fontFamily: 'Roboto',
+        //fontFamily: 'Roboto',
         textAlign: 'center',
         marginTop: 0,
     },

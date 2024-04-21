@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
   Image,
-  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -16,10 +15,21 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../assets/theme';
 
 
-export default function CardList({ items, title, onItemPressed = (_) => { } }) {
+export default function CardList({ items, title, onItemPressed = (_) => { }}) {
   const placeholderImage = require('../../assets/parking-details-images/placeholder.png');
+  if (!items) {
+    return (
+      <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>{title}</Text>
+          <Text>No items to show</Text>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
   return (
-    <SafeAreaView style={{ backgroundColor: '#f3f5f9' }}>
+    <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
+      
       <ScrollView
         contentContainerStyle={styles.container}>
         <Text style={styles.title}>{title}</Text>
@@ -75,6 +85,7 @@ export default function CardList({ items, title, onItemPressed = (_) => { } }) {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
+    paddingBottom: 140
   },
   title: {
     fontSize: 28,

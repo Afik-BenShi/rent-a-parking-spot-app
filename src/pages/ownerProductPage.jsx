@@ -15,6 +15,7 @@ import "./productDetailsPage.types";
 import { timeStampToDate } from "../utils/dateTime";
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
+
 export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
     const details = parseItem(route.params);
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
 
 // TODO use consistent data instead of parsing
 /** @returns {ProductDetails} */
-function parseItem({ details: item }) {
+export function parseItem({ details: item }) {
     const {
         id,
         title,
@@ -137,19 +138,25 @@ function parseItem({ details: item }) {
         city,
         distanceFromMe,
         imageUrl,
+        OrderStartDate,
+        OrderEndDate,
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
         id,
         title,
         description,
+        city,
         availability: {
-            startDate: timeStampToDate(startDay?? startDate),
-            endDate: timeStampToDate(endDay?? endDate),
+            startDate: timeStampToDate(startDate?? startDay),
+            endDate: timeStampToDate(endDate ?? endDay),
         },
         image: imageUrl,
         price: Object.assign(mock.price, { amount: pricePerDay }),
         owner: Object.assign(mock.owner, { name: ownerId }),
+        orderDates: Object.assign(mock.orderDates, 
+            { startDate: timeStampToDate(OrderStartDate?? startDate),   // in case of missing data, use the start date
+                endDate: timeStampToDate(OrderEndDate?? endDate) }),
     });
 }
 
@@ -183,7 +190,7 @@ const mock = {
         "Every girl needs a little black dress. But if you don't have one, rent have mine for a night",
     price: {
         amount: 10,
-        currency: "$",
+        currency: "nis",
         duration: "day",
     },
     location: {
@@ -197,6 +204,10 @@ const mock = {
         phoneNumber: "972522708541",
     },
     availability: {
+        startDate: new Date("2024-02-14T10:00"),
+        endDate: new Date("2024-02-17T18:00"),
+    },
+    orderDates: {
         startDate: new Date("2024-02-14T10:00"),
         endDate: new Date("2024-02-17T18:00"),
     },

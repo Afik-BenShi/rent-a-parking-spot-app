@@ -32,6 +32,10 @@ const COLORS = {
   
   cardBackground: '#f3f5f9',  
   cartTitle: '#173153',
+
+  greyBackground: '#F9F9F9',
+  greyText: '#7b7c7e',
+  orangeLikeStars: '#f26463',
 };
 
 const FONT = {

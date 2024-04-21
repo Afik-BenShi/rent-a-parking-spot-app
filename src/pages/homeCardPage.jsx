@@ -10,15 +10,14 @@ import {
   View,
   Pressable,
   RefreshControl,
+  TextInput,
 } from 'react-native';
 import { Header, Input } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-// Import the mock data for home page:
-// import { rentalItems } from '../../assets/mockData';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
@@ -26,13 +25,13 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
+import { set } from 'lodash';
 
 const items = [
   {key:'1', label:'Outdoor equipment'},
   {key:'2', label:'Entertainment & Events'},
   {key:'3', label:'Home Improvement'},
 ]
-
 
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
@@ -46,6 +45,7 @@ export default function HomeCardPage({ navigation, }) {
   const [showSelectedCategory, setShowSelectedCategory] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [rentalItems, setRentalItems] = useState([]);
+  const [masterData, setMasterData] = useState([]);
   const [filters, setFilters] = useState({
         "city": "",
         "endDate": "",
@@ -58,19 +58,22 @@ export default function HomeCardPage({ navigation, }) {
 
   const selectedCategoryLabel = selectedCategory ? items[selectedCategory - 1].label : "All Products";
 
+  const [searchTerm, setSearchTerm] = useState('');
+  //console.log("filters from hame page:" , filters);
 
-  console.log("filters:" , filters);
+  const [locationsList, setLocationsList] = useState(["All Locations"]);
 
-
-
-
-  const fetchProducts = async () => {
+  const fetchProducts = async (filters) => {
     try {
       console.log('fetchProducts in homeCard')
       console.log('fetchProducts filters', filters)
 
       const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { params: { filters } });
       setRentalItems(response.data);
+      setMasterData(response.data);
+      updateLocaionsList(response.data);
+           
+      console.log('response.data', response.data);
       if (0 == response.data.length){
         console.log('No products found');
         setNoContent(true);
@@ -81,11 +84,22 @@ export default function HomeCardPage({ navigation, }) {
     }
   };
 
+  const updateLocaionsList = (data) => {
+    const result = locationsList;
+    for (let i = 0; i < data.length; i++){
+      if (!result.includes(data[i].city)){
+        result.push(data[i].city);
+      }
+    }
+    // sort
+    result.sort();
+    setLocationsList(result);
+  };
 
   useEffect(() => {
     setNoContent(false);
     setShowFilters(false);
-    fetchProducts();
+    fetchProducts(filters);     
     
     var cnt = 0;
     Object.entries(filters).map(([key, value]) => {
@@ -93,25 +107,33 @@ export default function HomeCardPage({ navigation, }) {
     if (cnt > 0){
       setShowFilters(true);
     }
-
+    
   }, [filters]);
 
 
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback((filters) => {
     setRefreshing(true);
+    setSearchTerm("");
+
+    try{
+      //console.log('onRefresh filters', filters);
+      
+      fetchProducts(filters);    // REMOVE THIS IN ORDER TO FETCH 
+      
+    } catch (err) {
+      console.log(JSON.stringify(err))
+    }
 
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
-
-    fetchProducts();
-
+  
   }, []);
 
 
   const sheet = React.useRef();
-  const [value, setValue] = React.useState();
+  const [value, setValue] = useState();
 
   const handleDonePress = () => {
     console.log("Selected category: ", selectedCategory);
@@ -123,7 +145,12 @@ export default function HomeCardPage({ navigation, }) {
       'selectedCategory': selectedCategory.toString()
     }));
     
-    
+  }
+
+  const onCancleSearchPress = () => {
+    setSearchTerm("");
+    setRentalItems(masterData);
+    setNoContent(false);
   }
 
 
@@ -138,7 +165,7 @@ export default function HomeCardPage({ navigation, }) {
     });
 
     console.log('after update: ', filters);
-    //fetchProducts();
+    
   }
 
   const formatDate = (date) => {
@@ -188,7 +215,35 @@ export default function HomeCardPage({ navigation, }) {
     });
     setSelectedCategory(0);
     setValue(null);
+    setSearchTerm("");
   }
+
+  const searchFilter = (text) => {
+    if (text) {
+        const newData = masterData.filter((item) => {
+        const itemDataTitle = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+        const itemDataDescription = item.description ? item.description.toUpperCase() : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemDataTitle.indexOf(textData) > -1 || itemDataDescription.indexOf(textData) > -1;
+      });
+        if (newData.length == 0){
+           setNoContent(true);
+           setSearchTerm(text);
+           setRentalItems([]);
+        }
+        else{
+          setNoContent(false);
+          setRentalItems(newData);
+          setSearchTerm(text);
+        }
+    }
+    else {
+      setRentalItems(masterData)
+      setSearchTerm(text);
+    }
+  };
+
+
 
   return (
     <SafeAreaView style={styles.layout}>
@@ -208,20 +263,7 @@ export default function HomeCardPage({ navigation, }) {
           </View>
         }
         rightComponent={
-          {/*
-          <View style={{ flexDirection: 'row',}}>
-            <Pressable onPress={() => navigation.navigate('filters', { onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } })}>
-              <FontAwesome5 name="filter" color={COLORS.btnBlue} size={25}  />
-            </Pressable>
-
-            <Pressable onPress={() => {
-                setShowFilters(false);
-                initialFilters();
-                 }}>
-              <MaterialCommunityIcons name="filter-off" color={COLORS.btnBlue} size={35}/>
-            </Pressable>
-                </View>
-              */}
+          {}
         }
         containerStyle={styles.headerContainer}
       />
@@ -229,11 +271,28 @@ export default function HomeCardPage({ navigation, }) {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={false} // Set refreshing state here
-            onRefresh={onRefresh} // Pass onRefresh function here
+            refreshing={refreshing} // Set refreshing state here
+            onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here
+            
           />
         }
       >
+        <View style={styles.btnGroupHomePage}>
+          <Input
+            style={styles.searchBar}
+            value={searchTerm}
+            placeholder="Search Here..."
+            underlineColorAndroid='transparent'
+            onChangeText={(text) => searchFilter(text)}
+            
+            inputStyle={styles.inputControl}
+            inputContainerStyle={{ borderBottomWidth: 0, padding:10 }} 
+            leftIcon = {<FontAwesome name="search" size={20} color={COLORS.cartTitle} style={styles.logoIcon} />}
+            rightIcon = {<FontAwesome5 name="times" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
+                onPress={onCancleSearchPress}/>}
+          />
+        </View>
+        
 
           {/************** start select category *********************/}
           <View style={{justifyContent:'center'}}>
@@ -266,7 +325,7 @@ export default function HomeCardPage({ navigation, }) {
 
                   
                       <View style={styles.iconFrame}>
-                      <Pressable onPress={() => navigation.navigate('filters', { onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                      <Pressable onPress={() => navigation.navigate('filters', { locationsList , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
                       <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
                       </Pressable>
                       </View>
@@ -318,7 +377,7 @@ export default function HomeCardPage({ navigation, }) {
             showsHorizontalScrollIndicator={false}>
             {Object.entries(filters).map(([key, value]) => (
               
-              (value != "" && key !== 'selectedCategory') && (
+              (value !== "" && value !== null && key !== 'selectedCategory') && (
                 <View key={key}>
                   <View style={[styles.card, { backgroundColor: COLORS.grey2 }]}>
                     {/* Render key and value */}
@@ -343,12 +402,8 @@ export default function HomeCardPage({ navigation, }) {
           <CardList
             items={rentalItems}
             title=""
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />}
             onItemPressed={(details) => navigation.navigate("productDetails", { details })}
+            
           />
           
           {noContent && <OopsNoProducts />}
@@ -437,6 +492,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#173153',
     marginLeft: 14,
+    marginTop:10,
   },
   sec_title: {
     fontSize: 20,
@@ -463,7 +519,7 @@ const styles = StyleSheet.create({
     color: COLORS.cartTitle,
     fontWeight: '700',
     fontSize: 24,
-    fontFamily: 'Roboto',
+    //fontFamily: 'Roboto',
     textAlign: 'center',
     marginTop: 0,
   },
@@ -484,8 +540,8 @@ const styles = StyleSheet.create({
 
   //select category
   picker: {
-    marginTop: 12,
-    paddingVertical: 14,
+    marginTop: 0,  //12
+    paddingVertical: 10,
     paddingHorizontal:15,
     borderRadius: 12,
     flexDirection: 'row',
@@ -518,8 +574,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    
-    
   },
   pickerActionText: {
     fontSize: 16,
@@ -679,6 +733,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',     
   },
   btnGroupHomePage:{
+    paddingTop :10,
     backgroundColor: COLORS.cardBackground, 
     justifyContent: 'flex-start',
     flexDirection: 'column' 
@@ -691,7 +746,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: 5, 
     // //padding: 5, 
     
-      marginTop: 13,
+      marginTop: 2,
       paddingHorizontal:5,
       borderRadius: 12,
       flexDirection: 'row',
@@ -711,6 +766,29 @@ const styles = StyleSheet.create({
       },
     
   },
+  searchBar:{
+      height: 50,
+      backgroundColor: '#fff',   
+      paddingHorizontal: 25,
+      borderRadius: 12,
+      fontSize: 15,
+      fontWeight: '500',
+      color: '#222',
+  },
+  inputControl: {
+    height: 44,
+    backgroundColor: COLORS.cardBackground,   // grey background color 
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
+  timesIcon:{
+    marginLeft: -40,
+  },
+
+  
 
 
 });
