@@ -11,7 +11,7 @@ import {
 //import Swiper from 'react-native-swiper';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { COLORS } from '../../assets/theme';
@@ -21,6 +21,7 @@ import { dateRangeFormat } from "../utils/dateTime";
 import { UrlTile } from 'react-native-maps';
 import { ContactButtons } from "../components/contactButtons";
 import GoogleMaps from "../components/GoogleMaps";
+import config from '../backend/config';
 
 const items = [
   { name: 'Information' },
@@ -47,9 +48,10 @@ export default function ExtendedProduct({ route, navigation }) {
         image,
         location,
         orderDates,
+        mainCategoryId,
         } = details;
 
-    const { rate, reviews } = { rate: 4, reviews: 18 };
+    const { rate, reviews } = { rate: 4, reviews: 18 };   // TODO: CHANGE TO ACTUAL VALUES
 
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
@@ -69,9 +71,9 @@ export default function ExtendedProduct({ route, navigation }) {
               onPress={navigation.goBack}
               style={{ marginRight: 'auto' }}>
               <View style={styles.action}>
-                <FeatherIcon
+                <MaterialCommunityIcons
                   color="#242329"
-                  name="chevron-left"
+                  name="window-close"
                   size={20} />
               </View>
             </TouchableOpacity>
@@ -161,12 +163,18 @@ export default function ExtendedProduct({ route, navigation }) {
             
             <Text style={styles.cardPrice}>
                           <Text style={styles.cardPriceValue}>
-                            <Icon name="currency-ils" style={styles.shekel}/>{' '}
+                            <MaterialCommunityIcons name="currency-ils" style={styles.shekel}/>{' '}
                             {price.amount.toLocaleString('en-US')}{' '}
                           </Text>
                           <Text style={styles.cardPriceCurrency}> /day</Text>
                         </Text>
                            
+          </View>
+
+          <View style={styles.headerRow}>
+            <View style={styles.headerStars}>
+                <Text style={styles.headerLocationText}>{config.categories[mainCategoryId]?.label}</Text>
+            </View>
           </View>
 
           <View style={styles.headerRow}>
@@ -190,10 +198,13 @@ export default function ExtendedProduct({ route, navigation }) {
                 ))}
                 <Text style={styles.headerStarsText}>{reviews} reviews</Text>
             </View>
+          </View>
         </View>
 
-        </View>
         <View style={styles.picker}>
+          
+          <Text style={{marginLeft: 8, fontWeight: '500', fontSize: 13, lineHeight: 18, color: '#000',}}>
+            Order Dates:</Text>
           <TouchableOpacity
             style={styles.pickerDates}>
             <FeatherIcon
@@ -241,29 +252,6 @@ export default function ExtendedProduct({ route, navigation }) {
         </View>
 
       </ScrollView>
-
-      {/* <View style={styles.overlay}>
-        <View style={styles.footer}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}>
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Map</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-            style={{ flex: 1, paddingHorizontal: 8 }}>
-            <View style={styles.btnSecondary}>
-              <Text style={styles.btnSecondaryText}>Book a travel</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View> */}
     </View>
   );
 }
@@ -412,7 +400,7 @@ const styles = StyleSheet.create({
   },
   headerLocationText: {
     fontWeight: '500',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 20,
     color: '#7b7c7e',
     marginLeft: 4,
@@ -502,7 +490,7 @@ const styles = StyleSheet.create({
   },
   aboutDescription: {
     fontWeight: '500',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 20,
     color: '#7b7c7e',
   },

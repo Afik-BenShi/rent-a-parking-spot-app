@@ -36,6 +36,9 @@ const COLORS = {
   greyBackground: '#F9F9F9',
   greyText: '#7b7c7e',
   orangeLikeStars: '#f26463',
+  greyCityColor: '#5f697d',
+  greyTextInExtendedProduct: '#7b7c7e',
+
 };
 
 const FONT = {

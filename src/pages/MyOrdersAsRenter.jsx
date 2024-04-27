@@ -86,6 +86,7 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
           *  TODO : separate to history orders and upcoming orders
           *  display: title, image, price, date (start - end), owner (name, phone number)
           *  rating
+          *  ADD : category
           */}
           
           {

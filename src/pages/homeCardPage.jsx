@@ -12,12 +12,16 @@ import {
   RefreshControl,
   TextInput,
 } from 'react-native';
-import { Header, Input } from 'react-native-elements';
+import { Button, Header, Input } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
@@ -25,10 +29,12 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
-import { set } from 'lodash';
+import { filter, set } from 'lodash';
+
 
 const items = [
-  {key:'1', label:'Outdoor equipment'},
+  {key:'0', label:'Any'},
+  {key:'1', label:'Outdoor Equipment'},
   {key:'2', label:'Entertainment & Events'},
   {key:'3', label:'Home Improvement'},
 ]
@@ -36,13 +42,9 @@ const items = [
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
-
 export default function HomeCardPage({ navigation, }) {
 
-
-  const [selectedCategory, setSelectedCategory] = useState(0);
-  const [showSelectBtn, setShowSelectBtn] = useState(true);
-  const [showSelectedCategory, setShowSelectedCategory] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("0");
   const [refreshing, setRefreshing] = useState(false);
   const [rentalItems, setRentalItems] = useState([]);
   const [masterData, setMasterData] = useState([]);
@@ -56,12 +58,12 @@ export default function HomeCardPage({ navigation, }) {
   const [noContent, setNoContent] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const selectedCategoryLabel = selectedCategory ? items[selectedCategory - 1].label : "All Products";
+  const selectedCategoryLabel = selectedCategory != 0 ? items[selectedCategory].label : "All Products";
 
   const [searchTerm, setSearchTerm] = useState('');
-  //console.log("filters from hame page:" , filters);
 
   const [locationsList, setLocationsList] = useState(["All Locations"]);
+  const [activeFilters, setActiveFilters] = useState(false);
 
   const fetchProducts = async (filters) => {
     try {
@@ -99,15 +101,16 @@ export default function HomeCardPage({ navigation, }) {
   useEffect(() => {
     setNoContent(false);
     setShowFilters(false);
-    fetchProducts(filters);     
+    fetchProducts(filters);  
+    useFilters(filters);   
     
     var cnt = 0;
     Object.entries(filters).map(([key, value]) => {
-          if (value && key != 'selectedCategory'){ cnt ++ } });
+          if (value && key !== 'selectedCategory'){ cnt ++ } });
     if (cnt > 0){
       setShowFilters(true);
     }
-    
+
   }, [filters]);
 
 
@@ -133,11 +136,10 @@ export default function HomeCardPage({ navigation, }) {
 
 
   const sheet = React.useRef();
-  const [value, setValue] = useState();
-
-  const handleDonePress = () => {
+  function handleDonePress (category) {
+    setSelectedCategory(category);
     console.log("Selected category: ", selectedCategory);
-    sheet.current.close();
+    //sheet.current.close();
     
     // Merge the existing filters with the selected category
     setFilters(prevFilters => ({
@@ -156,26 +158,32 @@ export default function HomeCardPage({ navigation, }) {
 
   const setFiltersWithUpdatedData = (data) => {
     console.log('setFiltersWithData', data);
-      
-    Object.entries(data).forEach(([key, value]) => {
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [key]: value
-        }));
-    });
+    
+    // overwrite the existing filters with the updated data
+    const updatedFilters = { ...filters, ...data };
+    setFilters(updatedFilters);
 
     console.log('after update: ', filters);
+    setSelectedCategory(data.selectedCategory);
     
   }
 
   const formatDate = (date) => {
     if (date instanceof Date) {
       // Format date as desired
-      return date.toLocaleDateString('en-US', {
+      var formatStart = date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
       });
+      if (filters.endDate){
+        var formatEnd = filters.endDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+        return `${formatStart} - ${formatEnd}`;
+      }
     } else {
       return date; // Return as is if not a Date object
     }
@@ -195,9 +203,22 @@ export default function HomeCardPage({ navigation, }) {
         return <Entypo color="#000" name="price-tag" size={18} />;
         //return 'Max Price';
       case 'selectedCategory':
-        return 'Category';
+          if (selectedCategory === "0") {
+            return <Entypo color="#000" name="list" size={20} />;
+            //return 'All Categories';
+          } else if (selectedCategory === "1") {
+            return <MaterialCommunityIcons color="#000" name="hiking" size={20} />;
+            //return 'Outdoor equipment';
+          } else if (selectedCategory === "2") {
+            return <MaterialIcons color="#000" name="event" size={20} />;
+            //return 'Entertainment & Events';
+          } else if (selectedCategory === "3") {
+            return <MaterialCommunityIcons color="#000" name="home-city-outline" size={20} />;
+            //return 'Home Improvement';
+          }
+          break;
       case 'city':
-        return <Entypo color="#000" name="location-pin" size={18} />;
+        return <Ionicons color="#000" name="location-outline" size={16} />;
         //return 'City';
       default:
         // If no specific formatting is needed, return the original key
@@ -205,17 +226,19 @@ export default function HomeCardPage({ navigation, }) {
     }
   }
 
-  const initialFilters = () => {
+  const initialFilters = (resetCategory = true) => {
     setFilters({
     "city": "",
     "endDate": "",
     "maxPrice": "",
-    "selectedCategory": "0",
+    "selectedCategory": resetCategory ? "0" : filters.selectedCategory,
     "startDate": ""
     });
-    setSelectedCategory(0);
-    setValue(null);
+    if (resetCategory){
+      setSelectedCategory("0");
+    }
     setSearchTerm("");
+    setActiveFilters(false); // hide filters row
   }
 
   const searchFilter = (text) => {
@@ -243,16 +266,40 @@ export default function HomeCardPage({ navigation, }) {
     }
   };
 
+  
+  const scrollRef = React.useRef();
+  
+  const handleScrollToTop = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        x: 0,
+        animated: true,
+      });
+      console.log("Scrolled to top.");
+    } else {
+      console.log("Scroll reference is null. Unable to scroll to top.");
+    }
+  };
 
+
+  const useFilters = (filters) => {
+    const emptyFilters = {
+      "city": "", 
+      "endDate": "", 
+      "maxPrice": "", 
+      "startDate": "",
+    }
+    const hasFilters = Object.keys(filters).some(key => filters[key] !== emptyFilters[key]);
+    console.log('hasFilters', hasFilters);
+    setActiveFilters(hasFilters);
+
+    return hasFilters;
+  }
 
   return (
     <SafeAreaView style={styles.layout}>
       <Header
-        leftComponent={
-          {/*<Pressable onPress={() => console.log('Menu button pressed!')}>
-            <FontAwesome name="bars" color={COLORS.cartTitle} size={20} style={styles.menuIcon} />
-        </Pressable>*/}
-        }
+        leftComponent={{}}
         centerComponent={
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
@@ -262,21 +309,18 @@ export default function HomeCardPage({ navigation, }) {
             </Text>
           </View>
         }
-        rightComponent={
-          {}
-        }
+        rightComponent={{}}
         containerStyle={styles.headerContainer}
       />
 
       <ScrollView
+        ref = {scrollRef}
         refreshControl={
           <RefreshControl
             refreshing={refreshing} // Set refreshing state here
-            onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here
-            
-          />
-        }
-      >
+            onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here 
+          />}>
+
         <View style={styles.btnGroupHomePage}>
           <Input
             style={styles.searchBar}
@@ -288,27 +332,23 @@ export default function HomeCardPage({ navigation, }) {
             inputStyle={styles.inputControl}
             inputContainerStyle={{ borderBottomWidth: 0, padding:10 }} 
             leftIcon = {<FontAwesome name="search" size={20} color={COLORS.cartTitle} style={styles.logoIcon} />}
-            rightIcon = {<FontAwesome5 name="times" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
+            rightIcon = {<MaterialCommunityIcons name="window-close" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
                 onPress={onCancleSearchPress}/>}
           />
         </View>
         
 
-          {/************** start select category *********************/}
-          <View style={{justifyContent:'center'}}>
-
-          { showSelectBtn && 
-              ( 
+          {/************** start filters buttons *********************/}
+          <View style={{justifyContent:'center', backgroundColor: COLORS.cardBackground}}>
               <View style={{ 
                       backgroundColor: COLORS.cardBackground, 
-                      justifyContent: 'flex-start', 
+                      justifyContent: 'space-between', 
                       flexDirection: 'row',
-                      flex:1 }}>
+                      marginHorizontal: 15}}>
                   
-                  <View style={{backgroundColor: COLORS.cardBackground, 
-                      flexDirection: 'row',}}>
+                 
             
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                   onPress={() => sheet.current.open()}
                   style={[styles.picker, { paddingVertical: 20 }]}>
 
@@ -321,54 +361,49 @@ export default function HomeCardPage({ navigation, }) {
                       size={18}
                       marginRight={10} />
                   </View>
-                  </TouchableOpacity>
-
-                  
-                      <View style={styles.iconFrame}>
-                      <Pressable onPress={() => navigation.navigate('filters', { locationsList , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
-                      <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
-                      </Pressable>
-                      </View>
+                  </TouchableOpacity> */}
 
                       <View style={styles.iconFrame}>
-                      <Pressable onPress={() => {
-                          setShowFilters(false);
-                          initialFilters(); }}>
-                        <MaterialCommunityIcons name="filter-off" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
-                      </Pressable>
-                      </View>
-                    </View>
+                        <Pressable style={{flexDirection: 'row'}} 
+                          onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                          
+                          <Text style={styles.cardCity}>
+                          <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
+                          Filters</Text>
+                        </Pressable>
+                        </View>
+
+                        {filters.selectedCategory !== "0" && 
+                          (
+                            <Pressable style={[styles.removeFilterBtn, {marginTop:25}]} onPress={() => {
+                              setSelectedCategory("0");
+                              setFilters({ ...filters, ['selectedCategory']: "0" });
+                            }}>
+                              <Text style={{ textDecorationLine: 'underline' }}> Show All Categories</Text>
+                            </Pressable>
+                          )
+                        }
+                      
+
+                        
                   
               </View>
-              )}
+              
 
-          {showSelectedCategory && 
-              (<View style={{backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}}>
-                  <Text style={styles.title}>{selectedCategoryLabel}</Text>
-              </View>)}
+          {/* Selected category lable */}
+            <View style={{backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}}>
+                  <Text style={styles.title}>{formatKeyBeforeShow('selectedCategory')}{" "}{selectedCategoryLabel}</Text>
+            </View>
           </View>
 
-          {/************** end select category *********************/}
+          {/************** end filters buttons *********************/}
 
           {/************* start show filters ****************************/}
           {showFilters &&
          
-            
            ( <View style={styles.list}>
             <View style={styles.listHeader}>
 
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={styles.listAction}>
-              {/*<Text style={styles.listActionText}>View All</Text>
-
-              <FeatherIcon
-                color="#706F7B"
-                name="chevron-right"
-            size={16} />*/}
-            </TouchableOpacity>
           </View>
 
           <ScrollView
@@ -377,47 +412,79 @@ export default function HomeCardPage({ navigation, }) {
             showsHorizontalScrollIndicator={false}>
             {Object.entries(filters).map(([key, value]) => (
               
-              (value !== "" && value !== null && key !== 'selectedCategory') && (
+              (value && key !== 'selectedCategory' && key !== 'endDate') && (
                 <View key={key}>
-                  <View style={[styles.card, { backgroundColor: COLORS.grey2 }]}>
-                    {/* Render key and value */}
-                    <Text style={styles.cardLabel}>
-                    <Text style={styles.keyText}> {formatKeyBeforeShow(key)}</Text> 
-                     {  } {key === 'startDate' || key === 'endDate'
-                    ? formatDate(value) // Format date if key is 'startDate' or 'endDate'
-                    : (key === 'selectedCategory'
-                    ? selectedCategoryLabel // Render selectedCategoryLabel if key is 'selectedCategory'
-                    : value) }
+                  <View style={[styles.filterBox, { backgroundColor: COLORS.cardBackground }]}>
+                  <Text style={styles.cardLabel}>
+                      {formatKeyBeforeShow(key)}
+                      {key === 'startDate' ? formatDate(value) : value}
                     </Text>
+                    <MaterialCommunityIcons
+                      name="close"
+                      color={COLORS.black}
+                      size={14}
+                      style={styles.closeIcon}
+                      onPress={() => {
+                        setFilters({ ...filters, [key]: "" });
+                        if (key === 'startDate') {
+                          setFilters({ ...filters, ['endDate']: "" });
+                          setFilters({ ...filters, ['startDate']: "" });
+                        }
+                       // useFilters();
+                      }}
+                    />
+
                   </View>
                 </View>
               )
             ))}
           </ScrollView>
-        </View>)   }
+          
+          {activeFilters && (<Pressable style={styles.removeFilterBtn} onPress={() => {
+              setShowFilters(false);
+              initialFilters(false); }}>
+            <Text style={{ textDecorationLine: 'underline' }}> Remove All</Text>
+          </Pressable>)}
+        </View>)   }    
+
         {/************* end show filters ****************************/}
 
 
         <View style={styles.container}>
-          <CardList
+          { !noContent &&
+          (<CardList
             items={rentalItems}
             title=""
             onItemPressed={(details) => navigation.navigate("productDetails", { details })}
-            
-          />
+          />) }
           
           {noContent && <OopsNoProducts />}
         
         </View>
 
       </ScrollView>
+
+      
+
+      <View style={styles.buttonContainer}>
+        <View style={styles.circle} />
+        
+        <TouchableOpacity style={styles.buttonContainer} onPress={handleScrollToTop}> 
+          <Feather style={styles.scrollTopButton} 
+            name="chevron-up" 
+            type="material" 
+            color={COLORS.cartTitle}
+            size={30}
+            />
+        </TouchableOpacity>
+      </View>
       
 
       
 
 
       {/*****************************************/}
-      <RBSheet
+      {/* <RBSheet
         customStyles={{ container: styles.sheet }}
         height={380}
         openDuration={250}
@@ -473,8 +540,8 @@ export default function HomeCardPage({ navigation, }) {
             </Text>
           </TouchableOpacity>
         </View>
-      </RBSheet>
-      {/*****************************************/}
+      </RBSheet> */}
+      {/*****************************************/}   
 
     </SafeAreaView>
   );
@@ -512,7 +579,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     height: 110,
     marginTop: -30,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderBottomColor: COLORS.lightgrey,
   },
   headerText: {
@@ -534,7 +601,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   filterIcon: {
-    paddingHorizontal:13,
+    paddingHorizontal:0,
 
   },
 
@@ -562,12 +629,27 @@ const styles = StyleSheet.create({
       height: 1,
     },
   },
-  pickerDates: {
-    marginLeft: 12,
+  // scroll to top button
+  scrollTopButton: {
+    position: 'absolute',
+    bottom: -10,
+    right: 10,
   },
-  pickerDatesText: {
-    fontSize: 15,
-    fontWeight: '500',
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    zIndex: 999, // Ensure it's above other content
+  },
+  circle: {
+    position: 'absolute',
+    backgroundColor: COLORS.lightgrey, 
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    bottom: 5,
+    right: 25,
+    zIndex: -1, // Ensure it's behind the button
   },
   pickerAction: {
     marginLeft: 'auto',
@@ -586,25 +668,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#ff6a55',
-  },
-  /** Placeholder */
-  placeholder: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    height: 400,
-    marginTop: 0,
-    padding: 24,
-    backgroundColor: 'transparent',
-  },
-  placeholderInset: {
-    borderWidth: 4,
-    borderColor: '#e5e7eb',
-    borderStyle: 'dashed',
-    borderRadius: 9,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
   },
   /** Sheet */
   sheet: {
@@ -663,7 +726,6 @@ const styles = StyleSheet.create({
   },
   /** List */
   list: {
-    marginBottom: 24,
     backgroundColor: COLORS.cardBackground,
   },
   listHeader: {
@@ -672,81 +734,54 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
   },
-  listTitle: {
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 28,
-    color: '#323142',
-  },
   listAction: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-  },
-  listActionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
-    color: '#706f7b',
-    marginRight: 2,
-    alignItems: 'flex-end',
   },
   listContent: {
     paddingVertical: 12,
     paddingHorizontal: 18,
   },
   /** Card */
+  filterBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10, // Margin between text and cross icon
+    borderWidth: 1,
+    borderColor: COLORS.black,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   card: {
-    width: 120,
-    height:35,
-    paddingVertical: 2,
-    //paddingHorizontal: 1,
-    borderRadius: 20,
+    paddingVertical: 6,
+    borderRadius: 12,
     flexDirection: 'column',
     alignItems: 'center',
-    marginHorizontal: 3,
-    elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.2, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0.5,
-        height: 1,
-      },
+    marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: 'grey',
   },
   cardLabel: {
-    textAlign: 'left', 
-    textAlignVertical: 'center', 
-    fontWeight: '700',
+    fontWeight: '500',
     fontSize: 12,
-    lineHeight: 15,
     color: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
+    alignSelf: 'flex-start', // Allow the card to expand based on text length
+    paddingHorizontal: 10, // Add padding to ensure text doesn't touch the edges
   },
-  keyText: {
-    fontSize: 14,    
-    fontWeight: '400', 
-    color: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',     
-  },
+  
+  
   btnGroupHomePage:{
     paddingTop :10,
     backgroundColor: COLORS.cardBackground, 
     justifyContent: 'flex-start',
     flexDirection: 'column' 
   },
-  iconFrame: {
-    // borderColor: COLORS.black, 
-    // backgroundColor: '#fff',
-    // borderWidth: 2, 
-    // borderRadius: 10, 
-    // marginHorizontal: 5, 
-    // //padding: 5, 
-    
-      marginTop: 2,
+  iconFrame: { 
+      height: 50,
+      width: 100,
+      marginTop: -5,
       paddingHorizontal:5,
       borderRadius: 12,
       flexDirection: 'row',
@@ -764,7 +799,6 @@ const styles = StyleSheet.create({
         width: 0,
         height: 1,
       },
-    
   },
   searchBar:{
       height: 50,
@@ -787,6 +821,19 @@ const styles = StyleSheet.create({
   timesIcon:{
     marginLeft: -40,
   },
+  cardCity: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#000',
+  },
+  removeFilterBtn:{
+    backgroundColor: COLORS.cardBackground, 
+    justifyContent: 'left',
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    marginBottom: 10,
+    marginLeft:20,
+  }
 
   
 

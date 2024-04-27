@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Divider } from "@rneui/base";
+import { COLORS } from "../../assets/theme";
 
 const divLine = () => {
   return (
     <Divider
-      style={{ width: "80%", margin: 20 }}
-      color="#abdbe3"
+      style={{ width: "90%", margin: 20 }}
+      color={COLORS.lightgrey}
       insetType="left"
       subHeaderStyle={{}}
       width={1}

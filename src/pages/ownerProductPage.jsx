@@ -140,6 +140,7 @@ export function parseItem({ details: item }) {
         imageUrl,
         OrderStartDate,
         OrderEndDate,
+        mainCategoryId,
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
@@ -147,6 +148,7 @@ export function parseItem({ details: item }) {
         title,
         description,
         city,
+        mainCategoryId,
         availability: {
             startDate: timeStampToDate(startDate?? startDay),
             endDate: timeStampToDate(endDate ?? endDay),

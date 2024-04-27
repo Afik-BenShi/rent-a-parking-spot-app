@@ -20,7 +20,6 @@ import { Header } from 'react-native-elements';
 export default function AddProductPage ({ navigation, route }) {
   
    const { updateProducts } = route.params;
-   //console.log("Route params Add:", route.params);
 
     // State to hold the entered details
     const [details, setDetails] = useState({
@@ -40,6 +39,13 @@ export default function AddProductPage ({ navigation, route }) {
 
       const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected'; 
       console.log(start);
+
+      // // handle case that user selects start date after end date
+      // if (details.untilDate && startDate > details.untilDate) {
+      //     alert("Start date must be before end date");
+          
+      //     return;
+      // }
 
       setDetails((prevDetails) => ({
           ...prevDetails,
@@ -63,7 +69,7 @@ export default function AddProductPage ({ navigation, route }) {
     // Function to handle input change and update details state
     const handleInputChange = (field, value) => {
     
-        const parsedValue = field === "price" ? parseInt(value) : value;
+        const parsedValue = field === "price" ? parseInt(value) : value.trim();
 
         setDetails((prevDetails) => ({
             ...prevDetails,
@@ -78,14 +84,20 @@ export default function AddProductPage ({ navigation, route }) {
       }));      
     }
 
+    const isValidInput = () => {
+      return details.productName !== "" && details.city !== "" && details.price !== "" && details.from !== "" && details.until !== "" && details.productDescription !== "" && details.category !== "";
+    }
+
     // Function to handle 'next' button press
+    // TODO: Add input validation
     const handlePressNext = async (event) => {
-
-        //event.preventDefault();
-
         console.log("Submitted Details (before submit):", details);
+        if (!isValidInput()){
+          alert("Please fill all the fields");
+          return;
+        }
 
-        navigation.navigate("submitParkingDetails" ,
+        navigation.navigate("submitDetailsBeforePost" ,
         { detailsList: details , onSuccess: updateProducts});
         
     };

@@ -10,8 +10,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-//import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
 import { COLORS } from '../../assets/theme';
 
 
@@ -27,6 +25,7 @@ export default function CardList({ items, title, onItemPressed = (_) => { }}) {
       </SafeAreaView>
     );
   }
+
   return (
     <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
       
@@ -145,6 +144,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#5f697d',
+  },
+  headerLocationText: {
+    fontWeight: '500',
+    fontSize: 12,
+    lineHeight: 20,
+    color: COLORS.greyTextInExtendedProduct,
+    marginLeft: 4,
   },
   cardPrice: {
     fontSize: 13,

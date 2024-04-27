@@ -25,21 +25,46 @@ import SingleSelectedDropDown from "./SingleSelectListDropDown";
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
 
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date())
-
-
-  
-  const onStartDateChange = (selectedDate) => {
-    setStartDate(selectedDate);
-    const start = startDate ? startDate.toLocaleString() : 'Not selected';
-    console.log(start);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date())
     
-    sendStartDateToParent(selectedDate);
+    const [endDateHasChanged, setEndDateHasChanged] = useState(false)
+    const [startDateHasChanged, setStartDateHasChanged] = useState(false)
+    const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
+
+    const [valid, setValid] = useState(false);
+
+  const onStartDateChange = (selectedDate) => {
+    // handle case that user selects start date after end date
+    if (endDateHasChanged  && selectedDate > endDate) {
+        alert("Start date must be before end date, select availability dates again");
+        setValid(false);
+        setStartDate(selectedDate);
+        
+        // Update both start date and end date to the current selected date.
+        // The user needs to change the date range again  
+        sendStartDateToParent(selectedDate);
+        sendEndDateToParent(selectedDate);
+        return;
+    }
+    else if (!valid) {
+        setStartDate(selectedDate);
+        setValueInInvalidInput(selectedDate)
+
+        sendStartDateToParent(selectedDate);
+        sendEndDateToParent(selectedDate);
+        setValid(true);
+    }
+    else{
+        setValueInInvalidInput(null);
+        setStartDate(selectedDate);
+        sendStartDateToParent(selectedDate);
+    }
   };
 
   const onEndDateChange = (selectedDate) => {
     setEndDate(selectedDate);
+    setEndDateHasChanged(true);
     const end = endDate ? endDate.toLocaleString() : 'Not selected';
     console.log(end); 
 
@@ -78,7 +103,6 @@ return (
                 <Input
                     label="Product name"
                     labelStyle={styles.inputLabel}
-                    //leftIcon={<MoreIcon name="product" size={18} />}
                     placeholder=" Enter product name"
                     onChangeText={(text) => sendDataToParent("productName", text)}
                     inputStyle={styles.inputControl}
@@ -102,8 +126,6 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
           
-
-                
                 <Input
                     label="Daily Price rate"
                     labelStyle={styles.inputLabel}
@@ -135,7 +157,6 @@ return (
                     <View>
                         <Text style={styles.sectionTitle}>Choose a range of available days </Text>
                     </View>
-                    
                 </View>
                 
                 <View style={styles.dateView}>
@@ -145,7 +166,8 @@ return (
                 <Text> </Text>
                 <View style={styles.dateView}>
                     <Text style={styles.datesLables}>  End day : </Text>
-                    <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} />
+                    <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} 
+                    valueToDisplay={valueInInvalidInput}/>
                 </View>
 
                 <Text> </Text>
