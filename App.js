@@ -76,8 +76,8 @@ function SettingsStackScreen({ route }) {
   return (
     <SettingsStack.Navigator>
 
-      <SettingsStack.Screen name="userProfile" component={Profile} initialParams={{ userId }} />
       <SettingsStack.Screen name="Log in" component={LoginPage} />
+      <SettingsStack.Screen name="userProfile" component={Profile} initialParams={{ userId }} />
 
     </SettingsStack.Navigator>
   );

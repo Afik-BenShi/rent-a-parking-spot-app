@@ -7,7 +7,7 @@ const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
 
-const { firestore } = require("firebase-admin");
+const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
 
 db.init();
@@ -26,6 +26,23 @@ app.use((req, res, next) => {
   };
   console.log(`${req.method} ${req.url}`);
   next();
+});
+// Middleware to verify user's authentication token
+app.use(async (req, res, next) => {
+  const authToken = req.headers.authorization;
+  if (!authToken){
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  try {
+    const decodedToken = await auth().verifyIdToken(authToken);
+    req.token = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 });
 //---------------------------------------------------------
 

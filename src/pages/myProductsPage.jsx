@@ -15,22 +15,25 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
-import config from '../backend/config'
+import config from '../backend/config';
+import { getUser } from '../auth/auth';
 
 export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
 
     const fetchProducts = async () => {
+        const token = await getUser()?.getIdToken();
         try {
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, { params: { userId } });
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, {
+                headers: {Authorization: token},
+                params: { userId } });
             setMyItems(response.data);
         }
         catch (err) {
             console.log(JSON.stringify(err))
         }
     };
-
 
     useEffect(() => {
         fetchProducts();

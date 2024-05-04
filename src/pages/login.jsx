@@ -13,7 +13,9 @@ export function LoginPage({navigation}) {
             return;
         }
         const login = await signInWithEmail(email.text, password.text);
-        console.log(login);
+        if (login) {
+            navigation.navigate('userProfile');
+        }
     }
 
     return (
