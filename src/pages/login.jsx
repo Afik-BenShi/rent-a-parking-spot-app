@@ -5,14 +5,14 @@ import useValidatedText from "../customStates/useTextValidation";
 import { signInWithEmail } from "../auth/auth";
 
 export function LoginPage({navigation}) {
-    const email = useValidatedText('', / /);
+    const email = useValidatedText('', /\w\@\w.\w/);
     const password = useValidatedText('');
 
-    const doLogin = () => {
+    const doLogin = async () => {
         if (!email.isValid || !password.isValid){
             return;
         }
-        const login = signInWithEmail(email.text, password.text);
+        const login = await signInWithEmail(email.text, password.text);
         console.log(login);
     }
 

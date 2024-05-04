@@ -1,11 +1,20 @@
+import { initializeApp } from "firebase/app";
+import firebaseConfig from './auth-config.json'
 import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    signOut,
 } from "firebase/auth";
 
-export async function signUpWithEmail(email, password) {
-    const auth = getAuth();
+function connectToFirebaseAuth(){
+    if (app) return app;
+    return initializeApp(firebaseConfig);
+}
+const app = connectToFirebaseAuth();
+
+async function signUpWithEmail(email, password) {
+    const auth = getAuth(app);
     try {
         const userCredential = await createUserWithEmailAndPassword(
             auth,
@@ -22,15 +31,15 @@ export async function signUpWithEmail(email, password) {
     }
 }
 
-export async function signInWithEmail(email, password) {
-    const auth = getAuth();
+async function signInWithEmail(email, password) {
+    const auth = getAuth(app);
     try {
         const userCredential = await signInWithEmailAndPassword(
             auth,
             email,
             password
         );
-        // Signed up
+        // Signed in
         const user = userCredential.user;
         return user;
     } catch (error) {
@@ -40,13 +49,15 @@ export async function signInWithEmail(email, password) {
     }
 }
 
-export async function signOut() {
-    const auth = getAuth();
+async function signOutUser() {
+    const auth = getAuth(app);
     try {
-        await signOut();
+        signOut(auth);
         return true;
     } catch (error) {
         console.error(error);
         return false;
     }
 }
+
+export {signInWithEmail, signUpWithEmail, signOutUser}

@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { v4 as uuidv4 } from 'uuid';
 
-
 // pages
 import AddProduct from './src/pages/MyAddProduct'
 import ProductDetailsPage from './src/pages/productDetailsPage';
@@ -20,6 +19,7 @@ import { Icon } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { LoginPage } from './src/pages/login';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -77,6 +77,7 @@ function SettingsStackScreen({ route }) {
     <SettingsStack.Navigator>
 
       <SettingsStack.Screen name="userProfile" component={Profile} initialParams={{ userId }} />
+      <SettingsStack.Screen name="Log in" component={LoginPage} />
 
     </SettingsStack.Navigator>
   );
