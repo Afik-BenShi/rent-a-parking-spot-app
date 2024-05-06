@@ -221,7 +221,7 @@ export default function Profile({ navigation, route }) {
   );
 }
 
-const moreStyles = StyleSheet.create({
+export const moreStyles = StyleSheet.create({
   main_container: {
     paddingVertical: 30,
     paddingHorizontal: 0,
