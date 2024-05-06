@@ -5,7 +5,7 @@ import { COLORS } from "../../assets/theme";
 const divLine = () => {
   return (
     <Divider
-      style={{ width: "90%", margin: 20 }}
+      style={{ width: "90%", marginTop: 10 }}
       color={COLORS.lightgrey}
       insetType="left"
       subHeaderStyle={{}}

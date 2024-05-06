@@ -53,3 +53,31 @@ export function parseDate(date) {
 export function timeStampToDate({ _seconds, _nanoseconds }) {
     return new Timestamp(_seconds, _nanoseconds).toDate();
 }
+
+export function disabledDatesForProduct(reservedDatesListFromServer){
+    // Array to store the disabled dates
+    const disabledDates = [];
+    try{
+        // Iterate through each item in the response array
+        reservedDatesListFromServer.forEach(item => {
+            const endDate = timeStampToDate(item['endDate'])
+
+            // Create date range between start and end dates
+            const currentDate = timeStampToDate(item['startDate'])
+            while (currentDate <= endDate) {
+                // Add the current date to the disabledDates array
+                disabledDates.push(currentDate.toISOString().split('T')[0]); // Extract YYYY-MM-DD format
+                
+                // Move to the next day
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        });
+    }
+    catch{
+        console.error('Error in disabledDatesForProduct:', error);
+        throw new Error(`Could not create disabledDatesForProduct list: ${error.message}`);
+    }
+    // Unique date strings
+    const uniqueDisabledDates = Array.from(new Set(disabledDates));
+    return uniqueDisabledDates;
+};

@@ -10,13 +10,25 @@ export default function SingleSelectListDropDown({ dataToShow, onSelectCategory,
         {key:'2', value:'Entertainment & Events'},
         {key:'3', value:'Home Improvement'},
     ];
-
+    
+    let formattedData = [];
     data = dataToShow ? dataToShow : data;
+    if (!dataToShow) {
+        formattedData = data;
+    }
+    else{
+        formattedData = dataToShow.map((value, index) => ({
+            key: index.toString(), // Use the index as the key
+            value: value // Use the item itself as the label
+        }));
+    }
+
+    console.log("dataToShow: " + data);
 
     return (
         <SelectList 
         setSelected={(val) => setSelected(val)} 
-        data={data} 
+        data={formattedData} 
         save="key"
         placeholder={placeholderText ? placeholderText : "Select product category"}
         //placeholderStyle={{color: 'black', fontSize: 16, fontWeight: 'bold'}}
@@ -24,11 +36,10 @@ export default function SingleSelectListDropDown({ dataToShow, onSelectCategory,
         onSelect={() => {
             onSelectCategory(selected);
         }} 
-        notFoundText="No suitable category found, try again or choose 'Other'"
-        //label="Product categories"
+        notFoundText="Oops! We couldn't find any matching results. Please try refining your search."
         labelStyles={{color: 'black', fontSize: 16}}
-        defaultOption={""}
-        
+        defaultOption={""}  
+
     />
         
     );

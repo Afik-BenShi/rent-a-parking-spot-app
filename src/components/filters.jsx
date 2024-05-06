@@ -12,6 +12,7 @@ import SingleSelectListDropDown from './SingleSelectListDropDown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import { set } from 'lodash';
 
 const CIRCLE_SIZE = 18;
@@ -105,13 +106,13 @@ const Filter = ({ navigation, route }) => {
               
             }
             //centerComponent={{ text: 'Refine your search', style: { color: '#fff', fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
-            centerComponent={{ text: 'Filters', style: { color: '#fff', fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
+            centerComponent={{ text: 'Filters', style: { color: COLORS.cartTitle, fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
             
-            backgroundColor={COLORS.grey2}
+            backgroundColor={'white'}
             borderRadius={12}
           />
 
-          <Divider />
+          {/* <Divider /> */}
 
           {/* Single-Select List for Categories (All Categories) */}
           {/*
@@ -122,7 +123,7 @@ const Filter = ({ navigation, route }) => {
             title="Choose from all Categories"
           />
         */}
-        <View style={styles.about}>
+        {/* <View style={styles.about}>
             <Text style={styles.aboutTitle}>Category </Text> 
 
         <View style={styles.sheetBody}>
@@ -153,6 +154,7 @@ const Filter = ({ navigation, route }) => {
           
         </View>
         </View>
+        <Divider />  */}
           
 
           {/* Location Input */}
@@ -163,8 +165,16 @@ const Filter = ({ navigation, route }) => {
             <SingleSelectListDropDown
               dataToShow={locationsList}
               selectedData={city}
-              onSelectCategory={(selected) => {setCity(selected);
-                                      if (selected == "All Locations") {setCity("")};}}
+              onSelectCategory={(selected) => {
+                if (selected === "0") {
+                    setCity(""); // Clear city if the selected value is "0"
+                } else {
+                    const index = parseInt(selected, 10); // Parse selected as an integer
+                    const selectedCity = locationsList[index]; // Access the selected city from locationsList
+                    console.log('selectedCity', selectedCity);
+                    setCity(selectedCity); // Set the city to the selected city
+                }
+            }}
               placeholderText={city ? city : "Select a location"}
             />
         
@@ -190,7 +200,8 @@ const Filter = ({ navigation, route }) => {
               }}
             />} */}
           </View>
-          <Text></Text>
+          <Divider /> 
+
           <View style={styles.about}>
             <Text style={styles.aboutTitle}>Max price</Text>
             
@@ -210,10 +221,9 @@ const Filter = ({ navigation, route }) => {
             <Input
               inputContainerStyle={{ borderBottomWidth: 0 }} 
               inputStyle={styles.inputControl}  // -
-              labelStyle={styles.inputLabel} // -
               placeholder={"Enter desired max price"}
               defaultValue={maxPrice??""} 
-              leftIcon={<Ionicons name="location-outline" size={18} />}
+              leftIcon={<Entypo color="#000" name="price-tag" size={18} />}
               keyboardType="numeric"
               onChangeText={(newText) => {
                 if (newText == "") {
@@ -233,8 +243,9 @@ const Filter = ({ navigation, route }) => {
               }}
             />
           </View>
-          {/* <Divider /> */}
-
+          {/* <View style={styles.divider}>  
+          <View style={styles.dividerInset} /></View> */}
+          <Divider /> 
               <View style={styles.about}>
                 <Text style={styles.aboutTitle}> Dates : {SelectionText()}</Text>
 
@@ -340,7 +351,8 @@ const Filter = ({ navigation, route }) => {
             onDateChange={(date) => setEndDate(date)}
             minDate={startDate}
           /> */}
-          <Divider />
+          <Divider /> 
+
           <View style={styles.btnGroup}>
             <TouchableOpacity
               // onPress={() => { console.log({ startDate, endDate, selectedCategoriesAll, maxPrice, city }); navigation.goBack(); }}
@@ -373,7 +385,8 @@ const Filter = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cardBackground,
+    //backgroundColor: '#fff',
     padding: 16,
     marginTop: 50,
   },
@@ -393,7 +406,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.orangeLikeStars,
   },
   innerBorderStyle: {
-    color: 'transparent', // Hide the border between buttons
+    //color: 'transparent', // Hide the border between buttons
   },
   buttonStyle: {
     borderRadius: 15, // Rounded edges for individual buttons
@@ -460,10 +473,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   aboutTitle: {
-    fontWeight: '700',
-    fontSize: 20,
+    fontWeight: '600',
+    fontSize: 16,
     lineHeight: 32,
-    color: '#242329',
+    color: COLORS.cartTitle,
     marginBottom: 4,
   },
   aboutDescription: {
@@ -489,7 +502,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   radio: {
-    height: 44,
+    height: 38,
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
@@ -498,7 +511,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   radioLabel: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '500',
     color: '#000',
     marginLeft: 12,
@@ -521,6 +534,7 @@ const styles = StyleSheet.create({
     left: CIRCLE_RING_SIZE,
   },
   sheetBody: {
+    marginTop:-10,
     paddingHorizontal: 0,
     paddingVertical: 14,
   },
@@ -528,9 +542,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderStyle: 'solid',
+    borderWidth: 0,
+    //borderColor: '#e5e5e5',
+    //borderStyle: 'transparent',
     borderRadius: 12,
     marginHorizontal: 8,
     alignItems: 'center',
@@ -542,6 +556,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginHorizontal: -8,
     marginBottom: 12,
+  },
+  // divider
+  divider: {
+    overflow: 'hidden',
+    width: '100%',
+  },
+  dividerInset: {
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#e5e5e5',
+    borderStyle: 'dashed',
+    marginTop: -2,
+    marginRight:5,    
   },
 });
 

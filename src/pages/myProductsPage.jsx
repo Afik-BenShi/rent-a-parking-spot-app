@@ -49,17 +49,19 @@ export default function MyProductsPage({ navigation, route }) {
     return (
         <SafeAreaView style={styles.layout}>
 
-            <Header
+             {/* <Header
                 leftComponent={{}}
                 rightComponent={{}}
                 containerStyle={styles.headerContainer}
-            />
+            />  */}
 
 
             <View style={styles.container}>
                 <CardList
                     items={myItems}
-                    title="My Products"
+                    //title="My Products"
+                    title=""
+                    
                     onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
                 />
             </View>
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     },
     // header styles
     headerContainer: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'white',
         justifyContent: 'flex-start',
         height: 120,
         marginTop: -40,

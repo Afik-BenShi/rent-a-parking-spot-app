@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 import {
@@ -10,9 +10,10 @@ import {
   View,
   Pressable,
   RefreshControl,
+  Animated,
   TextInput,
 } from 'react-native';
-import { Button, Header, Input } from 'react-native-elements';
+import { Header, Input } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -42,9 +43,14 @@ const items = [
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
-export default function HomeCardPage({ navigation, }) {
+export default function HomeCardPage({ navigation, route}) {
+  
 
-  const [selectedCategory, setSelectedCategory] = useState("0");
+  // category is a string between 0-3. 0 -> View All
+  const { category } = route.params;
+  console.log("send cat: ",category);
+  const [selectedCategory, setSelectedCategory] = useState(category);
+
   const [refreshing, setRefreshing] = useState(false);
   const [rentalItems, setRentalItems] = useState([]);
   const [masterData, setMasterData] = useState([]);
@@ -58,12 +64,13 @@ export default function HomeCardPage({ navigation, }) {
   const [noContent, setNoContent] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const selectedCategoryLabel = selectedCategory != 0 ? items[selectedCategory].label : "All Products";
+  const selectedCategoryLabel = selectedCategory != "0" ? items[selectedCategory].label : "All Products";
 
   const [searchTerm, setSearchTerm] = useState('');
 
   const [locationsList, setLocationsList] = useState(["All Locations"]);
   const [activeFilters, setActiveFilters] = useState(false);
+  const [value, setValue] = useState(null);
 
   const fetchProducts = async (filters) => {
     try {
@@ -137,9 +144,8 @@ export default function HomeCardPage({ navigation, }) {
 
   const sheet = React.useRef();
   function handleDonePress (category) {
-    setSelectedCategory(category);
     console.log("Selected category: ", selectedCategory);
-    //sheet.current.close();
+    sheet.current.close();
     
     // Merge the existing filters with the selected category
     setFilters(prevFilters => ({
@@ -298,9 +304,24 @@ export default function HomeCardPage({ navigation, }) {
 
   return (
     <SafeAreaView style={styles.layout}>
-      <Header
-        leftComponent={{}}
-        centerComponent={
+      <View>
+        <Header
+        leftComponent={
+          <View style={styles.backBtn}>
+          <View style={styles.square} />
+            <TouchableOpacity style={styles.buttonContainer} onPress={navigation.goBack}> 
+                  <Feather style={styles.headerComponent} 
+                    name="chevron-left" 
+                    type="material" 
+                    color={COLORS.black}
+                    size={26}
+                    />
+                </TouchableOpacity>
+            </View>
+        
+        }
+        centerComponent={  
+          
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
               Rental
@@ -309,9 +330,21 @@ export default function HomeCardPage({ navigation, }) {
             </Text>
           </View>
         }
-        rightComponent={{}}
+        rightComponent={
+          <View style={styles.backBtn}>
+          <View style={styles.square} />
+            <TouchableOpacity style={styles.buttonContainer} 
+            onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                  <MaterialCommunityIcons name="filter" color={COLORS.black} size={24} style={styles.headerComponent}/>
+                  
+                </TouchableOpacity>
+            </View>
+        }
         containerStyle={styles.headerContainer}
+        
+        
       />
+      </View>
 
       <ScrollView
         ref = {scrollRef}
@@ -319,19 +352,22 @@ export default function HomeCardPage({ navigation, }) {
           <RefreshControl
             refreshing={refreshing} // Set refreshing state here
             onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here 
-          />}>
+          />}
+          >
 
+        
         <View style={styles.btnGroupHomePage}>
           <Input
             style={styles.searchBar}
             value={searchTerm}
             placeholder="Search Here..."
+            placeholderTextColor={COLORS.grey3}
             underlineColorAndroid='transparent'
             onChangeText={(text) => searchFilter(text)}
             
             inputStyle={styles.inputControl}
             inputContainerStyle={{ borderBottomWidth: 0, padding:10 }} 
-            leftIcon = {<FontAwesome name="search" size={20} color={COLORS.cartTitle} style={styles.logoIcon} />}
+            leftIcon = {<FontAwesome name="search" size={18} color={COLORS.black} style={styles.logoIcon} />}
             rightIcon = {<MaterialCommunityIcons name="window-close" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
                 onPress={onCancleSearchPress}/>}
           />
@@ -340,20 +376,20 @@ export default function HomeCardPage({ navigation, }) {
 
           {/************** start filters buttons *********************/}
           <View style={{justifyContent:'center', backgroundColor: COLORS.cardBackground}}>
-              <View style={{ 
+              {/* <View style={{ 
                       backgroundColor: COLORS.cardBackground, 
                       justifyContent: 'space-between', 
                       flexDirection: 'row',
-                      marginHorizontal: 15}}>
+                      marginHorizontal: 20}}> */}
                   
                  
             
-                  {/* <TouchableOpacity
-                  onPress={() => sheet.current.open()}
-                  style={[styles.picker, { paddingVertical: 20 }]}>
+              {/* <TouchableOpacity
+            onPress={() => sheet.current.open()}
+            style={[styles.picker, { paddingVertical: 10 }]}>
 
                   <View style={styles.pickerAction}>
-                      <Text style={styles.pickerActionText}>Change Category   </Text>
+                      <Text style={styles.pickerActionText}> Category  </Text>
 
                       <FeatherIcon
                       color="#4C6CFD"
@@ -361,39 +397,30 @@ export default function HomeCardPage({ navigation, }) {
                       size={18}
                       marginRight={10} />
                   </View>
-                  </TouchableOpacity> */}
+                  </TouchableOpacity>  */}
 
-                      <View style={styles.iconFrame}>
-                        <Pressable style={{flexDirection: 'row'}} 
-                          onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
-                          
-                          <Text style={styles.cardCity}>
-                          <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
-                          Filters</Text>
-                        </Pressable>
-                        </View>
-
-                        {filters.selectedCategory !== "0" && 
-                          (
-                            <Pressable style={[styles.removeFilterBtn, {marginTop:25}]} onPress={() => {
-                              setSelectedCategory("0");
-                              setFilters({ ...filters, ['selectedCategory']: "0" });
-                            }}>
-                              <Text style={{ textDecorationLine: 'underline' }}> Show All Categories</Text>
-                            </Pressable>
-                          )
-                        }
-                      
-
-                        
                   
-              </View>
+                  {/* <Pressable style={[styles.picker, { paddingVertical: 10 }]}
+                    //style={{flexDirection: 'row'}} 
+                      onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                      
+                      <Text style={styles.pickerActionText}>
+                      <MaterialCommunityIcons name="filter-outline" size={18} style={styles.filterIcon}/>
+                      Filters  </Text>
+                    </Pressable> */}
+                   
+           
+              {/* </View> */}
               
 
           {/* Selected category lable */}
-            <View style={{backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}}>
-                  <Text style={styles.title}>{formatKeyBeforeShow('selectedCategory')}{" "}{selectedCategoryLabel}</Text>
-            </View>
+            < Animated.View 
+              style={[
+                {backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}
+              ]}
+            >
+                  <Text style={styles.title}>{selectedCategoryLabel}</Text>
+            </Animated.View>
           </View>
 
           {/************** end filters buttons *********************/}
@@ -473,8 +500,8 @@ export default function HomeCardPage({ navigation, }) {
           <Feather style={styles.scrollTopButton} 
             name="chevron-up" 
             type="material" 
-            color={COLORS.cartTitle}
-            size={30}
+            color={COLORS.black}
+            size={26}
             />
         </TouchableOpacity>
       </View>
@@ -484,7 +511,7 @@ export default function HomeCardPage({ navigation, }) {
 
 
       {/*****************************************/}
-      {/* <RBSheet
+       <RBSheet
         customStyles={{ container: styles.sheet }}
         height={380}
         openDuration={250}
@@ -511,7 +538,7 @@ export default function HomeCardPage({ navigation, }) {
                 key={index}
                 onPress={() => {
                   setValue(index);
-                  setSelectedCategory(items[index].key);
+                  setSelectedCategory(items[index].key.toString());
                 }}>
                 <View style={styles.radio}>
 
@@ -532,7 +559,7 @@ export default function HomeCardPage({ navigation, }) {
             style={styles.radio}
             onPress={() => {
               setValue(null);
-              setSelectedCategory(0);
+              setSelectedCategory("0");
             }}>
             <FeatherIcon name="trash" color="#ff6a55" size={20} />
             <Text style={[styles.radioLabel, { color: '#ff6a55' }]}>
@@ -540,7 +567,7 @@ export default function HomeCardPage({ navigation, }) {
             </Text>
           </TouchableOpacity>
         </View>
-      </RBSheet> */}
+      </RBSheet> 
       {/*****************************************/}   
 
     </SafeAreaView>
@@ -555,10 +582,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 25,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#173153',
-    marginLeft: 14,
+    marginLeft: 25,
     marginTop:10,
   },
   sec_title: {
@@ -576,11 +603,20 @@ const styles = StyleSheet.create({
   // header
   headerContainer: {
     backgroundColor: '#fff',
+    //backgroundColor: COLORS.greyCityColor,
     justifyContent: 'flex-start',
-    height: 110,
-    marginTop: -30,
-    borderBottomWidth: 1,
+    height: 120,
+    marginTop: -10,
+    borderBottomWidth: 1.5,
     borderBottomColor: COLORS.lightgrey,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.2, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
   },
   headerText: {
     color: COLORS.cartTitle,
@@ -588,27 +624,33 @@ const styles = StyleSheet.create({
     fontSize: 24,
     //fontFamily: 'Roboto',
     textAlign: 'center',
-    marginTop: 0,
+    marginTop: 10,
   },
   centerHeader: {
+    //marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
+    //marginBottom: 10,
+    
   },
   logoIcon: {
     marginRight: 5,
+    
   },
   menuIcon: {
     marginTop: 0,
   },
   filterIcon: {
-    paddingHorizontal:0,
+    paddingHorizontal:4,
+    color: '#4c6cfd',
+    //color: COLORS.cartTitle,
 
   },
 
   //select category
   picker: {
-    marginTop: 0,  //12
-    paddingVertical: 10,
+    marginTop: -10,  //12
+    //paddingVertical: 10,
     paddingHorizontal:15,
     borderRadius: 12,
     flexDirection: 'row',
@@ -617,7 +659,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#f5f5f5',
-    marginLeft: 20,
+    marginLeft: 8,
     marginRight: 5,
     marginBottom: 5,
     elevation: 2, // Android shadow
@@ -633,7 +675,12 @@ const styles = StyleSheet.create({
   scrollTopButton: {
     position: 'absolute',
     bottom: -10,
-    right: 10,
+    right: 12,
+  },
+  headerComponent: {
+    position: 'absolute',
+    bottom: -25,
+    right: 12,
   },
   buttonContainer: {
     position: 'absolute',
@@ -643,13 +690,23 @@ const styles = StyleSheet.create({
   },
   circle: {
     position: 'absolute',
-    backgroundColor: COLORS.lightgrey, 
+    backgroundColor: COLORS.greyInSearchBar, 
     borderRadius: 20,
     width: 40,
     height: 40,
     bottom: 5,
     right: 25,
     zIndex: -1, // Ensure it's behind the button
+    borderWidth: 1,
+    borderColor: '#f5f5f5',
+    elevation: 2, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOpacity: 0.2, // iOS shadow
+      shadowRadius: 2, // iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
   },
   pickerAction: {
     marginLeft: 'auto',
@@ -753,6 +810,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 8,
     paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#f5f5f5',
+    elevation: 2, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOpacity: 0.2, // iOS shadow
+      shadowRadius: 2, // iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+
   },
   card: {
     paddingVertical: 6,
@@ -773,14 +841,15 @@ const styles = StyleSheet.create({
   
   
   btnGroupHomePage:{
-    paddingTop :10,
+    paddingTop :0,
     backgroundColor: COLORS.cardBackground, 
     justifyContent: 'flex-start',
-    flexDirection: 'column' 
+    flexDirection: 'column' ,
+    
   },
   iconFrame: { 
-      height: 50,
-      width: 100,
+      height: 40,
+      width: 88,
       marginTop: -5,
       paddingHorizontal:5,
       borderRadius: 12,
@@ -788,7 +857,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#fff',
-      borderWidth: 1,
+      borderWidth: 0.5,
       borderColor: '#f5f5f5',
       margin: 5,
       elevation: 2, // Android shadow
@@ -801,10 +870,11 @@ const styles = StyleSheet.create({
       },
   },
   searchBar:{
-      height: 50,
-      backgroundColor: '#fff',   
+      height: 40,
+      //backgroundColor: '#f3eff6',   
+      backgroundColor: COLORS.greyInSearchBar,
       paddingHorizontal: 25,
-      borderRadius: 12,
+      borderRadius: 10,
       fontSize: 15,
       fontWeight: '500',
       color: '#222',
@@ -833,7 +903,42 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 10,
     marginLeft:20,
-  }
+  },
+  backBtn:{
+    position: 'absolute',
+    top: 30,
+    left: 80,
+    zIndex: 999, // Ensure it's above other content
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // marginLeft: 10,
+  },
+  square: {
+    position: 'absolute',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderStyle: 'solid',
+    borderRadius: 12,
+    width: 40,
+    height: 40,
+    bottom: -10,
+    right: 25,
+    zIndex: -1, // Ensure it's behind the button
+    //borderWidth: 1,
+    //borderColor: '#f5f5f5',
+    elevation: 2, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOpacity: 0.1, // iOS shadow
+      shadowRadius: 2, // iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+    
+  },
+  
 
   
 

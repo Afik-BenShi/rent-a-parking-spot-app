@@ -16,6 +16,8 @@ import Filters from './src/components/filters';
 import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
 import ExtendedProduct from './src/pages/ExtendedProduct';
+import ChooseCategoryPage from './src/pages/chooseCategoryPage'
+
 
 import { Icon } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
@@ -29,6 +31,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator
     //screenOptions={{ headerShown: false }}
     >
+      <HomeStack.Screen name="category" component={ChooseCategoryPage} options={{ headerShown: false }}/>
       <HomeStack.Screen name="HomeCard"
         component={homeCardPage}
         options={{ headerShown: false }}
@@ -39,10 +42,11 @@ function HomeStackScreen() {
       <HomeStack.Screen
         name="filters"
         component={Filters}
-      //options={{ headerShown: false }} // to remove Stack header
+      options={{ headerShown: false }} // to remove Stack header
       />
 
       <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
+      
     </HomeStack.Navigator>
   );
 }
@@ -55,7 +59,7 @@ function MyProStackScreen({ route }) {
   return (
     <MyProductsStack.Navigator>
       <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
-        options={{ title: 'My products', headerShown: false }} initialParams={{ userId }}
+        options={{ title: 'My products'}} initialParams={{ userId }}
 
       />
 
@@ -121,8 +125,6 @@ export default function App() {
             } else if (route.name === 'My Orders') {
               iconName = focused ? 'bookmark' : 'bookmark-outline'; // My products icon
             }
-
-            // You can return any component here that you like!
             return <Icon name={iconName} type="ionicon" color={color} size={size} />;
           },
           tabBarActiveTintColor: COLORS.btnBlue, // Color of the active tab

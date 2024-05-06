@@ -45,6 +45,8 @@ export default function OwnerProductPage({ route, navigation }) {
         });
     }, [editMode, navigation]);
 
+    console.log(details);
+
     const updateReservations = () => {
         axios
             .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`)
@@ -126,6 +128,7 @@ const styles = StyleSheet.create({
 /** @returns {ProductDetails} */
 export function parseItem({ details: item }) {
     const {
+        productId,
         id,
         title,
         pricePerDay,
@@ -144,7 +147,7 @@ export function parseItem({ details: item }) {
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
-        id,
+        id: id ? id : productId,
         title,
         description,
         city,

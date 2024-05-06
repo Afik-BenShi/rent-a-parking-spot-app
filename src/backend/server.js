@@ -127,6 +127,13 @@ app.post('/orders/add', async (req, res) => {
   res.status(status).send(response);
 });
 
+app.get('/orders/productAvailability', async (req, res) => {
+  const { id } = req.query;
+  console.log("id - ", id);
+  const result = await orders.getProductAvailability(id);
+  res.send(result);
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

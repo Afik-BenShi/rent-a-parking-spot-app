@@ -104,7 +104,6 @@ const getProductsDb = async (filters) => {
             }
         }
         
-        //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
         return result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     } catch (error) {
@@ -300,6 +299,20 @@ const distinctProducts = async (items) => {
     return distinctProducts;
 };
 
+/**
+ * @param {string} product id 
+ */
+const getProductAvailabilityDb = async (id) => {
+    try {
+        const docRef = db.collection("orders").where("productId", "==", id);
+        const result = await docRef.get();
+        return result.docs.map(doc => ({ startDate: doc.data().startDate, endDate: doc.data().endDate, id: doc.id }));
+    } catch (error) {
+        console.error(`Error retrieving products availability `, error);
+        return null;
+    }
+};
+
 
 module.exports = {
     init,
@@ -312,4 +325,5 @@ module.exports = {
     upsertDocument,
     getOrdersWithOptions,
     getUserSuggestionsCached,
+    getProductAvailabilityDb,
 };

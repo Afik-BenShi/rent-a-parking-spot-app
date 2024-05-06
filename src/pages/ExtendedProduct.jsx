@@ -7,12 +7,15 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 //import Swiper from 'react-native-swiper';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
 import { COLORS } from '../../assets/theme';
 import { timeStampToDate } from "../utils/dateTime";
@@ -22,15 +25,20 @@ import { UrlTile } from 'react-native-maps';
 import { ContactButtons } from "../components/contactButtons";
 import GoogleMaps from "../components/GoogleMaps";
 import config from '../backend/config';
+import { disabledDatesForProduct } from "../utils/dateTime";
 
-const items = [
+import CalendarComponent from '../components/calendar';
+
+const sections = [
   { name: 'Information' },
-  { name: 'Reviews' },
+  { name: 'Availability' },
+  { name: 'Reviews' }
 ];
 
 export default function ExtendedProduct({ route, navigation }) {
   
     const details = parseItem(route.params);
+    console.log("details in extended");
     console.log(details)
 
     const productImage = details.image
@@ -39,6 +47,7 @@ export default function ExtendedProduct({ route, navigation }) {
         : require("../../assets/parking-details-images/placeholder.png");
 
     const { 
+        id,  // product Id
         title, 
         description, 
         owner, 
@@ -56,10 +65,29 @@ export default function ExtendedProduct({ route, navigation }) {
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
         orderDates.endDate
-    );
-   
+    ); 
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState(0);
+
+    const [disabledDates, setDisabledDates] = useState([]);
+    const fetchAvailabilityByProductId = async () => {
+        try {
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/productAvailability`, { params: { id } });
+            console.log(response.data);
+            
+            const result = disabledDatesForProduct(response.data.response);
+            console.log("dis ---", result);
+            setDisabledDates(result);
+        }
+        catch (err) {
+            console.log(JSON.stringify(err))
+        }
+    };
+
+    useEffect(() => {
+      fetchAvailabilityByProductId();
+      console.log("fetch ");
+    }, []);
 
     return (
     <View style={{ flex: 1, backgroundColor: '#F9F9F9' }}>
@@ -80,7 +108,7 @@ export default function ExtendedProduct({ route, navigation }) {
 
             
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 // handle onPress
               }}>
@@ -90,11 +118,11 @@ export default function ExtendedProduct({ route, navigation }) {
                   name="heart"
                   size={18} />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <View style={styles.tabs}>
-            {items.map(({ name }, index) => {
+            {sections.map(({ name }, index) => {
               const isActive = index === value;
 
               return (
@@ -122,7 +150,8 @@ export default function ExtendedProduct({ route, navigation }) {
         </SafeAreaView>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
+      { value == 0 &&
+      (<ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
         <View style={styles.photos}>
             <Image
             alt=""
@@ -245,14 +274,43 @@ export default function ExtendedProduct({ route, navigation }) {
         
         <View style={styles.about}>
             <GoogleMaps
-                    location={location}
-                    style={styles.map}
-                    movable
+                location={location}
+                style={styles.map}
+                movable
                 />
         </View>
+      </ScrollView> )}
 
-      </ScrollView>
-    </View>
+      {value == 1 && 
+      ( <View>
+        <View style={styles.about}>
+              <Text style={{margin:15, fontWeight: '500', fontSize: 15, lineHeight: 18, color: '#000',}}>
+                See availability on other days</Text>
+              <CalendarComponent
+                disabledDates={disabledDates}
+                minDate={availability.startDate}
+                maxDate={availability.endDate}
+              />
+        </View> 
+        
+        <View style={styles.about}>
+          <Pressable style={styles.blackText} onPress={() => {
+            
+          }}>
+            
+            <Text style={{ textDecorationLine: 'underline', fontSize:14}}> Add a New rental{'  '}
+            <EvilIcons name="arrow-right" size={20} color="#000" />
+            </Text>
+            
+           
+          </Pressable>
+          
+        </View>
+        </View>
+      
+      )}
+
+    </View> 
   );
 }
 
@@ -312,21 +370,30 @@ const styles = StyleSheet.create({
     marginHorizontal: -8,
     marginBottom: 12,
   },
+  blackText:{
+    margin:15, 
+    fontWeight: '500', 
+    fontSize: 15, 
+    lineHeight: 18, 
+    color: '#000',
+  },
   /** Tabs */
   tabs: {
     flexDirection: 'row',
     paddingHorizontal: 0,
+    alignContent: 'space-between',
   },
   tabsItemWrapper: {
-    marginRight: 28,
+    //marginRight: 28,
   },
   tabsItem: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignContent: 'space-between',
+    //alignItems: 'center',
+    //justifyContent: 'center',
     paddingTop: 10,
     paddingBottom: 4,
-    marginHorizontal:25,
+    marginHorizontal:19,  // Change this if want to change the space between tabs
   },
   tabsItemText: {
     fontWeight: '600',

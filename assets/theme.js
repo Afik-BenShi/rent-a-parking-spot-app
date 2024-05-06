@@ -30,7 +30,10 @@ const COLORS = {
   lightBackground: '#e8ecf4',  //light grey
   inputTextGrey: '#f3eff6', 
   
-  cardBackground: '#f3f5f9',  
+
+  //cardBackground: '#f3f5f9',  
+  cardBackground: '#F9F9F9',  
+  
   cartTitle: '#173153',
 
   greyBackground: '#F9F9F9',
@@ -38,6 +41,7 @@ const COLORS = {
   orangeLikeStars: '#f26463',
   greyCityColor: '#5f697d',
   greyTextInExtendedProduct: '#7b7c7e',
+  greyInSearchBar:  '#EBECEC',
 
 };
 
