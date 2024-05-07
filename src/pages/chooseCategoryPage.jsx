@@ -13,7 +13,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const items = [
   {
-    img: 'https://plus.unsplash.com/premium_photo-1661281316103-9aef5ad47c50?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80',
+    img: 'https://cdn.gencraft.com/prod/user/a275d62c-6004-4894-acc7-a4bdf104d297/9f76b2de-6b4e-4f3b-8346-ad04cc56a5a8/image/image0_0.jpg?Expires=1715173724&Signature=CqxXEjPEigAar1VGdvhGOQEIdP4SKdRI6s7-xBgn~sZPbaYx-5HnUAGXxN8E~LKvEdTDJ086aUu0yuZ-yw6CPpKJXkR1Ec1cG6mcQrn4P~-pdEzeOXx1AIxgABUU~5rr0-HQuTl5wNjHCPuQvuyYFXiIPctys9Id4xxfkecHMxXCtflahApUo1PhU8iQ7-7tDdE3meOY4yW754c0aFo5TQRzJl7pBXBibhlhBMzId1VNOFmMZ3pp4DKtO6A7YHboMKtEaakSNEF-t-Pj7BOC7NVChWCwdM4ZPLGSQMycS5uOLP3aZb-V~XmyLF~q7Tg~4OtQzwVNtgazx~q1BDriTg__&Key-Pair-Id=K3RDDB1TZ8BHT8',
     title: 'View All',
     
     tag: '',
@@ -21,14 +21,14 @@ const items = [
 
   },
   {
-    img: 'https://images.unsplash.com/photo-1519558260268-cde7e03a0152?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80',
+    img: 'https://cdn.gencraft.com/prod/user/7c5b0398-eaa9-42fa-8441-322697c5bb2f/5c6bffde-ae95-4973-b072-9d7c55be6730/image/image0_0.jpg?Expires=1715173060&Signature=J40bDZtTupgco5nPKOSuOxz4j3LcC4Omsd0vEqt1xw6IWN2Vw3TnZou5rRIW7frkBM9YZvjs5hQ2qyUrIqcAXgAeWQqK8sOpqCoGlDlR3uLvgLpmrKXDSdwfVnlef5aGesPrrRgyFr8K2uiIUiaxxRkWDr6V-XOFPmsrFPSSLclzZxqNwIN-VsZQysX75lddXY~VBWt76rqb7a-mDxz4C04iD5ElnOQ6851L~zjhCJc1Fsf6vi9QAdH55Oc2K16SrLo0eJcQdAsy1-4~GmxMRU8kVSD~xTAmeZp7jz1FSSCgGHhXZXxQcTGdkKcqdKlKiKqA-OgqvaU7Vfk39jRgRw__&Key-Pair-Id=K3RDDB1TZ8BHT8',
     title: 'Outdoor Equipment',
     
     tag: '· Camping Equipment: Tents, sleeping bags, camping stoves, portable chairs.\n\n· Sports Gear: Bikes, surfboards, kayaks, and outdoor games.',
     idx: "1",
   },
   {
-    img: 'https://images.unsplash.com/photo-1605367177286-f3d4789c47a0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2342&q=80',
+    img: 'https://cdn.gencraft.com/prod/user/a275d62c-6004-4894-acc7-a4bdf104d297/1972c14c-d454-4eb7-a157-ffdc8eb2a226/image/image1_0.jpg?Expires=1715173471&Signature=EJX2Q7dM6gTY8k2D7lKNHLY4Ct0M4ME2rEAGN1xK1SRdIOgPbTm7Vx2gIh6oDR3m3WZ~e1AU4UYdNooiU2-ZLiimxn2yiVz2i96Dr8dcqefhVTGV9P0qtzvaQ52Et-EMGtV08XkC0BM732RbY~Rr0SbeawFMhvS~nK6yO50X-gxO3zR3eS5~rTqSLIuLG63GLXxnN4DBgM6aqa0Zy2MlhoJnldeAHIuIHkh5krQAYzfDq8BTcq5Rnxkb9t3Jz2IaLQA4ap6xMUY30XF60VjZveZ10g0RWSfGWTjihWbeG5prSaKZCkOmtN28zludebDivIBdDCiMwt644VPFzlBqZg__&Key-Pair-Id=K3RDDB1TZ8BHT8',
     title: 'Entertainment & Events',
     tag: '· Speakers and Sound Systems Event Decor: Chairs, tables, party lights, event tents.',
     idx: "2",
@@ -58,13 +58,13 @@ export default function ChooseCategory({ navigation }) {
         
         <Text style={styles.title}>RentalWize</Text>
         <Text style={styles.subtitle}>A marketplace to rent Every-Day items in your community</Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('Home')}>
             <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <Text style={styles.title}>Select Your Category</Text>
+        <Text style={styles.title}>CATEGORIES</Text>
 
         {items.map(({ img, title, tag, idx }, index) => {
           return (
@@ -107,11 +107,11 @@ const styles = StyleSheet.create({
     paddingBottom:130,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#1d1d1d',
-    marginBottom: 12,
-    textAlign: 'left',
+    color: '#173153',
+    marginLeft: 25,
+    marginTop:10,
   },
   /** Card */
   card: {

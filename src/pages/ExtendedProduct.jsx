@@ -283,6 +283,9 @@ export default function ExtendedProduct({ route, navigation }) {
 
       {value == 1 && 
       ( <View>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{title}</Text>
+        </View>
         <View style={styles.about}>
               <Text style={{margin:15, fontWeight: '500', fontSize: 15, lineHeight: 18, color: '#000',}}>
                 See availability on other days</Text>
@@ -293,7 +296,7 @@ export default function ExtendedProduct({ route, navigation }) {
               />
         </View> 
         
-        <View style={styles.about}>
+        {/* <View style={styles.about}>
           <Pressable style={styles.blackText} onPress={() => {
             
           }}>
@@ -305,10 +308,32 @@ export default function ExtendedProduct({ route, navigation }) {
            
           </Pressable>
           
+        </View> */}
         </View>
-        </View>
-      
       )}
+
+      {value == 2 && 
+      ( <View>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{title}</Text>
+        </View>
+
+        {/* <View style={styles.about}>
+              <Text style={{margin:15, fontWeight: '500', fontSize: 15, lineHeight: 18, color: '#000',}}>
+                See availability on other days</Text>
+              <CalendarComponent
+                disabledDates={disabledDates}
+                minDate={availability.startDate}
+                maxDate={availability.endDate}
+              />
+        </View>  */}
+        
+        
+        </View>
+      )}
+
+
+      
 
     </View> 
   );

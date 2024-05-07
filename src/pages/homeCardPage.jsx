@@ -41,6 +41,13 @@ const items = [
   {key:'3', label:'Home Improvement'},
 ]
 
+const moreOptions = [
+  {key:'0', label:'All Categories'},
+  
+]
+
+
+
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
@@ -304,6 +311,14 @@ export default function HomeCardPage({ navigation, route}) {
     return hasFilters;
   }
 
+  const handleMoreOptionsPress = (index) => {
+    console.log('Selected oprtion: ', index);
+    // handle the selected option
+    if (index === 0){
+      navigation.navigate('category');
+    }  
+  }
+
   return (
     <SafeAreaView style={styles.layout}>
       <View>
@@ -338,7 +353,7 @@ export default function HomeCardPage({ navigation, route}) {
           {/* <View style={styles.square} /> */}
             <TouchableOpacity style={styles.buttonContainer} 
             //onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}
-            
+              onPress={() => sheet.current.open()}
             >
                   <Feather name="more-horizontal" color={COLORS.black} size={24} style={styles.headerComponent}/>
                   
@@ -553,42 +568,37 @@ export default function HomeCardPage({ navigation, route}) {
         <View style={styles.sheetHeader}>
           <View style={{ width: 60 }} />
 
-          <Text style={styles.sheetHeaderTitle}>Select Category</Text>
+          {/* <Text style={styles.sheetHeaderTitle}>Select Category</Text> */}
 
           <TouchableOpacity
-            onPress={handleDonePress}>
+            onPress={() => sheet.current.close()}>
             <View style={{ width: 60, alignItems: 'flex-end' }}>
-              <Text style={styles.done}>Done</Text>
+              <Text style={styles.done}>Close</Text>
             </View>
           </TouchableOpacity>
         </View>
 
         <View style={styles.sheetBody}>
-          {items.map(({ key, label }, index) => {
+          {moreOptions.map(({ key, label }, index) => {
             const isActive = value === index;
             return (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
                   setValue(index);
-                  setSelectedCategory(items[index].key.toString());
+                  handleMoreOptionsPress(index);
+                  
                 }}>
                 <View style={styles.radio}>
 
                   <Text style={styles.radioLabel}>{label}</Text>
 
-                  <View style={styles.radioCircle}>
-                    <View
-                      style={[
-                        styles.radioCircleInset,
-                        isActive && { backgroundColor: '#ff6a55' },
-                      ]} />
-                  </View>
+                  
                 </View>
               </TouchableOpacity>
             );
           })}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.radio}
             onPress={() => {
               setValue(null);
@@ -598,7 +608,7 @@ export default function HomeCardPage({ navigation, route}) {
             <Text style={[styles.radioLabel, { color: '#ff6a55' }]}>
               Remove selection
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </RBSheet> 
       {/*****************************************/}   
