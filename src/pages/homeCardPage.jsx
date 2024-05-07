@@ -31,6 +31,7 @@ import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
 import { filter, set } from 'lodash';
+import { useNavigation } from '@react-navigation/native';
 
 
 const items = [
@@ -71,6 +72,7 @@ export default function HomeCardPage({ navigation, route}) {
   const [locationsList, setLocationsList] = useState(["All Locations"]);
   const [activeFilters, setActiveFilters] = useState(false);
   const [value, setValue] = useState(null);
+
 
   const fetchProducts = async (filters) => {
     try {
@@ -117,7 +119,7 @@ export default function HomeCardPage({ navigation, route}) {
     if (cnt > 0){
       setShowFilters(true);
     }
-
+    
   }, [filters]);
 
 
@@ -288,7 +290,7 @@ export default function HomeCardPage({ navigation, route}) {
   };
 
 
-  const useFilters = (filters) => {
+  function useFilters (filters) {
     const emptyFilters = {
       "city": "", 
       "endDate": "", 
@@ -305,10 +307,11 @@ export default function HomeCardPage({ navigation, route}) {
   return (
     <SafeAreaView style={styles.layout}>
       <View>
+
         <Header
         leftComponent={
           <View style={styles.backBtn}>
-          <View style={styles.square} />
+          {/* <View style={styles.square} /> */}
             <TouchableOpacity style={styles.buttonContainer} onPress={navigation.goBack}> 
                   <Feather style={styles.headerComponent} 
                     name="chevron-left" 
@@ -316,33 +319,33 @@ export default function HomeCardPage({ navigation, route}) {
                     color={COLORS.black}
                     size={26}
                     />
+                    
                 </TouchableOpacity>
             </View>
         
         }
         centerComponent={  
-          
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
-              Rental
-              <FontAwesome5 name="box-open" size={25} color={COLORS.cartTitle} style={styles.logoIcon} />
-              Wise
+              Rental{' '}
+              <FontAwesome5 name="box-open" size={25} color={'#BA9166'} style={styles.logoIcon} />
+              {' '}Wise
             </Text>
           </View>
         }
-        rightComponent={
+        rightComponent={ 
           <View style={styles.backBtn}>
-          <View style={styles.square} />
+          {/* <View style={styles.square} /> */}
             <TouchableOpacity style={styles.buttonContainer} 
-            onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
-                  <MaterialCommunityIcons name="filter" color={COLORS.black} size={24} style={styles.headerComponent}/>
+            //onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}
+            
+            >
+                  <Feather name="more-horizontal" color={COLORS.black} size={24} style={styles.headerComponent}/>
                   
                 </TouchableOpacity>
             </View>
         }
         containerStyle={styles.headerContainer}
-        
-        
       />
       </View>
 
@@ -355,8 +358,37 @@ export default function HomeCardPage({ navigation, route}) {
           />}
           >
 
+      <View style={{ borderBottomWidth: 0, padding:10 }} > 
+        <View style={styles.searchSectionWrapper}>
+          <View style={styles.searchBarNew}>
+            <Ionicons 
+            name="search" 
+            size={18}
+            style={{marginRight:5}}
+            color={COLORS.black} />
+            <TextInput 
+              placeholder="Search here...                 " 
+              placeholderTextColor={COLORS.grey3}
+              onChangeText={(text) => searchFilter(text)}
+              value={searchTerm}
+              />
+          </View>
+
+          {searchTerm && 
+          (<TouchableOpacity onPress={onCancleSearchPress} style={{marginRight:-15, zIndex:999}}>
+                <MaterialCommunityIcons name="window-close" size={15} color={COLORS.black} style={styles.timesIcon} />
+          </TouchableOpacity>)}
+
+          <TouchableOpacity style={styles.filterBtn}
+              onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+            <Ionicons name="options" size={28} color={'#fff'} />
+          </TouchableOpacity>
+        </View>
+        </View>
         
-        <View style={styles.btnGroupHomePage}>
+
+        
+        {/* <View style={styles.btnGroupHomePage}>
           <Input
             style={styles.searchBar}
             value={searchTerm}
@@ -371,7 +403,7 @@ export default function HomeCardPage({ navigation, route}) {
             rightIcon = {<MaterialCommunityIcons name="window-close" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
                 onPress={onCancleSearchPress}/>}
           />
-        </View>
+        </View> */}
         
 
           {/************** start filters buttons *********************/}
@@ -452,12 +484,13 @@ export default function HomeCardPage({ navigation, route}) {
                       size={14}
                       style={styles.closeIcon}
                       onPress={() => {
-                        setFilters({ ...filters, [key]: "" });
                         if (key === 'startDate') {
-                          setFilters({ ...filters, ['endDate']: "" });
-                          setFilters({ ...filters, ['startDate']: "" });
+                          setFilters({ ...filters, startDate: "", endDate: "" });
                         }
-                       // useFilters();
+                        else{
+                          setFilters({ ...filters, [key]: "" });
+                        }
+                       useFilters(filters);
                       }}
                     />
 
@@ -470,7 +503,7 @@ export default function HomeCardPage({ navigation, route}) {
           {activeFilters && (<Pressable style={styles.removeFilterBtn} onPress={() => {
               setShowFilters(false);
               initialFilters(false); }}>
-            <Text style={{ textDecorationLine: 'underline' }}> Remove All</Text>
+            <Text style={{ textDecorationLine: 'underline' }}> Clear </Text>
           </Pressable>)}
         </View>)   }    
 
@@ -611,7 +644,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.lightgrey,
     elevation: 2, // Android shadow
     shadowColor: '#000', // iOS shadow
-    shadowOpacity: 0.2, // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
     shadowRadius: 2, // iOS shadow
     shadowOffset: {
       width: 0,
@@ -620,17 +653,17 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: COLORS.cartTitle,
-    fontWeight: '700',
+    fontWeight: '800',
     fontSize: 24,
     //fontFamily: 'Roboto',
     textAlign: 'center',
     marginTop: 10,
   },
   centerHeader: {
-    //marginTop: 10,
+    marginTop: -5,
     flexDirection: 'row',
     alignItems: 'center',
-    //marginBottom: 10,
+    marginBottom: 10,
     
   },
   logoIcon: {
@@ -889,7 +922,8 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   timesIcon:{
-    marginLeft: -40,
+    marginLeft: -35,
+    marginTop: 17,
   },
   cardCity: {
     fontSize: 15,
@@ -906,7 +940,7 @@ const styles = StyleSheet.create({
   },
   backBtn:{
     position: 'absolute',
-    top: 30,
+    top: 25,  
     left: 80,
     zIndex: 999, // Ensure it's above other content
     // flexDirection: 'row',
@@ -936,8 +970,36 @@ const styles = StyleSheet.create({
         width: 0,
         height: 1,
       },
-    
   },
+      
+  searchSectionWrapper:{
+      flexDirection: 'row',
+      marginVertival:20,
+      elevation: 2, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOpacity: 0.1, // iOS shadow
+      shadowRadius: 2, // iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+    },
+  searchBarNew:{
+      flex:1,
+      flexDirection:'row',
+      backgroundColor: '#fff',
+      padding:16,
+      borderRadius:10,
+      paddingHorizontal: 25,
+      marginRight:10,
+    },
+    filterBtn:{
+      backgroundColor: COLORS.orangeLikeStars,
+      padding:12,
+      borderRadius:10,
+      marginLeft:10,
+    }
+    
   
 
   

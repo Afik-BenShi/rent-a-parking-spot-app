@@ -1,6 +1,6 @@
 // Filter.jsx
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, View, TouchableOpacity, TextInput } from 'react-native';
 import { Header, Input, ButtonGroup, Text } from 'react-native-elements';
 import { FontAwesome } from '@expo/vector-icons';
 import Divider from './divider';
@@ -38,6 +38,10 @@ const Filter = ({ navigation, route }) => {
   const [value, setValue] = useState(parseInt(selectedCategory));
   const [finalStartDate, setFinalStartDate] = useState(filters.startDate != "" ? filters.startDate : ""); // State for final start date
   const [finalEndDate, setFinalEndDate] = useState(filters.endDate != "" ? filters.endDate : "");  // State for final end date
+
+
+  console.log('startDateF', finalStartDate);
+  console.log('endDateF', finalEndDate);
 
   const updateDateFilter = () => {
     if (finalStartDate && finalEndDate && finalStartDate <= finalEndDate) {
@@ -88,10 +92,46 @@ const Filter = ({ navigation, route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView>
+      <SafeAreaView style={{ flex: 1}}>
+        
+      <Header
+
+        leftComponent={
           
-          <Header style={styles.actionWrapper}
+            <TouchableOpacity style={styles.buttonContainer} onPress={navigation.goBack}> 
+                  <Feather style={styles.headerComponent} 
+                    name="chevron-left" 
+                    type="material" 
+                    color={COLORS.black}
+                    size={26}
+                    />
+                </TouchableOpacity>
+
+        }
+
+        centerComponent={{ text: 'Filters', style: { color: COLORS.cartTitle, fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
+            
+        rightComponent={ {}
+          // <View style={styles.backBtn}>
+          // <View style={styles.square} />
+          //   <TouchableOpacity style={styles.buttonContainer} 
+          //   onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+          //         <MaterialCommunityIcons name="filter" color={COLORS.black} size={24} style={styles.headerComponent}/>
+                  
+          //       </TouchableOpacity>
+          //   </View>
+        }
+        backgroundColor={'white'}
+        //borderRadius={12}
+        containerStyle={styles.headerContainer}
+        />
+
+        <ScrollView style={{ paddingBottom:140}}>
+        
+        
+      
+
+          {/* <Header style={styles.actionWrapper}
             leftComponent={
               <TouchableOpacity
               onPress={navigation.goBack}
@@ -110,7 +150,9 @@ const Filter = ({ navigation, route }) => {
             
             backgroundColor={'white'}
             borderRadius={12}
-          />
+            containerStyle={styles.headerContainer}
+        
+          /> */}
 
           {/* <Divider /> */}
 
@@ -217,8 +259,42 @@ const Filter = ({ navigation, route }) => {
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
             */}
+
+            <View style={styles.searchSectionWrapper}>
+                <View style={styles.searchBarNew}>
+                <Entypo 
+                color="#000" 
+                name="price-tag" 
+                size={18} 
+                style={{marginRight:5}}/>
+                  <TextInput 
+                    placeholder="Enter desired max price                 " 
+                    placeholderTextColor={COLORS.grey3}
+                    defaultValue={maxPrice??""} 
+                    keyboardType="numeric"
+                    onChangeText={(newText) => {
+                      if (newText == "") {
+                        // Update the maxPrice in the state
+                        if (filters.maxPrice != ""){
+                          setMaxPrice(null);
+                        }
+                        else {
+                          setMaxPrice(filters.maxPrice);
+                        }
+                      }
+                      else {
+                        console.log('newMaxPrice', newText)
+                        // Update the maxPrice in the state
+                        setMaxPrice(newText);
+                      }
+                    }}
+                    
+                    //value={searchTerm}
+                    />
+                </View>
+                </View>
             
-            <Input
+            {/* <Input
               inputContainerStyle={{ borderBottomWidth: 0 }} 
               inputStyle={styles.inputControl}  // -
               placeholder={"Enter desired max price"}
@@ -241,7 +317,8 @@ const Filter = ({ navigation, route }) => {
                   setMaxPrice(newText);
                 }
               }}
-            />
+            /> */}
+            
           </View>
           {/* <View style={styles.divider}>  
           <View style={styles.dividerInset} /></View> */}
@@ -256,7 +333,7 @@ const Filter = ({ navigation, route }) => {
                 <TouchableOpacity
                   onPress={() => { setFinalStartDate(""); setFinalEndDate(""); setDateFilter(false); }}
 
-                  style={{ flex: 1, paddingHorizontal: 6 }}>
+                  style={{ flex: 1, paddingHorizontal: 10 }}>
                   <View style={styles.btn}>
                     <Text style={styles.btnText}>
                     <MaterialCommunityIcons
@@ -275,7 +352,7 @@ const Filter = ({ navigation, route }) => {
                     setOpenPicker(!openPicker);
                    
                   }}
-                  style={{ flex: 1, paddingHorizontal: 6 }}>
+                  style={{ flex: 1, paddingHorizontal: 10}}>
                   <View style={styles.btn}>
                     <Text style={styles.btnText}>Select Dates   
                     {' '}<Feather
@@ -304,7 +381,9 @@ const Filter = ({ navigation, route }) => {
                     <DatePicker
                       label="End Date"
                       value={endDate}
-                      onDateChange={(date) => {setEndDate(date); }}
+                      onDateChange={(date) => {setEndDate(date);  
+                    }
+                  }
                       minDate={new Date()}
                     />
                 </View>
@@ -321,7 +400,7 @@ const Filter = ({ navigation, route }) => {
                     }
                     else {setInvalidInputMsg(true);}
                     }}
-                  //disabled={!startDate || !endDate || startDate > endDate}
+                  disabled={!startDate || !endDate || startDate > endDate}
                   
                   style={{ flex: 1, paddingHorizontal: 6 }}>
                   <View style={styles.btn}>
@@ -353,8 +432,13 @@ const Filter = ({ navigation, route }) => {
           /> */}
           <Divider /> 
 
-          <View style={styles.btnGroup}>
-            <TouchableOpacity
+          
+
+        </ScrollView>
+        <View style={styles.overlay}>
+            
+            {!openPicker && 
+          (<TouchableOpacity
               // onPress={() => { console.log({ startDate, endDate, selectedCategoriesAll, maxPrice, city }); navigation.goBack(); }}
 
               onPress={() => { 
@@ -367,16 +451,15 @@ const Filter = ({ navigation, route }) => {
                   setInvalidInputMsg(true);
                 }
               }}
-              style={{ flex: 1, paddingHorizontal: 6 }}>
+              style={{ flex: 1, paddingHorizontal: 25}}>
               <View style={styles.btnPrimary}>
                 <Text style={styles.btnPrimaryText}> 
                 {<FontAwesome name="search" size={16} color="white" />}
                 {' '} Search</Text>
               </View>
-            </TouchableOpacity>
-          </View>
+            </TouchableOpacity>)}
 
-        </ScrollView>
+          </View>
       </SafeAreaView>
     </KeyboardAvoidingView >
   );
@@ -386,9 +469,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.cardBackground,
-    //backgroundColor: '#fff',
-    padding: 16,
-    marginTop: 50,
+    //padding: 16,
+    //marginTop: 50,
   },
   closeIcon: {
     marginBottom: 30,
@@ -419,7 +501,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     borderWidth: 1,
     backgroundColor: COLORS.orangeLikeStars,
@@ -431,13 +513,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  btnGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: -6,
-    marginTop: 18,
-  },
+ 
+  
   btn: {
     //borderWidth: 1,
     flexDirection: 'row',
@@ -449,11 +526,34 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.inputTextGrey,
     //borderColor: COLORS.orangeLikeStars,
   },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    paddingTop: 16,
+    
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    marginHorizontal:-30,
+    
+  },
   btnGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: -6,
+    marginHorizontal: 0,
     marginTop: 18,
   },
   btnText: {
@@ -470,7 +570,7 @@ const styles = StyleSheet.create({
   },
   about: {
     marginHorizontal: 20,
-    marginTop: 8,
+    marginTop: 18,
   },
   aboutTitle: {
     fontWeight: '600',
@@ -569,6 +669,105 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     marginTop: -2,
     marginRight:5,    
+  },
+  headerContainer: {
+    backgroundColor: '#fff',
+    //backgroundColor: COLORS.greyCityColor,
+    justifyContent: 'flex-start',
+    height: 120,
+    marginTop: -10,
+    borderBottomWidth: 1.5,
+    borderBottomColor: COLORS.lightgrey,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+  },
+  backBtn:{
+    position: 'absolute',
+    top: 30,
+    left: 80,
+    zIndex: 999, // Ensure it's above other content
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // marginLeft: 10,
+  },
+  square: {
+    position: 'absolute',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderStyle: 'solid',
+    borderRadius: 12,
+    width: 40,
+    height: 40,
+    bottom: -10,
+    right: 25,
+    zIndex: -1, // Ensure it's behind the button
+    //borderWidth: 1,
+    //borderColor: '#f5f5f5',
+    elevation: 2, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOpacity: 0.1, // iOS shadow
+      shadowRadius: 2, // iOS shadow
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+  },
+  // header
+  // headerContainer: {
+  //   backgroundColor: '#fff',
+  //   justifyContent: 'flex-start',
+  //   height: 80,
+  //   marginTop: 0,
+  //   borderWidth: 1,
+  //   borderColor: COLORS.lightgrey,
+  //   elevation: 1, // Android shadow
+  //   shadowColor: '#000', // iOS shadow
+  //   shadowOpacity: 0.1, // iOS shadow
+  //   shadowRadius: 1, // iOS shadow
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 1,
+  //   },
+  // },
+  searchSectionWrapper:{
+    flexDirection: 'row',
+    marginVertival:20,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+  },
+searchBarNew:{
+    flex:1,
+    flexDirection:'row',
+    backgroundColor: '#fff',
+    padding:16,
+    borderRadius:10,
+    paddingHorizontal: 25,
+    marginRight:0,
+  },
+  headerComponent: {
+    position: 'absolute',
+    bottom: -25,
+    right: 12,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 32,
+    right: 20,
+    zIndex: 999, // Ensure it's above other content
   },
 });
 
