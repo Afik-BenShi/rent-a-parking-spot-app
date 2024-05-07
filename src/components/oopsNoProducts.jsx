@@ -41,7 +41,7 @@ export default function OopsNoProducts() {
             </View>
           </View>
 
-          <Text style={styles.emptyTitle}>We cannot find anything here</Text>
+          <Text style={styles.emptyTitle}>We couldn't find any matching results. {'\n\n'}Please try refining your search or explore other options.</Text>
 
           <Text style={styles.emptyDescription}>
             
@@ -54,15 +54,12 @@ export default function OopsNoProducts() {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
     paddingBottom: 140,
-    padding: 20,
+    paddingTop: 50,
   },
   title: {
-    fontSize: 30,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '600',
     color: '#1d1d1d',
     marginBottom: 12,
     alignItems: 'center',
@@ -77,8 +74,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   emptyTitle: {
-    fontSize: 19,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '400',
     color: '#222',
     marginBottom: 8,
     marginTop: 12,

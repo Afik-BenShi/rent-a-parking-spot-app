@@ -7,6 +7,7 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
+const { get } = require("lodash");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -72,7 +73,7 @@ const getProductsDb = async (filters) => {
         let docRef = db.collection("products")
 
         if (mainCategory && mainCategory != "0") {  // 0 for all products
-            console.log("enterd :    subCategory", mainCategory);
+            console.log("Enterd :    mainCategory", mainCategory);
             docRef = docRef.where("mainCategoryId", "==", mainCategory);
         }
         if (maxPrice) {
@@ -87,12 +88,26 @@ const getProductsDb = async (filters) => {
             
             docRef = docRef.where("city", 'in', [city, capitalizedCity, loweredCity, AllCap, AllLower]);
         }
+        if (startDate && endDate) {
+            try{
+                const productsSnapshot = await docRef.get();
+                const productIds = productsSnapshot.docs.map((doc) => doc.id);
+                const availableProductsPromises = productIds.map((productId) =>
+                        getAvailableProductsWithinDateRange(productId, startDate, endDate));
+                const availableProducts = await Promise.all(availableProductsPromises);
+                // availableProducts is an array of arrays, you might want to flatten it if needed
+
+                return distinctProducts(availableProducts.flat());
+            } catch (error) {
+                console.error("Error fetching product by dates range:", error);
+                throw error;
+            }
+        }
         
-        //TODO: need to filter on startDate, endDate just according to slots , or here. Cannot create multiple query with inequality,
         const result = await docRef.get();
-        return result.docs.map((doc) => doc.data());
+        return result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     } catch (error) {
-        console.error("Error fetching product by category:", error);
+        console.error("Error fetching product:", error);
         throw error;
    }
 };
@@ -222,6 +237,83 @@ const closeConnection = async () => {
     await database.close();
 };
 
+
+/**
+ * @param {string} productId 
+ * @param {Timestamp} startDate 
+ * @param {Timestamp} endDate */
+const getAvailableProductsWithinDateRange = async (productId, startDate, endDate) => {
+    try {
+        const freeProducts = [];
+        
+        // Step 1: Query product table for the given productId
+        const productDoc = await db.collection('products').doc(productId).get();
+        if (!productDoc.exists) {
+            throw new Error(`Product with ID ${productId} does not exist`);
+        }
+        
+        const productData = productDoc.data();
+        console.log("productData : ", productData);
+        const availableStartDate = productData.startDate;
+        const availableEndDate = productData.endDate;
+
+        // Check if the given date range is within the available range of the product
+        if (startDate >= availableStartDate && endDate <= availableEndDate) {
+            // Step 2: Query orders table
+            const orderSnapshot = await db.collection('orders')
+                .where('productId', '==', productId)
+                .get();
+            const overlappingOrders = orderSnapshot.docs.filter((orderDoc) => {
+                const orderData = orderDoc.data();
+                const orderStartDate = orderData.startDate;
+                const orderEndDate = orderData.endDate;
+                // Check if the given date range overlaps with any existing order
+                return startDate <= orderEndDate && endDate >= orderStartDate
+            });
+            // Check if there are any overlapping orders
+            if (overlappingOrders.length === 0) {
+                // No overlapping orders found, so the product is free during the given date range
+                freeProducts.push({...productData, productId});
+            }
+        }
+
+        // Return the list of free products for the current productId
+        return freeProducts;
+    } catch (error) {
+        console.error(`Error retrieving available products for ID ${productId}: `, error);
+        return [];
+    }
+};
+
+
+/**
+ * @param {Array} items 
+ */
+const distinctProducts = async (items) => {
+    // Create a map to store unique items based on some identifier (e.g., productId)
+    const uniqueProductsMap = new Map();
+    items.forEach((product) => {uniqueProductsMap.set(product.productId, product); });
+
+    // Convert the map values back to an array
+    const distinctProducts = Array.from(uniqueProductsMap.values());
+    return distinctProducts;
+};
+
+/**
+ * @param {string} product id 
+ */
+const getProductAvailabilityDb = async (id) => {
+    try {
+        const docRef = db.collection("orders").where("productId", "==", id);
+        const result = await docRef.get();
+        return result.docs.map(doc => ({ startDate: doc.data().startDate, endDate: doc.data().endDate, id: doc.id }));
+    } catch (error) {
+        console.error(`Error retrieving products availability `, error);
+        return null;
+    }
+};
+
+
 module.exports = {
     init,
     closeConnection,
@@ -233,4 +325,5 @@ module.exports = {
     upsertDocument,
     getOrdersWithOptions,
     getUserSuggestionsCached,
+    getProductAvailabilityDb,
 };

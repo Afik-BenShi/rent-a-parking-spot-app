@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
 import Icon from 'react-native-vector-icons/Ionicons'; 
-
-// import axios from 'axios'; 
-//const axios = require('axios').default;
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import {
   StyleSheet,
@@ -19,8 +17,10 @@ import {
 import NextBackBtn from '../components/nextAndBackBtn';
 import { Header } from 'react-native-elements';
 
-export default function AddProductPage ({navigation}) {
+export default function AddProductPage ({ navigation, route }) {
   
+   const { updateProducts } = route.params;
+
     // State to hold the entered details
     const [details, setDetails] = useState({
         ownerId: "",    // get the owner ID from the data base
@@ -39,6 +39,13 @@ export default function AddProductPage ({navigation}) {
 
       const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected'; 
       console.log(start);
+
+      // // handle case that user selects start date after end date
+      // if (details.untilDate && startDate > details.untilDate) {
+      //     alert("Start date must be before end date");
+          
+      //     return;
+      // }
 
       setDetails((prevDetails) => ({
           ...prevDetails,
@@ -62,7 +69,7 @@ export default function AddProductPage ({navigation}) {
     // Function to handle input change and update details state
     const handleInputChange = (field, value) => {
     
-        const parsedValue = field === "price" ? parseInt(value) : value;
+        const parsedValue = field === "price" ? parseInt(value) : value.trim();
 
         setDetails((prevDetails) => ({
             ...prevDetails,
@@ -77,15 +84,21 @@ export default function AddProductPage ({navigation}) {
       }));      
     }
 
+    const isValidInput = () => {
+      return details.productName !== "" && details.city !== "" && details.price !== "" && details.from !== "" && details.until !== "" && details.productDescription !== "" && details.category !== "";
+    }
+
     // Function to handle 'next' button press
+    // TODO: Add input validation
     const handlePressNext = async (event) => {
-
-        //event.preventDefault();
-
         console.log("Submitted Details (before submit):", details);
+        if (!isValidInput()){
+          alert("Please fill all the fields");
+          return;
+        }
 
-        navigation.navigate("submitParkingDetails" ,{ 
-            detailsList: details });
+        navigation.navigate("submitDetailsBeforePost" ,
+        { detailsList: details , onSuccess: updateProducts});
         
     };
     
@@ -98,12 +111,22 @@ export default function AddProductPage ({navigation}) {
         >
       
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-          
-          <ScrollView>
-
-          <TouchableOpacity style={styles.backButton} onPress={() => {navigation.goBack();}}>
-                <Icon name='chevron-back' size={24} color={COLORS.black} />
+          <View style={styles.actionWrapper}>
+            
+            <TouchableOpacity
+              onPress={navigation.goBack}
+              style={{ marginRight: 'auto' }}>
+              <View style={styles.action}>
+                <FeatherIcon
+                  color="#242329"
+                  name="chevron-left"
+                  size={20} />
+              </View>
             </TouchableOpacity>
+  
+          </View>
+
+          <ScrollView>
 
             <FillPersonalDetails 
               sendDataToParent={handleInputChange} 
@@ -227,6 +250,40 @@ backButton: {
   top: 20,
   left: 2,
   zIndex: 1,
+},
+
+divider: {
+  overflow: 'hidden',
+  width: '100%',
+},
+dividerInset: {
+  width: '100%',
+  borderWidth: 2,
+  borderColor: '#e5e5e5',
+  borderStyle: 'dashed',
+  marginTop: -2,
+  marginRight:5,    
+},
+/** Action */
+action: {
+  width: 36,
+  height: 36,
+  backgroundColor: '#ffffff',
+  borderWidth: 1,
+  borderColor: '#e5e5e5',
+  borderStyle: 'solid',
+  borderRadius: 12,
+  marginHorizontal: 8,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+actionWrapper: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  marginHorizontal: 0,
+  marginBottom: 12,
+  marginVertical:35
 },
 
 });

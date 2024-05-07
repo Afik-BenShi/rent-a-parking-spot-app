@@ -1,5 +1,5 @@
 const { Timestamp } = require('firebase-admin/firestore');
-const { getOrdersWithOptions, upsertDocument} = require("../utils/db");
+const { getOrdersWithOptions, upsertDocument, getProductAvailabilityDb} = require("../utils/db");
 
 const getOrders = async (userId, options) => {
     const response = await getOrdersWithOptions(userId, options);
@@ -37,4 +37,10 @@ const addNewOrder = async (reqBody) => {
     return {status, response};
 };
 
-module.exports = {getOrders, addNewOrder};
+const getProductAvailability = async (id) => {
+    const response = await getProductAvailabilityDb(id);
+    return { status:200, response:response };
+
+};
+
+module.exports = {getOrders, addNewOrder, getProductAvailability};

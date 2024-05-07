@@ -7,19 +7,28 @@ import {
   TouchableOpacity,
   View,
   Image,
-  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-//import { rentalItems, orderedRentalItems } from '../../assets/mockData'; // Import the mock data
 import { COLORS } from '../../assets/theme';
 
 
-export default function CardList({ items, title, onItemPressed = (_) => { } }) {
+export default function CardList({ items, title, onItemPressed = (_) => { }}) {
   const placeholderImage = require('../../assets/parking-details-images/placeholder.png');
+  if (!items) {
+    return (
+      <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>{title}</Text>
+          <Text>No items to show</Text>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={{ backgroundColor: '#f3f5f9' }}>
+    <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
+      
       <ScrollView
         contentContainerStyle={styles.container}>
         <Text style={styles.title}>{title}</Text>
@@ -75,6 +84,7 @@ export default function CardList({ items, title, onItemPressed = (_) => { } }) {
 const styles = StyleSheet.create({
   container: {
     padding: 15,
+    paddingBottom: 140
   },
   title: {
     fontSize: 28,
@@ -134,6 +144,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#5f697d',
+  },
+  headerLocationText: {
+    fontWeight: '500',
+    fontSize: 12,
+    lineHeight: 20,
+    color: COLORS.greyTextInExtendedProduct,
+    marginLeft: 4,
   },
   cardPrice: {
     fontSize: 13,
