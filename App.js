@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,6 +20,7 @@ import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginPage } from './src/pages/login';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -76,7 +77,6 @@ function SettingsStackScreen({ route }) {
   return (
     <SettingsStack.Navigator>
 
-      <SettingsStack.Screen name="Log in" component={LoginPage} />
       <SettingsStack.Screen name="userProfile" component={Profile} initialParams={{ userId }} />
 
     </SettingsStack.Navigator>
@@ -93,14 +93,40 @@ function MyOrdersStackScreen() {
   );
 }
 
+const AuthStack = createNativeStackNavigator();
+
+function AuthStackScreen(onLogin) {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen options={{headerShown: false}} name="Login" 
+        component={LoginPage}
+      />
+    </AuthStack.Navigator>
+  )
+}
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [userId, setuserId] = useState('1')
-
+  const [userId, setUserId] = useState('')
+  
+  useEffect(()=> {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      setUserId(user?.uid || "");
+    });
+  })
+  
+  console.log(userId, !!userId)
+  if (!userId) {
+    return (
+    <NavigationContainer>
+      <AuthStackScreen />
+    </NavigationContainer>
+    );
+  }
   return (
     <NavigationContainer>
-
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {

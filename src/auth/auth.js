@@ -5,15 +5,21 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    initializeAuth,
+    getReactNativePersistence,
 } from "firebase/auth";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'
 
 function connectToFirebaseAuth(){
     if (app) return app;
-    return initializeApp(firebaseConfig);
+    const _app = initializeApp(firebaseConfig);
+    const auth = initializeAuth(_app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+    });
+    return _app;
 }
 const app = connectToFirebaseAuth();
 
-const state = {login:false, get isLoggedIn(){return this.login}}
 
 async function signUpWithEmail(email, password) {
     const auth = getAuth(app);
@@ -24,12 +30,10 @@ async function signUpWithEmail(email, password) {
             password
         );
         // Signed up
-        state.login = true;
         const user = userCredential.user;
         return user;
     } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.error(error);
         // ..
     }
 }
@@ -43,12 +47,10 @@ async function signInWithEmail(email, password) {
             password
         );
         // Signed in
-        state.login = true;
         const user = userCredential.user;
         return user;
     } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.error(error);
         // ..
     }
 }
@@ -57,7 +59,6 @@ async function signOutUser() {
     const auth = getAuth(app);
     try {
         await signOut(auth);
-        state.login = false;
         return true;
     } catch (error) {
         console.error(error);
@@ -65,12 +66,8 @@ async function signOutUser() {
     }
 }
 
-function isLoggedIn(){
-    return state.isLoggedIn;
-}
-
 function getUser(){
     return getAuth().currentUser;
 }
 
-export {signInWithEmail, signUpWithEmail, signOutUser, getUser, isLoggedIn}
+export {signInWithEmail, signUpWithEmail, signOutUser, getUser}

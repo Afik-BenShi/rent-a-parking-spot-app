@@ -21,6 +21,8 @@ import styles from '../components/addProduct.style';
 import { Input } from 'react-native-elements';
 import NextBackBtn from '../components/nextAndBackBtn';
 import config from '../backend/config'
+import {signOutUser } from '../auth/auth';
+import { getAuth } from 'firebase/auth';
 
 
 export default function Profile({ navigation, route }) {
@@ -47,6 +49,13 @@ export default function Profile({ navigation, route }) {
     setLastProfileData(profileData);  // save the current data before editing
     setShowEditProfile(true);
   };
+
+  const doLogOut = async () => {
+    const isSignedOut = await signOutUser();
+    if (!isSignedOut){
+      console.error("did not log out", getAuth());
+    }
+  }
 
   // Function to handle 'save' button press
   const handleSave = async () => {
@@ -98,6 +107,15 @@ export default function Profile({ navigation, route }) {
                   <Text style={moreStyles.profileActionText}>Edit Profile</Text>
 
                   <FeatherIcon color="#fff" name="edit-3" size={16} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={doLogOut}
+              >
+                <View style={{...moreStyles.profileAction, backgroundColor:COLORS.red}}>
+                  <Text style={moreStyles.profileActionText}>Log Out</Text>
+
+                  <FeatherIcon color="#fff" name="log-out" size={16} />
                 </View>
               </TouchableOpacity>
 
