@@ -62,10 +62,17 @@ export default function ExtendedProduct({ route, navigation }) {
 
     const { rate, reviews } = { rate: 4, reviews: 18 };   // TODO: CHANGE TO ACTUAL VALUES
 
+    // order start and end dates:
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
         orderDates.endDate
     ); 
+
+    // product avaulability dates:
+    const { avaStartDay, avaStartYear, avaEndDay, avaEndYear } = dateRangeFormat(
+      availability.startDate,
+      availability.endDate
+  ); 
 
     const [value, setValue] = useState(0);
 
@@ -288,7 +295,9 @@ export default function ExtendedProduct({ route, navigation }) {
         </View>
         <View style={styles.about}>
               <Text style={{margin:15, fontWeight: '500', fontSize: 15, lineHeight: 18, color: '#000',}}>
-                See availability on other days</Text>
+                See availability on other days
+                {availability.startDate.toLocaleDateString()} - {avaEndDay}
+                 </Text>
               <CalendarComponent
                 disabledDates={disabledDates}
                 minDate={availability.startDate}

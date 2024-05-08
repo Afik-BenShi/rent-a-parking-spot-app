@@ -40,10 +40,12 @@ export default function MyProductsPage({ navigation, route }) {
             setRefreshing(false);
         }, 100);
 
+        setRefreshing(false);
+
     }, [refreshing]);
 
     const updateProducts = () => {
-         (true);
+        setRefreshing(true);
     };
 
     return (

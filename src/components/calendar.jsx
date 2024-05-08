@@ -8,36 +8,25 @@ const CalendarComponent = ({
     minDate,
     maxDate,
 }) => {
-
-    
     // Convert the array into an object with keys representing the dates
     const markedDates = {};
     disabledDates.forEach(dateString => {
-        const date = new Date(dateString);
-        var formattedDate = date.toLocaleDateString(); // Convert to localized date string
-        const [minDay, minMonth, minYear] = formattedDate.split('/');
-        formattedDate = `${minYear}-${minMonth}-${minDay}`;
-        markedDates[formattedDate] = { disabled: true };
+        markedDates[dateString] = { disabled: true };
     });
 
-    console.log(disabledDates);
-    const formattedMin = minDate.toLocaleDateString(); // Convert to localized date string
-    const formattedMax = maxDate.toLocaleDateString();  
-    const [minDay, minMonth, minYear] = formattedMin.split('/');
-    const [maxDay, maxMonth, maxYear] = formattedMax.split('/');
+    // Format minDate and maxDate
+    const formattedMin = `${minDate.getFullYear()}-${(minDate.getMonth() + 1).toString().padStart(2, '0')}-${minDate.getDate().toString().padStart(2, '0')}`;
+    const formattedMax = `${maxDate.getFullYear()}-${(maxDate.getMonth() + 1).toString().padStart(2, '0')}-${maxDate.getDate().toString().padStart(2, '0')}`;
 
-    // Rearrange the components into "YYYY-MM-DD" format
-    const parsedMinDate = `${minYear}-${minMonth}-${minDay}`;
-    const parsedMaxDate = `${maxYear}-${maxMonth}-${maxDay}`;
-
-    console.log(parsedMinDate);
+    console.log('formattedMin', maxDate);
+    console.log('formattedMax', formattedMax);
     return (
         <View>
             <Calendar
                 markedDates={markedDates}
                 monthFormat='MMM yyyy'
-                minDate={parsedMinDate}
-                maxDate={parsedMaxDate}
+                minDate={formattedMin}
+                maxDate={formattedMax}
             />
         </View>
     );
