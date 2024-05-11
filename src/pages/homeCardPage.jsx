@@ -11,7 +11,6 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native';
-import { Header, Input } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -26,6 +25,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
+import { Header } from '@rneui/themed';
 
 const items = [
   {key:'1', label:'Outdoor equipment'},
