@@ -28,7 +28,13 @@ app.use((req, res, next) => {
   next();
 });
 // Middleware to verify user's authentication token
+const noAuthServices  = ["location"];
 app.use(async (req, res, next) => {
+  const splitPath = req.path.split('/');
+  if (noAuthServices.some(service => splitPath.includes(service))){
+    next();
+    return;
+  }
   const authToken = req.headers.authorization;
   if (!authToken){
     res.status(401).json({ error: 'Unauthorized' });
@@ -37,7 +43,7 @@ app.use(async (req, res, next) => {
 
   try {
     const decodedToken = await auth().verifyIdToken(authToken);
-    req.token = decodedToken;
+    req.body.token = decodedToken;
     next();
   } catch (error) {
     console.error('Error verifying token:', error);
@@ -93,6 +99,13 @@ app.get('/users/suggestion', async (req, res) => {
   const {status, response} = await users.getUserSuggestions(query);
   res.status(status).send(response);
 })
+
+app.get('/users/hasPrivateInfo', async (req, res) => {
+  const {user_id} = req.body.token;
+  console.log(user_id);
+  const {status, response} = await users.getUserExists(user_id);
+  res.status(status).send(response);
+});
 
 app.get('/products/:id', (req, res) => { });
 
