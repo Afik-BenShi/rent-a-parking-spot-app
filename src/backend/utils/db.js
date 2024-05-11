@@ -207,6 +207,10 @@ const getUserSuggestions = async (q) => {
 
 const getUserSuggestionsCached = createCache(getUserSuggestions, 300);
 
+const getDocumentById = (collection, docId) => {
+    return db.collection(collection).doc(docId).get();
+}
+
 const upsertDocument = async ({ collection, docId, data }) => {
     const id = docId || `${collection}_${uuidv4()}`;
     await db.collection(collection).doc(id).set(data);
@@ -233,4 +237,5 @@ module.exports = {
     upsertDocument,
     getOrdersWithOptions,
     getUserSuggestionsCached,
+    getDocumentById,
 };

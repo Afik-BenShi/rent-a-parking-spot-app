@@ -20,7 +20,11 @@ import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginPage } from './src/pages/login';
+import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Text } from '@rneui/themed';
+import { branchOnInfoExistance } from './src/auth/auth';
+import LoadingPage from './src/pages/LoadingPage';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -95,11 +99,25 @@ function MyOrdersStackScreen() {
 
 const AuthStack = createNativeStackNavigator();
 
-function AuthStackScreen(onLogin) {
+function AuthStackScreen(navigate) {
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen options={{headerShown: false}} name="Login" 
-        component={LoginPage}
+        component={LoginPage} initialParams={navigate}
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Sign Up to RentalWize
+                </Text>
+            )}} name="SignUp" 
+        component={SignUpAuth}
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Fill in details
+                </Text>
+            )}} name="SignUpDetails" 
+        component={SignUpDetails}
       />
     </AuthStack.Navigator>
   )
@@ -109,19 +127,32 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const [userId, setUserId] = useState('')
+  const [isLoading, setIsLoading] = useState(true);
+  const [authRoute, setAuthRoute] = useState('Login');
   
   useEffect(()=> {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-      setUserId(user?.uid || "");
+      if (!user){
+        setIsLoading(false);
+        return;
+      }
+      branchOnInfoExistance({
+        user, 
+        doIfExists() {setUserId(user.uid || "");},
+        doIfNotExists() {setAuthRoute('SignUpDetails');}
+      }).then(()=> setIsLoading(false));
     });
   })
   
-  console.log(userId, !!userId)
+  if (isLoading){
+    return <LoadingPage/>
+  }
+
   if (!userId) {
     return (
     <NavigationContainer>
-      <AuthStackScreen />
+      <AuthStackScreen navigate={authRoute}/>
     </NavigationContainer>
     );
   }

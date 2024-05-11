@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import firebaseConfig from './auth-config.json'
+import { getApp, initializeApp } from "firebase/app";
+import firebaseConfig from "./auth-config.json";
 import {
     getAuth,
     createUserWithEmailAndPassword,
@@ -7,35 +7,38 @@ import {
     signOut,
     initializeAuth,
     getReactNativePersistence,
+    AuthErrorCodes,
 } from "firebase/auth";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import config from "../backend/config";
+import axios from "axios";
 
-function connectToFirebaseAuth(){
+function connectToFirebaseAuth() {
     if (app) return app;
-    const _app = initializeApp(firebaseConfig);
-    const auth = initializeAuth(_app, {
-        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
-    });
+    let _app;
+    try{
+        _app = initializeApp(firebaseConfig);
+        initializeAuth(_app, {
+            persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+        });
+    } catch (e) {
+        _app = getApp();
+        getAuth(_app);
+    }
     return _app;
 }
 const app = connectToFirebaseAuth();
 
-
 async function signUpWithEmail(email, password) {
     const auth = getAuth(app);
-    try {
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-        // Signed up
-        const user = userCredential.user;
-        return user;
-    } catch (error) {
-        console.error(error);
-        // ..
-    }
+    const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+    );
+    // Signed up
+    const user = userCredential.user;
+    return user;
 }
 
 async function signInWithEmail(email, password) {
@@ -66,8 +69,28 @@ async function signOutUser() {
     }
 }
 
-function getUser(){
+function getUser() {
     return getAuth().currentUser;
 }
 
-export {signInWithEmail, signUpWithEmail, signOutUser, getUser}
+async function branchOnInfoExistance({user, doIfExists=()=>{}, doIfNotExists=()=>{}}) {
+    const token = await user.getIdToken();
+    const isUserInfoExists = await axios.get(`http://${config.serverIp}:${config.port}/users/hasPrivateInfo`, {
+        headers: { Authorization: await token},
+    }).then(({data}) => data).catch(console.warn);
+    if (isUserInfoExists){
+        doIfExists();
+    } else {
+        doIfNotExists()
+    }
+
+}
+
+export {
+    signInWithEmail,
+    signUpWithEmail,
+    signOutUser,
+    getUser,
+    AuthErrorCodes,
+    branchOnInfoExistance,
+};
