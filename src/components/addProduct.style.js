@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: COLORS.cartTitle,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginTop: 0,
     margin: 10,
     marginLeft: 30,
   },
@@ -108,7 +108,7 @@ buttonText: {
     flexBasis: 0,
   },
   title: {
-    fontSize: 27,
+    fontSize: 26,
     fontWeight: '700',
     color: COLORS.cartTitle,
     marginBottom: 6,
@@ -157,6 +157,12 @@ buttonText: {
     color: '#222',
     marginBottom: 8,
     marginLeft: 12,
+  },
+  datesLables:{
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 8,
   },
   inputControl: {
     height: 44,
@@ -245,16 +251,27 @@ buttonText: {
     fontWeight: '600',
     color: '#4c6cfd',
   },
-  tab: (activeJobType, item) => ({
-    paddingVertical: SIZES.small / 2,
-    paddingHorizontal: SIZES.small,
-    borderRadius: SIZES.medium,
-    borderWidth: 1,
-    borderColor: activeJobType === item ? COLORS.secondary : COLORS.gray2,
-  }),
-  tabText: (activeJobType, item) => ({
-    color: activeJobType === item ? COLORS.secondary : COLORS.gray2,
-  }),
+  /** Divider */
+  divider: {
+    overflow: 'hidden',
+    width: '100%',
+    marginVertical: 24,
+  },
+  dividerInset: {
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#e5e5e5',
+    borderStyle: 'dashed',
+    marginTop: -2,
+  },
+  dateView :{
+      marginTop: 10,
+      marginHorizontal: 15,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    
+  },
 });
 
 export default styles;

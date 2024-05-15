@@ -22,7 +22,7 @@ export default function ProductDetailsPage({ route, navigation }) {
         // @ts-ignore
         : require("../../assets/parking-details-images/placeholder.png");
 
-    const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
+    const contactMessage = `Hi, I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
 
     return (
         <View style={styles.pageContainer}>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
 
 // TODO use consistent data instead of parsing
 /** @returns {ProductDetails} */
-function parseItem({ details: item }) {
+export function parseItem({ details: item }) {
     const {
         id,
         title,
@@ -120,6 +120,7 @@ function parseItem({ details: item }) {
         id,
         title,
         description,
+        city,
         availability: {
             startDate: timeStampToDate(startDay?? startDate),
             endDate: timeStampToDate(endDay?? endDate),

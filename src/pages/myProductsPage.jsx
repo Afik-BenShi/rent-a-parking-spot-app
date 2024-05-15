@@ -11,7 +11,7 @@ import {
     Pressable,
 } from 'react-native';
 import { Header } from 'react-native-elements';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
@@ -21,6 +21,7 @@ import { getUser } from '../auth/auth';
 export default function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
+    const [refreshing, setRefreshing] = useState(false);
 
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
@@ -37,49 +38,54 @@ export default function MyProductsPage({ navigation, route }) {
 
     useEffect(() => {
         fetchProducts();
-    }, [userId]);
+        console.log("refresh - fetchProducts");
+
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 100);
+
+    }, [refreshing]);
+
+    const updateProducts = () => {
+         (true);
+    };
 
     return (
         <SafeAreaView style={styles.layout}>
 
-            <Header
-
-                leftComponent={
-                    {/*<Pressable onPress={() => console.log('Menu button pressed!')}>
-                        <FontAwesome name="bars" color={COLORS.cartTitle} size={25} style={styles.menuIcon} />
-                </Pressable>*/}
-                }
-
-
-
-                rightComponent={
-                    <View style={{ alignContent: 'flex-start', flexDirection: 'row' }}>
-                        <Pressable onPress={() => navigation.navigate('addProduct')}>
-                            <FontAwesome name="plus-square-o" color={COLORS.btnBlue} size={30} style={styles.filterIcon} />
-                        </Pressable>
-                    </View>
-                }
+             {/* <Header
+                leftComponent={{}}
+                rightComponent={{}}
                 containerStyle={styles.headerContainer}
-            />
+            />  */}
 
 
             <View style={styles.container}>
                 <CardList
                     items={myItems}
-                    title="My Products"
+                    //title="My Products"
+                    title=""
+                    
                     onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
                 />
             </View>
 
-            {/*
-            <View style={styles.btnContainer}>
-                <TouchableOpacity
-                    style={styles.addProductBtn}
-                    onPress={() => navigation.navigate('addProduct')}>
-                    <Icon name='add' size={30} color={COLORS.white} />
-                </TouchableOpacity>
-                </View>
-                */}
+            <View style={styles.buttonContainer}>
+                    <View style={styles.circle} />
+                    
+                    <TouchableOpacity style={styles.buttonContainer} 
+                        onPress={() => navigation.navigate('addProduct', { updateProducts })}
+                    > 
+                    <Ionicons style={styles.newProductBtn} 
+                        name="add-circle" 
+                        type="material" 
+                        color={COLORS.btnBlue}
+                        size={65}
+                        />
+                    </TouchableOpacity>
+            </View>
+
+
         </SafeAreaView>
     );
 }
@@ -120,9 +126,9 @@ const styles = StyleSheet.create({
     },
     // header styles
     headerContainer: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'white',
         justifyContent: 'flex-start',
-        height: 95,
+        height: 120,
         marginTop: -40,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.lightgrey,
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
         color: COLORS.cartTitle,
         fontWeight: '700',
         fontSize: 24,
-        fontFamily: 'Roboto',
+        //fontFamily: 'Roboto',
         textAlign: 'center',
         marginTop: 0,
     },
@@ -150,4 +156,26 @@ const styles = StyleSheet.create({
         marginTop: 0,
         marginRight: 20,
     },
+// add new product button
+  newProductBtn: {
+    position: 'absolute',
+    bottom: -10,
+    right: 122,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    zIndex: 999, // Ensure it's above other content
+  },
+  circle: {
+    position: 'absolute',
+    backgroundColor: '#fff', 
+    borderRadius: 30,
+    width: 38,
+    height: 38,
+    bottom: 20,
+    right: 150,
+    zIndex: -1, // Ensure it's behind the button
+  },
 });

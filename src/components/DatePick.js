@@ -17,20 +17,21 @@ const DateTimePickerExample = ({
     minDate,
     onDateChange,
     initialDate = new Date(),
+    valueToDisplay = null,
 }) => {
     if (Platform.OS === "ios") {
         return (
-            <IosDateTimePicker {...{ minDate, onDateChange, initialDate }} />
+            <IosDateTimePicker {...{ minDate, onDateChange, initialDate, valueToDisplay }} />
         );
     } else {
         return (
             <AndroidDateTimePicker
-                {...{ minDate, onDateChange, initialDate }}
+                {...{ minDate, onDateChange, initialDate, valueToDisplay }}
             />
         );
     }
 };
-const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate }) => {
+const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisplay }) => {
     const [date, setDate] = useState(initialDate);
 
     const onChange = (event, selectedDate) => {
@@ -44,10 +45,11 @@ const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate }) => {
     const showDatepicker = () => {
         DateTimePickerAndroid.open({
             testID: "dateTimePicker",
-            value: date,
+            value: valueToDisplay?? date,
             mode: "date",
             minimumDate: minDate,
             onChange,
+            
         });
     };
 
@@ -85,7 +87,7 @@ const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate }) => {
     );
 };
 
-function IosDateTimePicker({ minDate, onDateChange, initialDate }) {
+function IosDateTimePicker({ minDate, onDateChange, initialDate, valueToDisplay }) {
     const [date, setDate] = useState(initialDate);
 
     const onChange = (event, selectedDate) => {
@@ -102,7 +104,7 @@ function IosDateTimePicker({ minDate, onDateChange, initialDate }) {
             <DateTimePicker
                 testID="dateTimePicker"
                 display="calendar"
-                value={date}
+                value={valueToDisplay?? date}
                 mode="date"
                 minimumDate={minDate}
                 onChange={onChange}
