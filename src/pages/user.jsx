@@ -18,8 +18,7 @@ import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
-import { Input } from 'react-native-elements';
-import NextBackBtn from '../components/nextAndBackBtn';
+import { Input } from '@rneui/themed';
 import config from '../backend/config'
 import {signOutUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';

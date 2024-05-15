@@ -1,7 +1,7 @@
 // Filter.jsx
 import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, View, TouchableOpacity, TextInput } from 'react-native';
-import { Header, Input, ButtonGroup, Text } from 'react-native-elements';
+import { Header, Input, ButtonGroup, Text } from '@rneui/themed';
 import { FontAwesome } from '@expo/vector-icons';
 import Divider from './divider';
 import DatePicker from './DatePick';

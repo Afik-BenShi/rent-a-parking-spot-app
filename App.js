@@ -18,14 +18,13 @@ import ExtendedProduct from './src/pages/ExtendedProduct';
 import ChooseCategoryPage from './src/pages/chooseCategoryPage'
 
 
-import { Icon } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginPage } from './src/pages/login';
 import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { Text } from '@rneui/themed';
+import { Text, Icon } from '@rneui/themed';
 import { branchOnInfoExistance } from './src/auth/auth';
 import LoadingPage from './src/pages/LoadingPage';
 import { setUserContext } from './src/customStates/userContext';

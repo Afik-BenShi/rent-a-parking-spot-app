@@ -2,17 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
-    SafeAreaView,
     ScrollView,
-    Text,
-    TouchableOpacity,
     View,
     RefreshControl,
-    Image,
-    Pressable,
 } from 'react-native';
-import { Header } from 'react-native-elements';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../assets/theme';
 import CardListForMyOrders from '../components/cardListForMyOrders';

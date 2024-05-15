@@ -3,14 +3,9 @@ import axios from 'axios';
 import {
     StyleSheet,
     SafeAreaView,
-    ScrollView,
-    Text,
     TouchableOpacity,
     View,
-    Image,
-    Pressable,
 } from 'react-native';
-import { Header } from 'react-native-elements';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { COLORS } from '../../assets/theme';

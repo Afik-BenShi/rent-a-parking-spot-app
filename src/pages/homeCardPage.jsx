@@ -17,7 +17,6 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -26,11 +25,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
-import { filter, set } from 'lodash';
-import { useNavigation } from '@react-navigation/native';
+import { Header } from '@rneui/themed';
 
 
 const items = [
