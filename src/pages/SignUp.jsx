@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Card, Input, Text, Icon, Button } from "@rneui/themed";
 import {
     View,
@@ -7,7 +7,9 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from "react-native";
-import useValidatedText from "../customStates/useTextValidation";
+import useValidatedText, {
+    validateRequiredFields,
+} from "../customStates/useTextValidation";
 import { COLORS } from "../../assets/theme";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { TooltipIcon } from "../components/TooltipIcon";
@@ -15,9 +17,11 @@ import { styles } from "./signUpAndLogin.styles";
 import { debounce } from "../utils/utils";
 import axios from "axios";
 import config from "../backend/config";
-import { AuthErrorCodes, signUpWithEmail } from "../auth/auth";
+import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";
+import { setUserContext } from "../customStates/userContext";
 
-export function SignUpAuth({ navigation }) {
+export function SignUpAuth({ navigation, route }) {
+    const setUserId = route?.params?.setUserId;
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -45,17 +49,8 @@ export function SignUpAuth({ navigation }) {
     );
 
     const authSignUpHandler = async () => {
-        if (!email.text) {
-            await email.validate();
-            setErrorMessage("");
-            return
-        }
-        if (!password.text) {
-            await password.validate();
-            setErrorMessage("");
-            return
-        }
-        if (!email.isValid || !password.isValid) {
+        const isValid = validateRequiredFields(email, password);
+        if (!isValid) {
             setErrorMessage("");
             return;
         }
@@ -65,7 +60,7 @@ export function SignUpAuth({ navigation }) {
             console.log({ user });
             if (user) {
                 setErrorMessage("");
-                navigation.navigate("SignUpDetails");
+                navigation.navigate("SignUpDetails", { setUserId });
             }
         } catch (error) {
             if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
@@ -93,7 +88,7 @@ export function SignUpAuth({ navigation }) {
                     onEndEditing={email.validate}
                     onChangeText={email.setText}
                     disabled={isLoading}
-                    />
+                />
                 <Input
                     inputContainerStyle={styles.input}
                     errorStyle={styles.failText}
@@ -138,7 +133,7 @@ export function SignUpAuth({ navigation }) {
     );
 }
 
-export function SignUpDetails({ navigation }) {
+export function SignUpDetails({ navigation, route }) {
     const fullName = useValidatedText(
         "",
         /^[a-zA-z ]{2,}$/,
@@ -147,7 +142,7 @@ export function SignUpDetails({ navigation }) {
     const phoneNumber = useValidatedText(
         "",
         /^05[\d]{8}$/,
-        "Invalid phoneNumber"
+        "Invalid phone number"
     );
     const [addressDetails, setAddressDetails] = useState({
         city: "",
@@ -156,6 +151,14 @@ export function SignUpDetails({ navigation }) {
     const [coord, setCoord] = useState({ lat: "", lon: "" });
     const addressNotes = useValidatedText("", /^[\w ]*$/);
     const [showAddressError, setAddressShow] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [signUpError, setSignUpError] = useState("");
+    const setUserId =
+        useContext(setUserContext) ??
+        ((_) =>
+            setSignUpError(
+                "We had an unexpacted error. Please close and reopen the app"
+            ));
 
     const coordSelectedHandler = ({ lat, lon }, newAddressDetails) => {
         setCoord({ lat, lon });
@@ -163,7 +166,47 @@ export function SignUpDetails({ navigation }) {
         setAddressShow(false);
     };
     const addressEditHandler = () => {
-        setCoord(null);
+        setCoord({ lat: "", lon: "" });
+        setAddressDetails({ city: "", streetAndNumber: "" });
+    };
+
+    const detailsSignUpHandler = async () => {
+        setIsLoading(true);
+        const token = getUser()?.getIdToken();
+        const isValid =
+            validateRequiredFields(fullName, phoneNumber, addressNotes) &&
+            coord.lat &&
+            coord.lon &&
+            addressDetails.city &&
+            addressDetails.streetAndNumber;
+        if (!isValid) {
+            setIsLoading(false);
+            return;
+        }
+        console.log(await token);
+        const result = await axios
+            .post(
+                `http:/${config.serverIp}:${config.port}/users/upsert`,
+                {
+                    fullName: fullName.text,
+                    phoneNumber: phoneNumber.text,
+                    coord,
+                    city: addressDetails.city,
+                    street: addressDetails.streetAndNumber,
+                    addressNotes: addressNotes.text,
+                },
+                { headers: { Authorization: await token } }
+            )
+            .then(({ data }) => data)
+            .catch((error) => ({ error }));
+        console.log({ result, setUserId });
+        if (result.error) {
+            setSignUpError(`${result.error}`);
+            setIsLoading(false);
+            return;
+        }
+        setIsLoading(false);
+        setUserId(result);
     };
 
     return (
@@ -178,6 +221,7 @@ export function SignUpDetails({ navigation }) {
                     errorMessage={fullName.errorMessage}
                     onEndEditing={fullName.validate}
                     onChangeText={fullName.setText}
+                    disabled={isLoading}
                 />
                 <Input
                     inputContainerStyle={styles.input}
@@ -199,12 +243,14 @@ export function SignUpDetails({ navigation }) {
                     errorMessage={phoneNumber.errorMessage}
                     onEndEditing={phoneNumber.validate}
                     onChangeText={phoneNumber.setText}
+                    disabled={isLoading}
                 />
                 <Card.Title style={styles.sections}>Address</Card.Title>
                 <Card.Divider />
                 <AddressSuggestionsBox
                     onChooseSuggestion={coordSelectedHandler}
                     onEdit={addressEditHandler}
+                    disabled={isLoading}
                 />
                 {showAddressError && (
                     <Text style={styles.failText}>
@@ -225,11 +271,18 @@ export function SignUpDetails({ navigation }) {
                     errorMessage={addressNotes.errorMessage}
                     onEndEditing={addressNotes.validate}
                     onChangeText={addressNotes.setText}
+                    disabled={isLoading}
                 />
+
+                {!!signUpError && (
+                    <Text style={styles.failText}>{signUpError}</Text>
+                )}
                 <Button
                     buttonStyle={styles.actionButtons}
                     titleStyle={styles.profileActionText}
-                    onPress={() => navigation.navigate("SignUpDetails")}
+                    onPress={detailsSignUpHandler}
+                    disabled={isLoading}
+                    loading={isLoading}
                 >
                     Sign up
                 </Button>
@@ -238,7 +291,11 @@ export function SignUpDetails({ navigation }) {
     );
 }
 
-function AddressSuggestionsBox({ onChooseSuggestion, onEdit }) {
+function AddressSuggestionsBox({
+    onChooseSuggestion,
+    onEdit,
+    disabled = false,
+}) {
     const [isShow, setIsShow] = useState(false);
     const city = useValidatedText("", /^[\w\ ]+$/, "Invalid city");
     const streetAndNumber = useValidatedText(
@@ -272,14 +329,17 @@ function AddressSuggestionsBox({ onChooseSuggestion, onEdit }) {
         debounce(async (details) => {
             const newSuggestions = await findAddress(details);
             setSuggestions(newSuggestions);
-        }, 5000),
+        }, 1500),
         []
     );
 
     const pressSuggestion = (suggestion) => {
         if (!suggestion.value) return;
         setIsShow(false);
-        onChooseSuggestion(suggestion.value, { city, streetAndNumber });
+        onChooseSuggestion(suggestion.value, {
+            city: city.text,
+            streetAndNumber: streetAndNumber.text,
+        });
     };
 
     const detailsChange = () => {
@@ -308,12 +368,15 @@ function AddressSuggestionsBox({ onChooseSuggestion, onEdit }) {
                     />
                 }
                 errorMessage={city.errorMessage}
+                disabled={disabled}
                 onEndEditing={() => {
-                    city.validate().then(detailsChange);
+                    city.validate();
+                    detailsChange();
                 }}
                 onChangeText={(text) => {
                     city.setText(text);
-                    city.validate().then(detailsChange);
+                    city.validate();
+                    detailsChange();
                 }}
             />
             <Input
@@ -321,15 +384,18 @@ function AddressSuggestionsBox({ onChooseSuggestion, onEdit }) {
                 leftIcon={<FeatherIcon size={16} name="map-pin" />}
                 label="Street and number"
                 errorMessage={streetAndNumber.errorMessage}
+                disabled={disabled}
                 onEndEditing={() => {
-                    streetAndNumber.validate().then(detailsChange);
+                    streetAndNumber.validate();
+                    detailsChange();
                 }}
                 onChangeText={(text) => {
                     streetAndNumber.setText(text);
-                    streetAndNumber.validate().then(detailsChange);
+                    streetAndNumber.validate();
+                    detailsChange();
                 }}
             />
-            {isShow && (
+            {isShow && !disabled && (
                 <View style={moreStyles.container}>
                     <Text style={moreStyles.label}>Please choose one</Text>
                     {suggestions.map(({ label, value }) => (

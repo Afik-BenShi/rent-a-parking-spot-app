@@ -35,7 +35,7 @@ app.use(async (req, res, next) => {
     next();
     return;
   }
-  const authToken = req.headers.authorization;
+  const authToken = req.headers.authorization ?? req.headers.Authorization;
   if (!authToken){
     res.status(401).json({ error: 'Unauthorized' });
     return;
@@ -123,8 +123,12 @@ app.get('/location/geocode/structured', async (req, res) => {
 });
 
 app.post('/users/upsert', async (req, res) => {
-  const response = await users.upsertPersonalDetails(req.body)
-  res.send(response);
+  try{
+    const response = await users.upsertPersonalDetails(req.body)
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({error});
+  }
 });
 
 app.get('/orders/owner/:userId', async (req, res) => {

@@ -31,7 +31,7 @@ export default function useValidatedText(
         _customValidator.validate = validator;
     }
 
-    async function validate() {
+    function validate() {
         reset();
         if (regex) {
             const isPatternValid = regex.test(text);
@@ -40,7 +40,7 @@ export default function useValidatedText(
                 return validation;
             }
         }
-        await _customValidator.validate(text, reject);
+        _customValidator.validate(text, reject);
         return validation;
     }
 
@@ -65,7 +65,22 @@ export default function useValidatedText(
 }
 
 /**
- * @typedef {(value: string, reject:(reason:string) => void) => void | Promise<void>} ValidationFn
+ * 
+ * @param  {...ReturnType<useValidatedText>} fields 
+ * @returns {boolean} is valid?
+ */
+export function validateRequiredFields(...fields){
+    return fields.every(async (field)=> {
+        if (!field.text){
+            field.validate();
+            return false;
+        }
+        return field.isValid
+    });
+}
+
+/**
+ * @typedef {(value: string, reject:(reason:string) => void) => void } ValidationFn
  */
 /**
  * @typedef {{isValid:boolean, reason?: string}} Validation

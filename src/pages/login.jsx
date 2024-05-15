@@ -9,7 +9,7 @@ import { getAuth } from "firebase/auth";
 import LoadingPage from "./LoadingPage";
 
 export function LoginPage({ navigation, route }) {
-    const navigate = route?.params?.navigate;
+    const {navigate}= route?.params;
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
