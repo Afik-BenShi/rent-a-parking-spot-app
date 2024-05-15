@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import FillPersonalDetails from "../components/fillPersonalDetails";
 import { COLORS} from "../../assets/theme";
-import Icon from 'react-native-vector-icons/Ionicons'; 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import {
@@ -9,13 +8,10 @@ import {
   SafeAreaView,
   View,
   TouchableOpacity,
-  Image,
   ScrollView,
-  Text,
   KeyboardAvoidingView,
 } from 'react-native';
 import NextBackBtn from '../components/nextAndBackBtn';
-import { Header } from 'react-native-elements';
 
 export default function AddProductPage ({ navigation, route }) {
   

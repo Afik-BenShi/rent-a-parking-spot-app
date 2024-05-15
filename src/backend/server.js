@@ -7,7 +7,7 @@ const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
 
-const { firestore } = require("firebase-admin");
+const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
 
 db.init();
@@ -26,6 +26,29 @@ app.use((req, res, next) => {
   };
   console.log(`${req.method} ${req.url}`);
   next();
+});
+// Middleware to verify user's authentication token
+const noAuthServices  = ["location"];
+app.use(async (req, res, next) => {
+  const splitPath = req.path.split('/');
+  if (noAuthServices.some(service => splitPath.includes(service))){
+    next();
+    return;
+  }
+  const authToken = req.headers.authorization ?? req.headers.Authorization;
+  if (!authToken){
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  try {
+    const decodedToken = await auth().verifyIdToken(authToken);
+    req.body.token = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.status(401).json({ error: 'Unauthorized' });
+  }
 });
 //---------------------------------------------------------
 
@@ -90,6 +113,13 @@ app.get('/users/suggestion', async (req, res) => {
   res.status(status).send(response);
 })
 
+app.get('/users/hasPrivateInfo', async (req, res) => {
+  const {user_id} = req.body.token;
+  console.log(user_id);
+  const {status, response} = await users.getUserExists(user_id);
+  res.status(status).send(response);
+});
+
 app.get('/products/:id', (req, res) => { });
 
 
@@ -106,8 +136,12 @@ app.get('/location/geocode/structured', async (req, res) => {
 });
 
 app.post('/users/upsert', async (req, res) => {
-  const response = await users.upsertPersonalDetails(req.body)
-  res.send(response);
+  try{
+    const response = await users.upsertPersonalDetails(req.body)
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({error});
+  }
 });
 
 app.get('/orders/owner/:userId', async (req, res) => {

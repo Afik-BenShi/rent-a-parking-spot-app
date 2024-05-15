@@ -28,6 +28,7 @@ import config from '../backend/config';
 import { disabledDatesForProduct } from "../utils/dateTime";
 
 import CalendarComponent from '../components/calendar';
+import { getAuth } from 'firebase/auth';
 
 const sections = [
   { name: 'Information' },
@@ -72,7 +73,10 @@ export default function ExtendedProduct({ route, navigation }) {
     const [disabledDates, setDisabledDates] = useState([]);
     const fetchAvailabilityByProductId = async () => {
         try {
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/productAvailability`, { params: { id } });
+            const token = await getAuth().currentUser?.getIdToken()
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/productAvailability`, { 
+              headers: { Authorization: token },
+              params: { id } });
             console.log(response.data);
             
             const result = disabledDatesForProduct(response.data.response);

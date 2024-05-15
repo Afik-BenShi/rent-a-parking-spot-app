@@ -1,10 +1,10 @@
 const _ = require("lodash");
-const { upsertDocument, getUserSuggestionsCached } = require("../utils/db")
+const { upsertDocument, getUserSuggestionsCached, getDocumentById } = require("../utils/db");
 
 const upsertPersonalDetails = async (data) => {
-    const relevantData = _.pick(data, ['fullName', 'city', 'phoneNumber']);
+    const relevantData = _.pick(data, ['fullName', 'phoneNumber', 'city', 'coordinates', 'street', 'addressNotes', 'imageUrl' ]);
     const collection = 'users'
-    const resultId = await upsertDocument({ collection, data: relevantData, docId: data.id });
+    const resultId = await upsertDocument({ collection, data: relevantData, docId: data.token.user_id });
     return resultId;
 };
 
@@ -21,5 +21,12 @@ const getUserSuggestions = async ({q}) => {
     }
 }
 
+const getUserExists = async (userId) => {
+    if (!userId) {
+        return {status:400, response: "no user id provided"};
+    }
+    const user = await getDocumentById('users', userId)
+    return {status: 200, response: user.exists};
+}
 
-module.exports = { upsertPersonalDetails, getUserSuggestions}
+module.exports = { upsertPersonalDetails, getUserSuggestions, getUserExists}

@@ -2,22 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
-    SafeAreaView,
     ScrollView,
-    Text,
-    TouchableOpacity,
     View,
     RefreshControl,
-    Image,
-    Pressable,
 } from 'react-native';
-import { Header } from 'react-native-elements';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { COLORS } from '../../assets/theme';
 import CardListForMyOrders from '../components/cardListForMyOrders';
 import config from '../backend/config';
 import NoOrdersYet from './noOrdersYetPage';
+import { getAuth } from 'firebase/auth';
 
 export default function MyOrderAsRenterPage({ navigation, route }) {
 
@@ -29,7 +23,10 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
 
     const fetchMyOrderAsRenter = async () => {
         try {
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`);
+          const token = getAuth().currentUser?.getIdToken()
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`,
+              {headers: { Authorization: await token },}
+            );
             setMyOrders(response.data);
             
             console.log("myOrders : " + myOrders);

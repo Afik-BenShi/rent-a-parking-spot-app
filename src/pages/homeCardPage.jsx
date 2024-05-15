@@ -13,12 +13,10 @@ import {
   Animated,
   TextInput,
 } from 'react-native';
-import { Header, Input } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -27,11 +25,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { ThemeConsumer } from 'react-native-elements';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
-import { filter, set } from 'lodash';
-import { useNavigation } from '@react-navigation/native';
+import { Header } from '@rneui/themed';
+import { getAuth } from 'firebase/auth';
 
 
 const items = [
@@ -85,8 +82,10 @@ export default function HomeCardPage({ navigation, route}) {
     try {
       console.log('fetchProducts in homeCard')
       console.log('fetchProducts filters', filters)
-
-      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { params: { filters } });
+      const token = getAuth().currentUser?.getIdToken()
+      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { 
+        headers: { Authorization: await token },
+        params: { filters } });
       setRentalItems(response.data);
       setMasterData(response.data);
       updateLocaionsList(response.data);
@@ -126,7 +125,7 @@ export default function HomeCardPage({ navigation, route}) {
     if (cnt > 0){
       setShowFilters(true);
     }
-    
+
   }, [filters]);
 
 
@@ -154,7 +153,7 @@ export default function HomeCardPage({ navigation, route}) {
   const sheet = React.useRef();
   function handleDonePress (category) {
     console.log("Selected category: ", selectedCategory);
-    sheet.current.close();
+    //sheet.current.close();
     
     // Merge the existing filters with the selected category
     setFilters(prevFilters => ({

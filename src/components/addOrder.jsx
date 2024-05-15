@@ -5,6 +5,7 @@ import InputWithSuggestions from "./inputWithSuggestions";
 import config from "../backend/config";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Icon, Text } from "@rneui/themed";
+import { getAuth } from "firebase/auth";
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
 export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
@@ -26,10 +27,11 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
     });
 
     const userSuggestions = async (query) => {
+        const token = getAuth().currentUser?.getIdToken()
         console.log("suggestion");
         const values = await axios
         .get(SERVER + `/users/suggestion?q=${encodeURI(query)}`
-            )
+            ,{ headers: { Authorization: await token } })
             .then(({ data }) => data)
             .catch((_) => []);
 
@@ -54,6 +56,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
 
     /** @param {ProductReservation} rsv */
     const onSubmitReservation = async (rsv) => {
+        const token = getAuth().currentUser?.getIdToken();
         const payload = {
             ownerId: userId,
             startDate:rsv.scheduling.startDate,
@@ -61,7 +64,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
             productId, 
             renterId: rsv.reservingUser.id,
         }
-        const response = await axios.post(SERVER + '/orders/add', payload);
+        const response = await axios.post(SERVER + '/orders/add', payload, { headers: { Authorization: await token } });
         if (response.status === 200){
             onSuccess(response.data);
             return true;

@@ -13,6 +13,7 @@ import AddOrder from "../components/addOrder";
 
 import "./productDetailsPage.types";
 import { timeStampToDate } from "../utils/dateTime";
+import { getAuth } from "firebase/auth";
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
@@ -48,13 +49,14 @@ export default function OwnerProductPage({ route, navigation }) {
     console.log(details);
 
     const updateReservations = () => {
+        getAuth().currentUser?.getIdToken().then(token => 
         axios
-            .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`)
+            .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`, {headers:{Authorization:token}})
             .then(({ data }) => {
                 const rsvTemplate = { next: [], past: [] };
                 const newRsvs = data.reduce(responseParser, rsvTemplate);
                 setRsvs(newRsvs);
-            });
+            }));
     }
     useEffect(updateReservations, [userId]);
 

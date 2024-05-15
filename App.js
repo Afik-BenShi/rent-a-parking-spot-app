@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { v4 as uuidv4 } from 'uuid';
-
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
@@ -19,10 +18,16 @@ import ExtendedProduct from './src/pages/ExtendedProduct';
 import ChooseCategoryPage from './src/pages/chooseCategoryPage'
 
 
-import { Icon } from 'react-native-elements';
 import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { LoginPage } from './src/pages/login';
+import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { Text, Icon } from '@rneui/themed';
+import { branchOnInfoExistance } from './src/auth/auth';
+import LoadingPage from './src/pages/LoadingPage';
+import { setUserContext } from './src/customStates/userContext';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -103,14 +108,75 @@ function MyOrdersStackScreen({ route }) {
   );
 }
 
+const AuthStack = createNativeStackNavigator();
+
+function AuthStackScreen({navigate}) {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen options={{headerShown: false}} name="Login" 
+        component={LoginPage} initialParams={{navigate}}
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Sign Up to RentalWize
+                </Text>
+            )}} name="SignUp" 
+        component={SignUpAuth} 
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Fill in details
+                </Text>
+            )}} name="SignUpDetails" 
+        component={SignUpDetails}
+      />
+    </AuthStack.Navigator>
+  )
+}
+
 const Tab = createBottomTabNavigator();
-
 export default function App() {
-  const [userId, setUserId] = useState('1')
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [authRoute, setAuthRoute] = useState('Login');
+  const [userId, _setUserId] = useState('')
+  const setUserId = useCallback((param) => {_setUserId(param)}, []);
+  
+  useEffect(()=> {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (!user){
+        setIsLoading(false);
+        return;
+      }
+      branchOnInfoExistance({
+        user, 
+        doIfExists() {
+          _setUserId(user.uid || "");
+          setIsLoading(false);
+        },
+        doIfNotExists() {
+          setAuthRoute('SignUpDetails');
+          setIsLoading(false);
+        }
+      })
+    });
+  }, [])
+  
+  if (isLoading){
+    return <LoadingPage/>
+  }
+  
+  if (!userId) {
+    return (
+    <NavigationContainer>
+      <setUserContext.Provider value={setUserId}>
+      <AuthStackScreen navigate={authRoute} />
+      </setUserContext.Provider>
+    </NavigationContainer>
+    );
+  }
   return (
     <NavigationContainer>
-
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
