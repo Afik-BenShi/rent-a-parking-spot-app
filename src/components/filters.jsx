@@ -12,10 +12,7 @@ import SingleSelectListDropDown from './SingleSelectListDropDown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-<<<<<<< HEAD
 import Entypo from 'react-native-vector-icons/Entypo';
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 import { set } from 'lodash';
 
 const CIRCLE_SIZE = 18;
@@ -42,13 +39,10 @@ const Filter = ({ navigation, route }) => {
   const [finalStartDate, setFinalStartDate] = useState(filters.startDate != "" ? filters.startDate : ""); // State for final start date
   const [finalEndDate, setFinalEndDate] = useState(filters.endDate != "" ? filters.endDate : "");  // State for final end date
 
-<<<<<<< HEAD
 
   console.log('startDateF', finalStartDate);
   console.log('endDateF', finalEndDate);
 
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   const updateDateFilter = () => {
     if (finalStartDate && finalEndDate && finalStartDate <= finalEndDate) {
       setDateFilter(true);
@@ -98,7 +92,6 @@ const Filter = ({ navigation, route }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-<<<<<<< HEAD
       <SafeAreaView style={{ flex: 1}}>
         
       <Header
@@ -162,33 +155,6 @@ const Filter = ({ navigation, route }) => {
           /> */}
 
           {/* <Divider /> */}
-=======
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView>
-          
-          <Header style={styles.actionWrapper}
-            leftComponent={
-              <TouchableOpacity
-              onPress={navigation.goBack}
-              style={{ marginRight: 'auto', marginTop:-30}}>
-              <View style={styles.action}>
-                <FeatherIcon
-                  color="#242329"
-                  name="chevron-left"
-                  size={20} />
-              </View>
-            </TouchableOpacity>
-              
-            }
-            //centerComponent={{ text: 'Refine your search', style: { color: '#fff', fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
-            centerComponent={{ text: 'Filters', style: { color: '#fff', fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
-            
-            backgroundColor={COLORS.grey2}
-            borderRadius={12}
-          />
-
-          <Divider />
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
           {/* Single-Select List for Categories (All Categories) */}
           {/*
@@ -199,11 +165,7 @@ const Filter = ({ navigation, route }) => {
             title="Choose from all Categories"
           />
         */}
-<<<<<<< HEAD
         {/* <View style={styles.about}>
-=======
-        <View style={styles.about}>
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
             <Text style={styles.aboutTitle}>Category </Text> 
 
         <View style={styles.sheetBody}>
@@ -234,10 +196,7 @@ const Filter = ({ navigation, route }) => {
           
         </View>
         </View>
-<<<<<<< HEAD
         <Divider />  */}
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           
 
           {/* Location Input */}
@@ -283,12 +242,8 @@ const Filter = ({ navigation, route }) => {
               }}
             />} */}
           </View>
-<<<<<<< HEAD
           <Divider /> 
 
-=======
-          <Text></Text>
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           <View style={styles.about}>
             <Text style={styles.aboutTitle}>Max price</Text>
             
@@ -342,10 +297,6 @@ const Filter = ({ navigation, route }) => {
             {/* <Input
               inputContainerStyle={{ borderBottomWidth: 0 }} 
               inputStyle={styles.inputControl}  // -
-<<<<<<< HEAD
-=======
-              labelStyle={styles.inputLabel} // -
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
               placeholder={"Enter desired max price"}
               defaultValue={maxPrice??""} 
               leftIcon={<Entypo color="#000" name="price-tag" size={18} />}
@@ -369,14 +320,9 @@ const Filter = ({ navigation, route }) => {
             /> */}
             
           </View>
-<<<<<<< HEAD
           {/* <View style={styles.divider}>  
           <View style={styles.dividerInset} /></View> */}
           <Divider /> 
-=======
-          {/* <Divider /> */}
-
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
               <View style={styles.about}>
                 <Text style={styles.aboutTitle}> Dates : {SelectionText()}</Text>
 
@@ -406,11 +352,7 @@ const Filter = ({ navigation, route }) => {
                     setOpenPicker(!openPicker);
                    
                   }}
-<<<<<<< HEAD
                   style={{ flex: 1, paddingHorizontal: 10}}>
-=======
-                  style={{ flex: 1, paddingHorizontal: 6 }}>
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
                   <View style={styles.btn}>
                     <Text style={styles.btnText}>Select Dates   
                     {' '}<Feather
@@ -458,11 +400,7 @@ const Filter = ({ navigation, route }) => {
                     }
                     else {setInvalidInputMsg(true);}
                     }}
-<<<<<<< HEAD
                   disabled={!startDate || !endDate || startDate > endDate}
-=======
-                  //disabled={!startDate || !endDate || startDate > endDate}
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
                   
                   style={{ flex: 1, paddingHorizontal: 6 }}>
                   <View style={styles.btn}>
@@ -494,28 +432,7 @@ const Filter = ({ navigation, route }) => {
           /> */}
           <Divider /> 
 
-<<<<<<< HEAD
           
-=======
-              onPress={() => { 
-                if (isValidInputOnSearchPress()) {
-                  setStartDate(finalStartDate);
-                  setEndDate(finalEndDate);
-                onReturn({ selectedCategory, startDate:finalStartDate , endDate:finalEndDate, maxPrice, city }); navigation.goBack();
-                updateDateFilter(); }
-                else{
-                  setInvalidInputMsg(true);
-                }
-              }}
-              style={{ flex: 1, paddingHorizontal: 6 }}>
-              <View style={styles.btnPrimary}>
-                <Text style={styles.btnPrimaryText}> 
-                {<FontAwesome name="search" size={16} color="white" />}
-                {' '} Search</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
         </ScrollView>
         <View style={styles.overlay}>
@@ -584,11 +501,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-<<<<<<< HEAD
     paddingVertical: 10,
-=======
-    paddingVertical: 8,
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     paddingHorizontal: 16,
     borderWidth: 1,
     backgroundColor: COLORS.orangeLikeStars,
@@ -612,7 +525,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: COLORS.inputTextGrey,
     //borderColor: COLORS.orangeLikeStars,
-<<<<<<< HEAD
   },
   overlay: {
     position: 'absolute',
@@ -636,8 +548,6 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal:-30,
     
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   },
   btnGroup: {
     flexDirection: 'row',
@@ -692,11 +602,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   radio: {
-<<<<<<< HEAD
     height: 38,
-=======
-    height: 44,
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
@@ -705,11 +611,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   radioLabel: {
-<<<<<<< HEAD
     fontSize: 15,
-=======
-    fontSize: 17,
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     fontWeight: '500',
     color: '#000',
     marginLeft: 12,
@@ -732,10 +634,7 @@ const styles = StyleSheet.create({
     left: CIRCLE_RING_SIZE,
   },
   sheetBody: {
-<<<<<<< HEAD
     marginTop:-10,
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     paddingHorizontal: 0,
     paddingVertical: 14,
   },
@@ -743,15 +642,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     backgroundColor: '#ffffff',
-<<<<<<< HEAD
     borderWidth: 0,
     //borderColor: '#e5e5e5',
     //borderStyle: 'transparent',
-=======
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderStyle: 'solid',
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     borderRadius: 12,
     marginHorizontal: 8,
     alignItems: 'center',
@@ -764,7 +657,6 @@ const styles = StyleSheet.create({
     marginHorizontal: -8,
     marginBottom: 12,
   },
-<<<<<<< HEAD
   // divider
   divider: {
     overflow: 'hidden',
@@ -877,8 +769,6 @@ searchBarNew:{
     right: 20,
     zIndex: 999, // Ensure it's above other content
   },
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 });
 
 export default Filter;

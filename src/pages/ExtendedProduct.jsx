@@ -15,11 +15,7 @@ import axios from 'axios';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-<<<<<<< HEAD
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-=======
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
 import { COLORS } from '../../assets/theme';
 import { timeStampToDate } from "../utils/dateTime";
@@ -29,10 +25,7 @@ import { UrlTile } from 'react-native-maps';
 import { ContactButtons } from "../components/contactButtons";
 import GoogleMaps from "../components/GoogleMaps";
 import config from '../backend/config';
-<<<<<<< HEAD
 import { disabledDatesForProduct } from "../utils/dateTime";
-=======
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
 import CalendarComponent from '../components/calendar';
 import { getAuth } from 'firebase/auth';
@@ -292,7 +285,6 @@ export default function ExtendedProduct({ route, navigation }) {
         </View>
       </ScrollView> )}
 
-<<<<<<< HEAD
       {value == 1 && 
       ( <View>
         <View style={styles.header}>
@@ -348,10 +340,6 @@ export default function ExtendedProduct({ route, navigation }) {
       
 
     </View> 
-=======
-      </ScrollView>
-    </View>
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   );
 }
 

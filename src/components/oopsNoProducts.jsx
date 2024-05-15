@@ -55,11 +55,7 @@ export default function OopsNoProducts() {
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 140,
-<<<<<<< HEAD
     paddingTop: 50,
-=======
-    paddingTop: 80,
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   },
   title: {
     fontSize: 20,
@@ -78,13 +74,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   emptyTitle: {
-<<<<<<< HEAD
     fontSize: 15,
     fontWeight: '400',
-=======
-    fontSize: 16,
-    fontWeight: '500',
->>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     color: '#222',
     marginBottom: 8,
     marginTop: 12,
