@@ -33,6 +33,7 @@ import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
 <<<<<<< HEAD
 import { Header } from '@rneui/themed';
+import { getAuth } from 'firebase/auth';
 =======
 import { filter, set } from 'lodash';
 >>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
@@ -102,8 +103,10 @@ export default function HomeCardPage({ navigation, }) {
     try {
       console.log('fetchProducts in homeCard')
       console.log('fetchProducts filters', filters)
-
-      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { params: { filters } });
+      const token = getAuth().currentUser?.getIdToken()
+      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { 
+        headers: { Authorization: await token },
+        params: { filters } });
       setRentalItems(response.data);
       setMasterData(response.data);
       updateLocaionsList(response.data);
