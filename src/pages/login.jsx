@@ -28,7 +28,6 @@ export function LoginPage({ navigation, route }) {
         if (!email.isValid || !password.isValid) {
             return;
         }
-        console.log(getAuth().currentUser);
         setIsLoading(true);
         const login = await signInWithEmail(email.text, password.text);
         if (login) {

@@ -125,7 +125,6 @@ function AuthStackScreen({navigate}) {
 }
 
 const Tab = createBottomTabNavigator();
-let isFirstInit = true;
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [authRoute, setAuthRoute] = useState('Login');
@@ -133,12 +132,8 @@ export default function App() {
   const setUserId = useCallback((param) => {_setUserId(param)}, []);
   
   useEffect(()=> {
-    if (!isFirstInit) {return;}
-    console.log('app', {isFirstInit});
-    isFirstInit = false;
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-      console.log('define onAuthChanged')
       if (!user){
         setIsLoading(false);
         return;
@@ -146,7 +141,6 @@ export default function App() {
       branchOnInfoExistance({
         user, 
         doIfExists() {
-          console.log('ifDoExists')
           _setUserId(user.uid || "");
           setIsLoading(false);
         },

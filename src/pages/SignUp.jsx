@@ -57,7 +57,6 @@ export function SignUpAuth({ navigation, route }) {
         try {
             setIsLoading(true);
             const user = await signUpWithEmail(email.text, password.text);
-            console.log({ user });
             if (user) {
                 setErrorMessage("");
                 navigation.navigate("SignUpDetails", { setUserId });
@@ -183,7 +182,6 @@ export function SignUpDetails({ navigation, route }) {
             setIsLoading(false);
             return;
         }
-        console.log(await token);
         const result = await axios
             .post(
                 `http:/${config.serverIp}:${config.port}/users/upsert`,
@@ -199,7 +197,6 @@ export function SignUpDetails({ navigation, route }) {
             )
             .then(({ data }) => data)
             .catch((error) => ({ error }));
-        console.log({ result, setUserId });
         if (result.error) {
             setSignUpError(`${result.error}`);
             setIsLoading(false);
