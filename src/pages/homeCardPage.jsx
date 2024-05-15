@@ -13,6 +13,10 @@ import {
   Animated,
   TextInput,
 } from 'react-native';
+<<<<<<< HEAD
+=======
+import { Button, Header, Input } from 'react-native-elements';
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -27,7 +31,11 @@ import CardList from '../components/cardList';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
+<<<<<<< HEAD
 import { Header } from '@rneui/themed';
+=======
+import { filter, set } from 'lodash';
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
 
 const items = [
@@ -47,6 +55,7 @@ const moreOptions = [
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
+<<<<<<< HEAD
 export default function HomeCardPage({ navigation, route}) {
   
 
@@ -55,6 +64,11 @@ export default function HomeCardPage({ navigation, route}) {
   console.log("send cat: ",category);
   const [selectedCategory, setSelectedCategory] = useState(category);
 
+=======
+export default function HomeCardPage({ navigation, }) {
+
+  const [selectedCategory, setSelectedCategory] = useState("0");
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   const [refreshing, setRefreshing] = useState(false);
   const [rentalItems, setRentalItems] = useState([]);
   const [masterData, setMasterData] = useState([]);
@@ -68,14 +82,21 @@ export default function HomeCardPage({ navigation, route}) {
   const [noContent, setNoContent] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+<<<<<<< HEAD
   const selectedCategoryLabel = selectedCategory != "0" ? items[selectedCategory].label : "All Products";
+=======
+  const selectedCategoryLabel = selectedCategory != 0 ? items[selectedCategory].label : "All Products";
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
   const [searchTerm, setSearchTerm] = useState('');
 
   const [locationsList, setLocationsList] = useState(["All Locations"]);
   const [activeFilters, setActiveFilters] = useState(false);
+<<<<<<< HEAD
   const [value, setValue] = useState(null);
 
+=======
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
   const fetchProducts = async (filters) => {
     try {
@@ -122,7 +143,7 @@ export default function HomeCardPage({ navigation, route}) {
     if (cnt > 0){
       setShowFilters(true);
     }
-    
+
   }, [filters]);
 
 
@@ -149,8 +170,12 @@ export default function HomeCardPage({ navigation, route}) {
 
   const sheet = React.useRef();
   function handleDonePress (category) {
+<<<<<<< HEAD
+=======
+    setSelectedCategory(category);
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     console.log("Selected category: ", selectedCategory);
-    sheet.current.close();
+    //sheet.current.close();
     
     // Merge the existing filters with the selected category
     setFilters(prevFilters => ({
@@ -293,7 +318,11 @@ export default function HomeCardPage({ navigation, route}) {
   };
 
 
+<<<<<<< HEAD
   function useFilters (filters) {
+=======
+  const useFilters = (filters) => {
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     const emptyFilters = {
       "city": "", 
       "endDate": "", 
@@ -307,6 +336,7 @@ export default function HomeCardPage({ navigation, route}) {
     return hasFilters;
   }
 
+<<<<<<< HEAD
   const handleMoreOptionsPress = (index) => {
     console.log('Selected oprtion: ', index);
     // handle the selected option
@@ -336,6 +366,13 @@ export default function HomeCardPage({ navigation, route}) {
         
         }
         centerComponent={  
+=======
+  return (
+    <SafeAreaView style={styles.layout}>
+      <Header
+        leftComponent={{}}
+        centerComponent={
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           <View style={styles.centerHeader}>
             <Text style={styles.headerText}>
               Rental{' '}
@@ -344,6 +381,7 @@ export default function HomeCardPage({ navigation, route}) {
             </Text>
           </View>
         }
+<<<<<<< HEAD
         rightComponent={ 
           <View style={styles.backBtn}>
           {/* <View style={styles.square} /> */}
@@ -356,6 +394,9 @@ export default function HomeCardPage({ navigation, route}) {
                 </TouchableOpacity>
             </View>
         }
+=======
+        rightComponent={{}}
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
         containerStyle={styles.headerContainer}
       />
       </View>
@@ -366,6 +407,7 @@ export default function HomeCardPage({ navigation, route}) {
           <RefreshControl
             refreshing={refreshing} // Set refreshing state here
             onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here 
+<<<<<<< HEAD
           />}
           >
 
@@ -400,6 +442,11 @@ export default function HomeCardPage({ navigation, route}) {
 
         
         {/* <View style={styles.btnGroupHomePage}>
+=======
+          />}>
+
+        <View style={styles.btnGroupHomePage}>
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           <Input
             style={styles.searchBar}
             value={searchTerm}
@@ -410,7 +457,11 @@ export default function HomeCardPage({ navigation, route}) {
             
             inputStyle={styles.inputControl}
             inputContainerStyle={{ borderBottomWidth: 0, padding:10 }} 
+<<<<<<< HEAD
             leftIcon = {<FontAwesome name="search" size={18} color={COLORS.black} style={styles.logoIcon} />}
+=======
+            leftIcon = {<FontAwesome name="search" size={20} color={COLORS.cartTitle} style={styles.logoIcon} />}
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
             rightIcon = {<MaterialCommunityIcons name="window-close" size={17} color={COLORS.cartTitle} style={styles.timesIcon} 
                 onPress={onCancleSearchPress}/>}
           />
@@ -419,6 +470,7 @@ export default function HomeCardPage({ navigation, route}) {
 
           {/************** start filters buttons *********************/}
           <View style={{justifyContent:'center', backgroundColor: COLORS.cardBackground}}>
+<<<<<<< HEAD
               {/* <View style={{ 
                       backgroundColor: COLORS.cardBackground, 
                       justifyContent: 'space-between', 
@@ -430,6 +482,19 @@ export default function HomeCardPage({ navigation, route}) {
               {/* <TouchableOpacity
             onPress={() => sheet.current.open()}
             style={[styles.picker, { paddingVertical: 10 }]}>
+=======
+              <View style={{ 
+                      backgroundColor: COLORS.cardBackground, 
+                      justifyContent: 'space-between', 
+                      flexDirection: 'row',
+                      marginHorizontal: 15}}>
+                  
+                 
+            
+                  {/* <TouchableOpacity
+                  onPress={() => sheet.current.open()}
+                  style={[styles.picker, { paddingVertical: 20 }]}>
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
                   <View style={styles.pickerAction}>
                       <Text style={styles.pickerActionText}> Category  </Text>
@@ -440,6 +505,7 @@ export default function HomeCardPage({ navigation, route}) {
                       size={18}
                       marginRight={10} />
                   </View>
+<<<<<<< HEAD
                   </TouchableOpacity>  */}
 
                   
@@ -464,6 +530,41 @@ export default function HomeCardPage({ navigation, route}) {
             >
                   <Text style={styles.title}>{selectedCategoryLabel}</Text>
             </Animated.View>
+=======
+                  </TouchableOpacity> */}
+
+                      <View style={styles.iconFrame}>
+                        <Pressable style={{flexDirection: 'row'}} 
+                          onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                          
+                          <Text style={styles.cardCity}>
+                          <MaterialCommunityIcons name="filter" color={COLORS.btnBlue} size={25} style={styles.filterIcon}/>
+                          Filters</Text>
+                        </Pressable>
+                        </View>
+
+                        {filters.selectedCategory !== "0" && 
+                          (
+                            <Pressable style={[styles.removeFilterBtn, {marginTop:25}]} onPress={() => {
+                              setSelectedCategory("0");
+                              setFilters({ ...filters, ['selectedCategory']: "0" });
+                            }}>
+                              <Text style={{ textDecorationLine: 'underline' }}> Show All Categories</Text>
+                            </Pressable>
+                          )
+                        }
+                      
+
+                        
+                  
+              </View>
+              
+
+          {/* Selected category lable */}
+            <View style={{backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}}>
+                  <Text style={styles.title}>{formatKeyBeforeShow('selectedCategory')}{" "}{selectedCategoryLabel}</Text>
+            </View>
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           </View>
 
           {/************** end filters buttons *********************/}
@@ -495,6 +596,7 @@ export default function HomeCardPage({ navigation, route}) {
                       size={14}
                       style={styles.closeIcon}
                       onPress={() => {
+<<<<<<< HEAD
                         if (key === 'startDate') {
                           setFilters({ ...filters, startDate: "", endDate: "" });
                         }
@@ -502,6 +604,14 @@ export default function HomeCardPage({ navigation, route}) {
                           setFilters({ ...filters, [key]: "" });
                         }
                        useFilters(filters);
+=======
+                        setFilters({ ...filters, [key]: "" });
+                        if (key === 'startDate') {
+                          setFilters({ ...filters, ['endDate']: "" });
+                          setFilters({ ...filters, ['startDate']: "" });
+                        }
+                       // useFilters();
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
                       }}
                     />
 
@@ -514,7 +624,11 @@ export default function HomeCardPage({ navigation, route}) {
           {activeFilters && (<Pressable style={styles.removeFilterBtn} onPress={() => {
               setShowFilters(false);
               initialFilters(false); }}>
+<<<<<<< HEAD
             <Text style={{ textDecorationLine: 'underline' }}> Clear </Text>
+=======
+            <Text style={{ textDecorationLine: 'underline' }}> Remove All</Text>
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
           </Pressable>)}
         </View>)   }    
 
@@ -544,8 +658,13 @@ export default function HomeCardPage({ navigation, route}) {
           <Feather style={styles.scrollTopButton} 
             name="chevron-up" 
             type="material" 
+<<<<<<< HEAD
             color={COLORS.black}
             size={26}
+=======
+            color={COLORS.cartTitle}
+            size={30}
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
             />
         </TouchableOpacity>
       </View>
@@ -555,7 +674,11 @@ export default function HomeCardPage({ navigation, route}) {
 
 
       {/*****************************************/}
+<<<<<<< HEAD
        <RBSheet
+=======
+      {/* <RBSheet
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
         customStyles={{ container: styles.sheet }}
         height={380}
         openDuration={250}
@@ -606,7 +729,11 @@ export default function HomeCardPage({ navigation, route}) {
             </Text>
           </TouchableOpacity> */}
         </View>
+<<<<<<< HEAD
       </RBSheet> 
+=======
+      </RBSheet> */}
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
       {/*****************************************/}   
 
     </SafeAreaView>
@@ -644,9 +771,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     //backgroundColor: COLORS.greyCityColor,
     justifyContent: 'flex-start',
+<<<<<<< HEAD
     height: 120,
     marginTop: -10,
     borderBottomWidth: 1.5,
+=======
+    height: 110,
+    marginTop: -30,
+    borderBottomWidth: 1,
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     borderBottomColor: COLORS.lightgrey,
     elevation: 2, // Android shadow
     shadowColor: '#000', // iOS shadow
@@ -680,9 +813,13 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   filterIcon: {
+<<<<<<< HEAD
     paddingHorizontal:4,
     color: '#4c6cfd',
     //color: COLORS.cartTitle,
+=======
+    paddingHorizontal:0,
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
   },
 
@@ -714,6 +851,7 @@ const styles = StyleSheet.create({
   scrollTopButton: {
     position: 'absolute',
     bottom: -10,
+<<<<<<< HEAD
     right: 12,
   },
   headerComponent: {
@@ -721,6 +859,10 @@ const styles = StyleSheet.create({
     bottom: -25,
     right: 12,
   },
+=======
+    right: 10,
+  },
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   buttonContainer: {
     position: 'absolute',
     bottom: 20,
@@ -729,13 +871,18 @@ const styles = StyleSheet.create({
   },
   circle: {
     position: 'absolute',
+<<<<<<< HEAD
     backgroundColor: COLORS.greyInSearchBar, 
+=======
+    backgroundColor: COLORS.lightgrey, 
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     borderRadius: 20,
     width: 40,
     height: 40,
     bottom: 5,
     right: 25,
     zIndex: -1, // Ensure it's behind the button
+<<<<<<< HEAD
     borderWidth: 1,
     borderColor: '#f5f5f5',
     elevation: 2, // Android shadow
@@ -746,6 +893,8 @@ const styles = StyleSheet.create({
         width: 0,
         height: 1,
       },
+=======
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
   },
   pickerAction: {
     marginLeft: 'auto',
@@ -842,6 +991,7 @@ const styles = StyleSheet.create({
   /** Card */
   filterBox: {
     flexDirection: 'row',
+<<<<<<< HEAD
     alignItems: 'center',
     marginRight: 10, // Margin between text and cross icon
     borderWidth: 1,
@@ -866,6 +1016,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     flexDirection: 'column',
     alignItems: 'center',
+=======
+    alignItems: 'center',
+    marginRight: 10, // Margin between text and cross icon
+    borderWidth: 1,
+    borderColor: COLORS.black,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  card: {
+    paddingVertical: 6,
+    borderRadius: 12,
+    flexDirection: 'column',
+    alignItems: 'center',
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
     marginHorizontal: 5,
     borderWidth: 1,
     borderColor: 'grey',
@@ -883,12 +1048,20 @@ const styles = StyleSheet.create({
     paddingTop :0,
     backgroundColor: COLORS.cardBackground, 
     justifyContent: 'flex-start',
+<<<<<<< HEAD
     flexDirection: 'column' ,
     
   },
   iconFrame: { 
       height: 40,
       width: 88,
+=======
+    flexDirection: 'column' 
+  },
+  iconFrame: { 
+      height: 50,
+      width: 100,
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
       marginTop: -5,
       paddingHorizontal:5,
       borderRadius: 12,
@@ -943,6 +1116,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 10,
     marginLeft:20,
+<<<<<<< HEAD
   },
   backBtn:{
     position: 'absolute',
@@ -1007,6 +1181,9 @@ const styles = StyleSheet.create({
     }
     
   
+=======
+  }
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
   
 

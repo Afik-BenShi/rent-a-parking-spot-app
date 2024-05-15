@@ -6,6 +6,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+<<<<<<< HEAD
+=======
+import { Header } from 'react-native-elements';
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { COLORS } from '../../assets/theme';
@@ -48,7 +52,11 @@ export default function MyProductsPage({ navigation, route }) {
     return (
         <SafeAreaView style={styles.layout}>
 
+<<<<<<< HEAD
              {/* <Header
+=======
+            <Header
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
                 leftComponent={{}}
                 rightComponent={{}}
                 containerStyle={styles.headerContainer}

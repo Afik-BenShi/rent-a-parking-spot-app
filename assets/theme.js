@@ -43,7 +43,10 @@ const COLORS = {
   orangeLikeStars: '#f26463',
   greyCityColor: '#5f697d',
   greyTextInExtendedProduct: '#7b7c7e',
+<<<<<<< HEAD
   greyInSearchBar:  '#EBECEC',
+=======
+>>>>>>> 77fb1a4 (improve filters, input validation in AddNewProduct)
 
 };
 
