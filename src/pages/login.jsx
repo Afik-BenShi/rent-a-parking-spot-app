@@ -21,7 +21,7 @@ export function LoginPage({ navigation, route }) {
 
     useEffect(() => {
         if (navigate) {
-            navigation.replace("SignUpDetails");
+            navigation.replace(navigate);
         }
     }, [route]);
     const doLogin = async () => {
