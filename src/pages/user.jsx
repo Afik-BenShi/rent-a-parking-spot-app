@@ -50,10 +50,13 @@ export default function Profile({ navigation, route }) {
   };
 
   const doLogOut = async () => {
+    console.log('logging out');
     const isSignedOut = await signOutUser();
     if (!isSignedOut){
       console.error("did not log out", getAuth());
+      return;
     }
+    navigation.navigate('auth');
   }
 
   // Function to handle 'save' button press
