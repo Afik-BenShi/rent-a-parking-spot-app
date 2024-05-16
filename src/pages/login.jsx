@@ -9,7 +9,7 @@ import { getAuth } from "firebase/auth";
 import LoadingPage from "./LoadingPage";
 
 export function LoginPage({ navigation, route }) {
-    const {navigate}= route?.params;
+    const {redirect}= route?.params;
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -20,8 +20,8 @@ export function LoginPage({ navigation, route }) {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        if (navigate) {
-            navigation.replace(navigate);
+        if (redirect) {
+            navigation.replace(redirect);
         }
     }, [route]);
     const doLogin = async () => {
@@ -32,13 +32,14 @@ export function LoginPage({ navigation, route }) {
         const login = await signInWithEmail(email.text, password.text);
         if (login) {
             setLoginFailed(false);
+            navigation.navigate('loading');
         } else {
             setLoginFailed(true);
         }
         setIsLoading(false);
     };
-    if (navigate) {
-        return <LoadingPage/>
+    if (redirect) {
+        return <LoadingPage navigation={navigation} />
     }
     return (
         <SafeAreaView style={styles.loginContainer}>

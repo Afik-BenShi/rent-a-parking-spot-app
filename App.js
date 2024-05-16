@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { v4 as uuidv4 } from 'uuid';
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
@@ -12,7 +11,6 @@ import MyProductsPage from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
 import MyOrderAsRenterPage from './src/pages/MyOrdersAsRenter';
 import Filters from './src/components/filters';
-import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
 import ExtendedProduct from './src/pages/ExtendedProduct';
 import ChooseCategoryPage from './src/pages/chooseCategoryPage'
@@ -23,11 +21,8 @@ import { COLORS } from "./assets/theme";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginPage } from './src/pages/login';
 import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Text, Icon } from '@rneui/themed';
-import { branchOnInfoExistance } from './src/auth/auth';
 import LoadingPage from './src/pages/LoadingPage';
-import { setUserContext } from './src/customStates/userContext';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -110,11 +105,12 @@ function MyOrdersStackScreen({ route }) {
 
 const AuthStack = createNativeStackNavigator();
 
-function AuthStackScreen({navigate}) {
+function AuthStackScreen({route}) {
+  const {redirect} = route.params?? {};
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen options={{headerShown: false}} name="Login" 
-        component={LoginPage} initialParams={{navigate}}
+        component={LoginPage} initialParams={{redirect}}
       />
       <AuthStack.Screen options={{headerTitle: () => (
                 <Text style={{ fontSize: 16, fontWeight: "bold" }}>
@@ -135,49 +131,10 @@ function AuthStackScreen({navigate}) {
 }
 
 const Tab = createBottomTabNavigator();
-export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [authRoute, setAuthRoute] = useState('Login');
-  const [userId, _setUserId] = useState('')
-  const setUserId = useCallback((param) => {_setUserId(param)}, []);
-  
-  useEffect(()=> {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (!user){
-        setIsLoading(false);
-        return;
-      }
-      branchOnInfoExistance({
-        user, 
-        doIfExists() {
-          _setUserId(user.uid || "");
-          setIsLoading(false);
-        },
-        doIfNotExists() {
-          setAuthRoute('SignUpDetails');
-          setIsLoading(false);
-        }
-      })
-    });
-  }, [])
-  
-  if (isLoading){
-    return <LoadingPage/>
-  }
-  
-  if (!userId) {
-    return (
-    <NavigationContainer>
-      <setUserContext.Provider value={setUserId}>
-      <AuthStackScreen navigate={authRoute} />
-      </setUserContext.Provider>
-    </NavigationContainer>
-    );
-  }
+function TabStackScreen({route}) {
+  const {userId} = route.params?? {};
   return (
-    <NavigationContainer>
-      <Tab.Navigator
+    <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -213,6 +170,19 @@ export default function App() {
 
 
       </Tab.Navigator>
+  )
+}
+
+const AppStack = createNativeStackNavigator();
+export default function App() {
+  return( 
+    <NavigationContainer>
+      <AppStack.Navigator initialRouteName={'loading'}>
+          <AppStack.Screen options={{headerShown:false}} name="loading"
+            component={LoadingPage} />
+          <AppStack.Screen options={{headerShown: false}} component={AuthStackScreen} name='auth' />
+        <AppStack.Screen options={{headerShown: false}} component={TabStackScreen} name='main'/>
+      </AppStack.Navigator>
     </NavigationContainer>
   );
 }

@@ -18,10 +18,8 @@ import { debounce } from "../utils/utils";
 import axios from "axios";
 import config from "../backend/config";
 import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";
-import { setUserContext } from "../customStates/userContext";
 
-export function SignUpAuth({ navigation, route }) {
-    const setUserId = route?.params?.setUserId;
+export function SignUpAuth({ navigation }) {
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -59,7 +57,7 @@ export function SignUpAuth({ navigation, route }) {
             const user = await signUpWithEmail(email.text, password.text);
             if (user) {
                 setErrorMessage("");
-                navigation.navigate("SignUpDetails", { setUserId });
+                navigation.navigate("SignUpDetails");
             }
         } catch (error) {
             if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
@@ -132,7 +130,7 @@ export function SignUpAuth({ navigation, route }) {
     );
 }
 
-export function SignUpDetails({ navigation, route }) {
+export function SignUpDetails({ navigation }) {
     const fullName = useValidatedText(
         "",
         /^[a-zA-z ]{2,}$/,
@@ -152,12 +150,6 @@ export function SignUpDetails({ navigation, route }) {
     const [showAddressError, setAddressShow] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [signUpError, setSignUpError] = useState("");
-    const setUserId =
-        useContext(setUserContext) ??
-        ((_) =>
-            setSignUpError(
-                "We had an unexpacted error. Please close and reopen the app"
-            ));
 
     const coordSelectedHandler = ({ lat, lon }, newAddressDetails) => {
         setCoord({ lat, lon });
@@ -188,7 +180,7 @@ export function SignUpDetails({ navigation, route }) {
                 {
                     fullName: fullName.text,
                     phoneNumber: phoneNumber.text,
-                    coord,
+                    coordinates: coord,
                     city: addressDetails.city,
                     street: addressDetails.streetAndNumber,
                     addressNotes: addressNotes.text,
@@ -203,7 +195,7 @@ export function SignUpDetails({ navigation, route }) {
             return;
         }
         setIsLoading(false);
-        setUserId(result);
+        navigation.navigate('main');
     };
 
     return (

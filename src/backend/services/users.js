@@ -1,8 +1,10 @@
 const _ = require("lodash");
 const { upsertDocument, getUserSuggestionsCached, getDocumentById } = require("../utils/db");
+const {firestore: {GeoPoint}} = require('firebase-admin');
 
 const upsertPersonalDetails = async (data) => {
     const relevantData = _.pick(data, ['fullName', 'phoneNumber', 'city', 'coordinates', 'street', 'addressNotes', 'imageUrl' ]);
+    relevantData.coordinates = new GeoPoint(relevantData.coordinates?.lat, relevantData.coordinates?.lon);
     const collection = 'users'
     const resultId = await upsertDocument({ collection, data: relevantData, docId: data.token.user_id });
     return resultId;
