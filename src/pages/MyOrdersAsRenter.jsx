@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
+    SafeAreaView,
     ScrollView,
     View,
     RefreshControl,
 } from 'react-native';
+import { Header } from 'react-native-elements';
 
 import { COLORS } from '../../assets/theme';
 import CardListForMyOrders from '../components/cardListForMyOrders';
@@ -23,7 +25,7 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
 
     const fetchMyOrderAsRenter = async () => {
         try {
-          const token = getAuth().currentUser?.getIdToken()
+            const token = getAuth().currentUser?.getIdToken()
             const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`,
               {headers: { Authorization: await token },}
             );
@@ -90,10 +92,11 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
           !noContent && 
           <CardListForMyOrders
             items={myOrders.map((order) => ({
-                ...order.enriched_productId,
-                productId: order.productId,
-                OrderStartDate: order.startDate,
-                OrderEndDate: order.endDate,
+              ...order.enriched_productId,
+              productId: order.productId,
+              OrderStartDate: order.startDate,
+              OrderEndDate: order.endDate,
+              OwnerInfo: order.enriched_ownerId,
             }))}
             title=""
             onItemPressed={(details) => {

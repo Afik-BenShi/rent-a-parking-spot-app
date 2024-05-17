@@ -66,7 +66,7 @@ export default function OwnerProductPage({ route, navigation }) {
           require("../../assets/parking-details-images/placeholder.png");
 
     const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
-
+ 
     return (
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
@@ -146,6 +146,7 @@ export function parseItem({ details: item }) {
         OrderStartDate,
         OrderEndDate,
         mainCategoryId,
+        OwnerInfo,
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
@@ -160,7 +161,9 @@ export function parseItem({ details: item }) {
         },
         image: imageUrl,
         price: Object.assign(mock.price, { amount: pricePerDay }),
-        owner: Object.assign(mock.owner, { name: ownerId }),
+        owner: Object.assign(mock.owner, { id: ownerId, 
+                                            name: OwnerInfo ? OwnerInfo.fullName : mock.owner.name,
+                                            phoneNumber: OwnerInfo ? OwnerInfo.phoneNumber : mock.owner.phoneNumber}),
         orderDates: Object.assign(mock.orderDates, 
             { startDate: timeStampToDate(OrderStartDate?? startDate),   // in case of missing data, use the start date
                 endDate: timeStampToDate(OrderEndDate?? endDate) }),

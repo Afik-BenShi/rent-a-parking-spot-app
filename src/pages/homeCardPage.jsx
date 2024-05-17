@@ -29,6 +29,8 @@ import config from '../backend/config'
 import OopsNoProducts from '../components/oopsNoProducts';
 import { Header } from '@rneui/themed';
 import { getAuth } from 'firebase/auth';
+import { filter, set } from 'lodash';
+import { useNavigation } from '@react-navigation/native';
 
 
 const items = [
@@ -101,6 +103,7 @@ export default function HomeCardPage({ navigation, route}) {
     }
   };
 
+  
   const updateLocaionsList = (data) => {
     const result = locationsList;
     for (let i = 0; i < data.length; i++){
@@ -128,6 +131,10 @@ export default function HomeCardPage({ navigation, route}) {
 
   }, [filters]);
 
+  useEffect(() => {
+    fetchProducts(filters);  
+  }, []);
+  
 
 
   const onRefresh = useCallback((filters) => {
@@ -137,7 +144,7 @@ export default function HomeCardPage({ navigation, route}) {
     try{
       //console.log('onRefresh filters', filters);
       
-      fetchProducts(filters);    // REMOVE THIS IN ORDER TO FETCH 
+      fetchProducts(filters);    
       
     } catch (err) {
       console.log(JSON.stringify(err))
@@ -190,7 +197,8 @@ export default function HomeCardPage({ navigation, route}) {
         month: 'short',
         day: 'numeric',
       });
-      if (filters.endDate){
+      // @ts-ignore
+      if (filters.endDate && filters.endDate instanceof Date){
         var formatEnd = filters.endDate.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
@@ -848,11 +856,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10, // Margin between text and cross icon
     borderWidth: 1,
-    borderColor: COLORS.black,
     borderRadius: 5,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderWidth: 1,
     borderColor: '#f5f5f5',
     elevation: 2, // Android shadow
       shadowColor: '#000', // iOS shadow
@@ -983,7 +989,7 @@ const styles = StyleSheet.create({
       
   searchSectionWrapper:{
       flexDirection: 'row',
-      marginVertival:20,
+      marginVertical:20,
       elevation: 2, // Android shadow
       shadowColor: '#000', // iOS shadow
       shadowOpacity: 0.1, // iOS shadow
