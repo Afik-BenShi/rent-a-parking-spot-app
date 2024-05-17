@@ -25,6 +25,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Rental-Wize needs access to your photos for uploading photos of your products and a picture for your account."
+        }
+      ]
+    ]
   }
 }
