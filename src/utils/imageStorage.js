@@ -19,6 +19,4 @@ export async function uploadImage(storagePath, uri) {
     const storageRef = ref(storage, storagePath);
 
     const response = await uploadBytes(storageRef, blob);
-
-    response.metadata
 }
