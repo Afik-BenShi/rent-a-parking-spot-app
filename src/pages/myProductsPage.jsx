@@ -42,7 +42,7 @@ export default function MyProductsPage({ navigation, route }) {
     }, [refreshing]);
 
     const updateProducts = () => {
-         (true);
+        setRefreshing(true);
     };
 
     return (
@@ -69,7 +69,7 @@ export default function MyProductsPage({ navigation, route }) {
                     <View style={styles.circle} />
                     
                     <TouchableOpacity style={styles.buttonContainer} 
-                        onPress={() => navigation.navigate('addProduct', { updateProducts })}
+                        onPress={() => navigation.navigate('addProduct', { updateProducts, userId })}
                     > 
                     <Ionicons style={styles.newProductBtn} 
                         name="add-circle" 
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         flexDirection: 'column',
+        paddingBottom: 180,
     },
     btnContainer: {
         flexDirection: 'row',

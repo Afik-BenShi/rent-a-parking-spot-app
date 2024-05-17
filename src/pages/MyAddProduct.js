@@ -15,7 +15,9 @@ import NextBackBtn from '../components/nextAndBackBtn';
 
 export default function AddProductPage ({ navigation, route }) {
   
-   const { updateProducts } = route.params;
+   const { updateProducts, userId } = route.params;
+
+   console.log("userId in addProductPage: ", userId);
 
     // State to hold the entered details
     const [details, setDetails] = useState({
@@ -94,7 +96,7 @@ export default function AddProductPage ({ navigation, route }) {
         }
 
         navigation.navigate("submitDetailsBeforePost" ,
-        { detailsList: details , onSuccess: updateProducts});
+        { detailsList: details , user:userId ,onSuccess: updateProducts});
         
     };
     
@@ -187,37 +189,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  finishButton: {
-    backgroundColor: 'lightgreen',
-    paddingVertical: 15,
-    paddingHorizontal: 80,
-    borderRadius: 10,
-    alignSelf: 'center',
-    marginTop: 20,
-    height: 50,
-},
-startButtonText: {
-    color: '#333',
-    fontWeight: 'bold',
-},
-btn: {
-  borderWidth: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 8,
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  backgroundColor: 'transparent',
-  borderColor: '#266EF1',
-},
-btnGroup: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginHorizontal: -6,
-  marginTop: 18,
-},
+
 btnText: {
   fontSize: 14,
   lineHeight: 20,

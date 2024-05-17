@@ -15,16 +15,18 @@ import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
 
+import { getUser } from '../auth/auth';
 import config from '../backend/config'
 
 const productImage = require("../../assets/parking-details-images/placeholder.png");
 
 
-const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
+const onClickFinish = async ({ navigation, detailsList, userId, onSuccess }) => {
   console.log("Product details submitted: ", detailsList);
 
   // Send the details to the backend
   // Send a POST request to your server
+  const token = await getUser()?.getIdToken();
 
   const newProduct = {
     title: detailsList.productName,
@@ -42,7 +44,8 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
   fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      Authorization: token
     },
     body: JSON.stringify(newProduct)
   })
@@ -63,9 +66,10 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
 
 
 export default function SubmitDetails({ navigation, route }) {
-  const { detailsList, userId: user, onSuccess } = route.params;
+  const { detailsList, user, onSuccess } = route.params;
 
   const [userId, setUserId] = useState(user);
+  console.log("userId in submitDetails: ", userId);
 
   const onGoBackPress = () => {
     navigation.goBack();

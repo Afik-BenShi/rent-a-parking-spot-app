@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Pressable,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -15,10 +14,8 @@ import axios from 'axios';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
 
 import { COLORS } from '../../assets/theme';
-import { timeStampToDate } from "../utils/dateTime";
 import { parseItem } from "./ownerProductPage";
 import { dateRangeFormat } from "../utils/dateTime";
 import { UrlTile } from 'react-native-maps';
@@ -29,6 +26,7 @@ import { disabledDatesForProduct } from "../utils/dateTime";
 
 import CalendarComponent from '../components/calendar';
 import { getAuth } from 'firebase/auth';
+import { set } from 'lodash';
 
 const sections = [
   { name: 'Information' },
@@ -51,7 +49,7 @@ export default function ExtendedProduct({ route, navigation }) {
         id,  // product Id
         title, 
         description, 
-        owner, 
+        owner,   // object - {id, name, phone}
         availability,
         city, 
         price,
@@ -68,6 +66,7 @@ export default function ExtendedProduct({ route, navigation }) {
         orderDates.endDate
     ); 
 
+    const [ownerInfo, setOwnerInfo] = useState(owner);
     const [value, setValue] = useState(0);
 
     const [disabledDates, setDisabledDates] = useState([]);
@@ -88,10 +87,33 @@ export default function ExtendedProduct({ route, navigation }) {
         }
     };
 
+  //   const getOwnerInfoById = async () => {
+  //     if (!owner) 
+  //     {
+  //       console.log("owner is missing");
+  //       return;
+  //     }
+  //     const ownerId = owner.id;
+  //     try {
+  //         const token = await getAuth().currentUser?.getIdToken()
+  //         const response = await axios.get(`http://${config.serverIp}:${config.port}/users/userInfoById`, { 
+  //           headers: { Authorization: token },
+  //           params: { ownerId } });
+  //         console.log(response.data._fieldsProto);
+  //         return response.data._fieldsProto;
+  //     }
+  //     catch (err) {
+  //         console.log(JSON.stringify(err))
+  //     }
+  // };
+
     useEffect(() => {
       fetchAvailabilityByProductId();
       console.log("fetch ");
+      
     }, []);
+
+   
 
     return (
     <View style={{ flex: 1, backgroundColor: '#F9F9F9' }}>
