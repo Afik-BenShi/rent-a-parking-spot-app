@@ -207,30 +207,11 @@ btnPrimary: {
   backgroundColor: '#266EF1',
   borderColor: '#266EF1',
 },
-btnPrimaryText: {
-  fontSize: 14,
-  lineHeight: 20,
-  fontWeight: '600',
-  color: '#fff',
-},
 backButton: {
   position: 'absolute',
   top: 20,
   left: 2,
   zIndex: 1,
-},
-
-divider: {
-  overflow: 'hidden',
-  width: '100%',
-},
-dividerInset: {
-  width: '100%',
-  borderWidth: 2,
-  borderColor: '#e5e5e5',
-  borderStyle: 'dashed',
-  marginTop: -2,
-  marginRight:5,    
 },
 /** Action */
 action: {

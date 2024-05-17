@@ -1,8 +1,9 @@
 {
-    "apiKey": "AIzaSyCw9roJPEbqJ3ZlAJLSU53-DzOiy6mZMrg",
-    "authDomain": "rental-wize.firebaseapp.com",
-    "projectId": "rental-wize",
-    "storageBucket": "rental-wize.appspot.com",
-    "messagingSenderId": "595348126897",
-    "appId": "1:595348126897:android:d106405c30a59dd3f4f690"
+    "apiKey": "AIzaSyASlj-Dcr0XhideY2fcobsptTz9nF45rQM",
+    "authDomain": "rentalwize-481c2.firebaseapp.com",
+    "projectId": "rentalwize-481c2",
+    "storageBucket": "rentalwize-481c2.appspot.com",
+    "messagingSenderId": "151080231002",
+    "appId": "1:151080231002:web:f70527790f64a0dd173863",
+    "measurementId": "G-G2CWC3K54F"
 }

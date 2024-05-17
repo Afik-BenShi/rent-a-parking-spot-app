@@ -66,7 +66,6 @@ export default function ExtendedProduct({ route, navigation }) {
         orderDates.endDate
     ); 
 
-    const [ownerInfo, setOwnerInfo] = useState(owner);
     const [value, setValue] = useState(0);
 
     const [disabledDates, setDisabledDates] = useState([]);
@@ -87,25 +86,6 @@ export default function ExtendedProduct({ route, navigation }) {
         }
     };
 
-  //   const getOwnerInfoById = async () => {
-  //     if (!owner) 
-  //     {
-  //       console.log("owner is missing");
-  //       return;
-  //     }
-  //     const ownerId = owner.id;
-  //     try {
-  //         const token = await getAuth().currentUser?.getIdToken()
-  //         const response = await axios.get(`http://${config.serverIp}:${config.port}/users/userInfoById`, { 
-  //           headers: { Authorization: token },
-  //           params: { ownerId } });
-  //         console.log(response.data._fieldsProto);
-  //         return response.data._fieldsProto;
-  //     }
-  //     catch (err) {
-  //         console.log(JSON.stringify(err))
-  //     }
-  // };
 
     useEffect(() => {
       fetchAvailabilityByProductId();
@@ -113,8 +93,8 @@ export default function ExtendedProduct({ route, navigation }) {
       
     }, []);
 
-   
-
+  
+    console.log();
     return (
     <View style={{ flex: 1, backgroundColor: '#F9F9F9' }}>
       <View style={styles.actions}>
