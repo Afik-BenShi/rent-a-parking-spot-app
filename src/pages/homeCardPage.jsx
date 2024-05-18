@@ -326,6 +326,7 @@ export default function HomeCardPage({ navigation, route}) {
     }  
   }
 
+
   return (
     <SafeAreaView style={styles.layout}>
       <View>
@@ -403,6 +404,7 @@ export default function HomeCardPage({ navigation, route}) {
 
           <TouchableOpacity style={styles.filterBtn}
               onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
+                
             <Ionicons name="options" size={28} color={'#fff'} />
           </TouchableOpacity>
         </View>

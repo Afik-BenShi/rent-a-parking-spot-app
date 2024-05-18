@@ -7,16 +7,26 @@ import {
     View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import { NavigationContainer } from '@react-navigation/native';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import config from '../backend/config';
 import { getUser } from '../auth/auth';
+import NoProductsYet from './noProductsYetPage';
 
-export default function MyProductsPage({ navigation, route }) {
+
+
+export function MyProductsPage({ navigation, route }) {
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
     const [refreshing, setRefreshing] = useState(false);
+    const [noContent, setNoContent] = useState(false);
+    
+    function updateProducts () {
+        console.log("hi from updateProducts");
+        setRefreshing(false);
+        setTimeout(() => setRefreshing(true), 0);
+    };
 
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
@@ -24,7 +34,16 @@ export default function MyProductsPage({ navigation, route }) {
             const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, {
                 headers: {Authorization: token},
                 params: { userId } });
-            setMyItems(response.data);
+            const items = response.data;
+            setMyItems(items);
+            console.log("myItems : " + JSON.stringify(items));
+            
+            // Check if the fetched items are empty
+            if (!items || items.length === 0) {
+                setNoContent(true);
+            } else {
+                setNoContent(false);
+            }           
         }
         catch (err) {
             console.log(JSON.stringify(err))
@@ -41,9 +60,8 @@ export default function MyProductsPage({ navigation, route }) {
 
     }, [refreshing]);
 
-    const updateProducts = () => {
-        setRefreshing(true);
-    };
+   
+
 
     return (
         <SafeAreaView style={styles.layout}>
@@ -56,16 +74,22 @@ export default function MyProductsPage({ navigation, route }) {
 
 
             <View style={styles.container}>
+            {!noContent && (
                 <CardList
                     items={myItems}
                     //title="My Products"
-                    title=""
-                    
-                    onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
+                    onItemPressed={(details) => navigation.navigate('ownerProduct', { updateProducts, details, userId })}
+                    style={styles.cardList} // Apply styles to CardList
                 />
+            )}
+
+            { noContent && <NoProductsYet />   }
+                
             </View>
 
+
             <View style={styles.buttonContainer}>
+                
                     <View style={styles.circle} />
                     
                     <TouchableOpacity style={styles.buttonContainer} 
@@ -82,6 +106,7 @@ export default function MyProductsPage({ navigation, route }) {
 
 
         </SafeAreaView>
+        
     );
 }
 
@@ -103,9 +128,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         flexDirection: 'column',
-        paddingBottom: 180,
+        backgroundColor: COLORS.cardBackground,
     },
     btnContainer: {
         flexDirection: 'row',
@@ -174,4 +199,8 @@ const styles = StyleSheet.create({
     right: 150,
     zIndex: -1, // Ensure it's behind the button
   },
+  cardList: {
+    flex: 1, // Ensure the CardList takes up the full height of the container
+},
+
 });

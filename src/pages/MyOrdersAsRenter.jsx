@@ -29,14 +29,19 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
             const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`,
               {headers: { Authorization: await token },}
             );
-            setMyOrders(response.data);
+            const items = response.data;
+            setMyOrders(items);
             
             console.log("myOrders : " + myOrders);
             console.log("myOrders : " + JSON.stringify(response.data));
             
-            if (myOrders) {
+            if (!items || items.length === 0) {
+              setNoContent(true);
+            } else {
                 setNoContent(false);
             }
+          
+            console.log("noContent : " + noContent);
         }
         catch (err) {
             console.log(JSON.stringify(err))
@@ -78,7 +83,6 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
             }
         >
 
-        
         <View style={styles.container}>
           
           {/*
@@ -118,12 +122,6 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-    layout: {
-      flex: 1,
-      backgroundColor: COLORS.lightWhite,
-      alignContent: 'center',
-      justifyContent: 'center',
-    },
     title: {
       fontSize: 25,
       fontWeight: '800',
@@ -131,25 +129,12 @@ const styles = StyleSheet.create({
       marginLeft: 14,
       marginTop:10,
     },
-    sec_title: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: '#5f697d',
-      marginLeft: 14,
-    },
+ 
     container: {
       flex: 1,
       justifyContent: 'flex-start',
       flexDirection: 'column',
       backgroundColor: COLORS.cardBackground,
     },
-    // header
-    headerContainer: {
-      backgroundColor: '#fff',
-      justifyContent: 'flex-start',
-      height: 110,
-      marginTop: -30,
-      borderBottomWidth: 2,
-      borderBottomColor: COLORS.lightgrey,
-    },
+   
 });

@@ -1,20 +1,19 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useState, useEffect, useContext } from "react";
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
 import ProductDetailsPage from './src/pages/productDetailsPage';
 import SubmitPersonalDetails from './src/pages/submitDetails';
 import OwnerProductPage from './src/pages/ownerProductPage';
-import MyProductsPage from './src/pages/myProductsPage';
+import { MyProductsPage } from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
 import MyOrderAsRenterPage from './src/pages/MyOrdersAsRenter';
 import Filters from './src/components/filters';
 import Profile from './src/pages/user';
 import ExtendedProduct from './src/pages/ExtendedProduct';
 import ChooseCategoryPage from './src/pages/chooseCategoryPage'
-
 
 import { COLORS } from "./assets/theme";
 
@@ -23,6 +22,8 @@ import { LoginPage } from './src/pages/login';
 import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
 import { Text, Icon } from '@rneui/themed';
 import LoadingPage from './src/pages/LoadingPage';
+
+
 
 const HomeStack = createNativeStackNavigator();
 
@@ -57,6 +58,7 @@ function MyProStackScreen({ route }) {
   const { userId } = route.params;
 
   return (
+    
     <MyProductsStack.Navigator>
       <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
         options={{ title: 'My products'}} initialParams={{ userId }}
@@ -70,6 +72,7 @@ function MyProStackScreen({ route }) {
       />
 
     </MyProductsStack.Navigator>
+    
   );
 }
 
@@ -176,6 +179,8 @@ function TabStackScreen({route}) {
 const AppStack = createNativeStackNavigator();
 export default function App() {
   return( 
+    
+
     <NavigationContainer>
       <AppStack.Navigator initialRouteName={'loading'}>
           <AppStack.Screen options={{headerShown:false}} name="loading"
@@ -184,5 +189,6 @@ export default function App() {
         <AppStack.Screen options={{headerShown: false}} component={TabStackScreen} name='main'/>
       </AppStack.Navigator>
     </NavigationContainer>
+
   );
 }
