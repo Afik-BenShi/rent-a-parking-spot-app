@@ -15,7 +15,9 @@ import { COLORS } from '../../assets/theme';
 
 export default function CardList({ items, title, onItemPressed = (_) => { }}) {
   const placeholderImage = require('../../assets/parking-details-images/placeholder.png');
+  
   if (!items) {
+    
     return (
       <SafeAreaView style={{ backgroundColor: COLORS.cardBackground }}>
         <ScrollView contentContainerStyle={styles.container}>

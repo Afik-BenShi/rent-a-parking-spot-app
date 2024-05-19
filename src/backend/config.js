@@ -6,7 +6,7 @@ const categories = [
   ];
 
 const config = {
-    serverIp: '192.168.1.171',
+    serverIp: '192.168.1.39',
     port: 3000,
     categories: categories,
 };

@@ -19,14 +19,18 @@ export function EditableText({
     h2 = false,
     h3 = false,
     h4 = false,
+    sendDataToParent,
 }) {
     const [text, setText] = useState(value);
 
     const debouncedOnChange = useCallback(debounce(onChange), [onChange]);
     const textChangeHandler = (newText) => {
         if (!editMode) return;
+        console.log("newText : " + newText);
+
         setText(newText);
         debouncedOnChange(newText);
+        sendDataToParent(newText);
     };
 
     return !editMode ? (
@@ -37,6 +41,7 @@ export function EditableText({
         <Input
             style={inputStyle}
             onChangeText={textChangeHandler}
+            //onChangeText={(text) => {textChangeHandler}}
             multiline
             value={text}
         />

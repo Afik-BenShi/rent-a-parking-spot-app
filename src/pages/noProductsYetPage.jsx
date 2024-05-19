@@ -7,16 +7,14 @@ import {
 } from 'react-native';
 import { COLORS } from '../../assets/theme';
 
-export default function NoOrdersYet() {
+export default function NoProductsYet() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f6f6f6' }}>
       <View style={styles.container}>
-        <Text style={styles.title}>My Orders</Text>
-        
-        <Text> {'\n'} </Text>
-          
-                  <View style={styles.empty}>
+        <Text style={styles.title}>My Products</Text>
+
+        <View style={styles.empty}>
             <View style={styles.fake}>
               <View style={styles.fakeCircle} />
 
@@ -49,10 +47,10 @@ export default function NoOrdersYet() {
               </View>
             </View>
 
-            <Text style={styles.emptyTitle}>Your order list is empty</Text>
+            <Text style={styles.emptyTitle}>Your products list is empty</Text>
 
             <Text style={styles.emptyDescription}>
-              Once you start a new rental, you'll find the updated rental order displayed here.
+            Once you add a new product available for rent, you will see it displayed here
             </Text>
           </View> 
 

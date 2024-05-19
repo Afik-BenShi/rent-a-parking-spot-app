@@ -112,6 +112,19 @@ const getProductsDb = async (filters) => {
    }
 };
 
+const updateProductInfoDb = async (productId, newProductData) => {
+    const { title, description } = newProductData;
+    try {
+        const docRef = db.collection("products").doc(productId);
+        // Update only specific fields (title and description)
+        await docRef.update({ title, description });
+        return { id: docRef.id, title, description };
+    } catch (error) {
+        console.error("Error updating product:", error);
+        throw error;
+    }
+};
+
 
 const addMyProductDb = async (newProductData) => {
     async function addSlot(parentDocId, date, userId) {
@@ -331,4 +344,5 @@ module.exports = {
     getUserSuggestionsCached,
     getProductAvailabilityDb,
     getDocumentById,
+    updateProductInfoDb,
 };
