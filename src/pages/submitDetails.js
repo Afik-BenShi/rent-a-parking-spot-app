@@ -17,9 +17,10 @@ import ExpandableImage from "../components/ExpandableImage";
 
 import config from '../backend/config'
 
-const productImage = require("../../assets/parking-details-images/littleBlackDress.jpg");
+const productImage = require("../../assets/parking-details-images/placeholder.png");
 
-const onClickFinish = ({ navigation, detailsList, userId }) => {
+
+const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
   console.log("Product details submitted: ", detailsList);
 
   // Send the details to the backend
@@ -30,9 +31,9 @@ const onClickFinish = ({ navigation, detailsList, userId }) => {
     pricePerDay: detailsList.price,
     ownerId: userId,
     description: detailsList.productDescription,
-    subCategoryId: 1,  // Replace with the actual category ID 
-    startDate: detailsList.from,
-    endDate: detailsList.until,
+    mainCategoryId: detailsList.category,  
+    fromDate: detailsList.fromDate,
+    untilDate: detailsList.untilDate,
     city: detailsList.city,
   };
 
@@ -53,18 +54,31 @@ const onClickFinish = ({ navigation, detailsList, userId }) => {
       console.error("Error while posting new product:", JSON.stringify(error));
     });
 
+    onSuccess();
   // Navigate to the My Products page
   navigation.navigate("My Products cardList");
 
 };
 
+
+
 export default function SubmitDetails({ navigation, route }) {
-  const { detailsList, userId: user } = route.params;
+  const { detailsList, userId: user, onSuccess } = route.params;
+
   const [userId, setUserId] = useState(user);
 
   const onGoBackPress = () => {
     navigation.goBack();
   };
+
+  const data = [
+    {key:'1', value:'Outdoor equipment'},
+    {key:'2', value:'Entertainment & Events'},
+    {key:'3', value:'Home Improvement'},
+  ];
+
+  const categoryName = data.find((item) => item.key === detailsList.category) ? 
+                data.find((item) => item.key === detailsList.category).value : "";
 
   return (
     <View style={{ flex: 1 }}>
@@ -118,8 +132,7 @@ export default function SubmitDetails({ navigation, route }) {
                 <Text style={styles.detailsField}>Category</Text>
 
                 <View>
-                  <Text style={styles.detailsValue}>{detailsList.category}</Text>
-                  {/*    TODO: get the category name from the category id !!!! */}
+                  <Text style={styles.detailsValue}>{categoryName}</Text>
                 </View>
 
               </View>
@@ -180,7 +193,7 @@ export default function SubmitDetails({ navigation, route }) {
           backText="Back"
           navigation={navigation}
           //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-          onNextPress={() => onClickFinish({ navigation, detailsList, userId })}
+          onNextPress={() => onClickFinish({ navigation, detailsList, userId, onSuccess})}
 
           paddingBottom={0}
         />
@@ -191,20 +204,6 @@ export default function SubmitDetails({ navigation, route }) {
   );
 }
 
-
-/*
- 
-  ownerName: "",
-  productName: "",
-  category: "",  // add choose from list
-  city: "",
-  price: "",
-  phoneNumber: "",
-  from: "",
-  until: "",  // range of days
-  productDescription: "",
-});
-*/
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 0,
@@ -212,6 +211,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    paddingBottom:120,
   },
   overlay: {
     position: 'absolute',

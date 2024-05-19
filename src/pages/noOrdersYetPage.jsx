@@ -1,51 +1,99 @@
 import React from 'react';
-import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
+import {
+    StyleSheet,
+    SafeAreaView,
+    Text,
+    View,
+} from 'react-native';
 
 export default function NoOrdersYet() {
+
+  // const [myOrders, setMyOrders] = useState([]);
+  // const [userId, setUserId] = useState(route.params.userId);
+
+  // const [noContent, setNoContent] = useState(true);
+
+  // const fetchMyOrderAsRenter = async () => {
+  //     try {
+  //         const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`);
+  //         setMyOrders(response.data);
+          
+  //         console.log("myOrders : " + response.data.length);
+  //         console.log("myOrders : " + JSON.stringify(response.data));
+          
+  //         if (response.data.length > 0) {
+  //             setNoContent(false);
+  //         }
+  //     }
+  //     catch (err) {
+  //         console.log(JSON.stringify(err))
+  //         console.log("error while fetching renter")
+  //     }
+  // };
+
+
+  // useEffect(() => {
+  //   fetchMyOrderAsRenter();
+  // }, []);
+
+// <View style={styles.container}>
+//           <CardList
+//             items={rentalItems}
+//             title=""
+//             onItemPressed={(details) => navigation.navigate("productDetails", { details })}
+            
+//           />
+          
+//           {noContent && <OopsNoProducts />}
+        
+//         </View>
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f6f6f6' }}>
       <View style={styles.container}>
         <Text style={styles.title}>My Orders</Text>
 
         <View style={styles.empty}>
-          <View style={styles.fake}>
-            <View style={styles.fakeCircle} />
+            <View style={styles.fake}>
+              <View style={styles.fakeCircle} />
 
-            <View>
-              <View style={[styles.fakeLine, { width: 120 }]} />
+              <View>
+                <View style={[styles.fakeLine, { width: 120 }]} />
 
-              <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
 
-              <View
-                style={[
-                  styles.fakeLine,
-                  { width: 70, marginBottom: 0 },
-                ]} />
+                <View
+                  style={[
+                    styles.fakeLine,
+                    { width: 70, marginBottom: 0 },
+                  ]} />
+              </View>
             </View>
-          </View>
 
-          <View style={[styles.fake, { opacity: 0.5 }]}>
-            <View style={styles.fakeCircle} />
+            <View style={[styles.fake, { opacity: 0.5 }]}>
+              <View style={styles.fakeCircle} />
 
-            <View>
-              <View style={[styles.fakeLine, { width: 120 }]} />
+              <View>
+                <View style={[styles.fakeLine, { width: 120 }]} />
 
-              <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
 
-              <View
-                style={[
-                  styles.fakeLine,
-                  { width: 70, marginBottom: 0 },
-                ]} />
+                <View
+                  style={[
+                    styles.fakeLine,
+                    { width: 70, marginBottom: 0 },
+                  ]} />
+              </View>
             </View>
-          </View>
 
-          <Text style={styles.emptyTitle}>Your order list is empty</Text>
+            <Text style={styles.emptyTitle}>Your order list is empty</Text>
 
-          <Text style={styles.emptyDescription}>
-            Once you start a new rental, you'll find the updated rental order displayed here.
-          </Text>
-        </View>
+            <Text style={styles.emptyDescription}>
+              Once you start a new rental, you'll find the updated rental order displayed here.
+            </Text>
+          </View> 
+
       </View>
     </SafeAreaView>
   );

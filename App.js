@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { v4 as uuidv4 } from 'uuid';
-
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
@@ -11,15 +9,20 @@ import SubmitPersonalDetails from './src/pages/submitDetails';
 import OwnerProductPage from './src/pages/ownerProductPage';
 import MyProductsPage from './src/pages/myProductsPage';
 import homeCardPage from './src/pages/homeCardPage';
-import NoOrdersYet from './src/pages/noOrdersYetPage';
+import MyOrderAsRenterPage from './src/pages/MyOrdersAsRenter';
 import Filters from './src/components/filters';
-import EditProfile from './src/pages/settingPersonal';
 import Profile from './src/pages/user';
+import ExtendedProduct from './src/pages/ExtendedProduct';
+import ChooseCategoryPage from './src/pages/chooseCategoryPage'
 
-import { Icon } from 'react-native-elements';
+
 import { COLORS } from "./assets/theme";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { LoginPage } from './src/pages/login';
+import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
+import { Text, Icon } from '@rneui/themed';
+import LoadingPage from './src/pages/LoadingPage';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -28,6 +31,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator
     //screenOptions={{ headerShown: false }}
     >
+      <HomeStack.Screen name="category" component={ChooseCategoryPage} options={{ headerShown: false }}/>
       <HomeStack.Screen name="HomeCard"
         component={homeCardPage}
         options={{ headerShown: false }}
@@ -38,10 +42,11 @@ function HomeStackScreen() {
       <HomeStack.Screen
         name="filters"
         component={Filters}
-      //options={{ headerShown: false }} // to remove Stack header
+      options={{ headerShown: false }} // to remove Stack header
       />
 
       <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
+      
     </HomeStack.Navigator>
   );
 }
@@ -54,13 +59,13 @@ function MyProStackScreen({ route }) {
   return (
     <MyProductsStack.Navigator>
       <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
-        options={{ title: 'My products', headerShown: false }} initialParams={{ userId }}
+        options={{ title: 'My products'}} initialParams={{ userId }}
 
       />
 
       <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} initialParams={{ userId }} />
       <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
-      <MyProductsStack.Screen name="submitParkingDetails" component={SubmitPersonalDetails} initialParams={{ userId }}
+      <MyProductsStack.Screen name="submitDetailsBeforePost" component={SubmitPersonalDetails} initialParams={{ userId }}
         options={{ headerShown: false }} // to remove Stack header 
       />
 
@@ -84,23 +89,52 @@ function SettingsStackScreen({ route }) {
 
 const MyOrdersStack = createNativeStackNavigator();
 
-function MyOrdersStackScreen() {
+function MyOrdersStackScreen({ route }) {
+  const { userId } = route.params;
+
   return (
     <MyOrdersStack.Navigator>
-      <MyOrdersStack.Screen name="Orders" component={NoOrdersYet} options={{ headerShown: false }} />
+      <MyOrdersStack.Screen name="Orders" component={MyOrderAsRenterPage} initialParams={{ userId }}
+      options={{ headerShown: false }} />
+
+      <MyOrdersStack.Screen name="ExtendedProduct" component={ExtendedProduct} initialParams={{ userId }}
+      options={{ headerShown: false }} />
     </MyOrdersStack.Navigator>
   );
 }
 
-const Tab = createBottomTabNavigator();
+const AuthStack = createNativeStackNavigator();
 
-export default function App() {
-  const [userId, setuserId] = useState('1')
-
+function AuthStackScreen({route}) {
+  const {redirect} = route.params?? {};
   return (
-    <NavigationContainer>
+    <AuthStack.Navigator>
+      <AuthStack.Screen options={{headerShown: false}} name="Login" 
+        component={LoginPage} initialParams={{redirect}}
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Sign Up to RentalWize
+                </Text>
+            )}} name="SignUp" 
+        component={SignUpAuth} 
+      />
+      <AuthStack.Screen options={{headerTitle: () => (
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Fill in details
+                </Text>
+            )}} name="SignUpDetails" 
+        component={SignUpDetails}
+      />
+    </AuthStack.Navigator>
+  )
+}
 
-      <Tab.Navigator
+const Tab = createBottomTabNavigator();
+function TabStackScreen({route}) {
+  const {userId} = route.params?? {};
+  return (
+    <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -114,8 +148,6 @@ export default function App() {
             } else if (route.name === 'My Orders') {
               iconName = focused ? 'bookmark' : 'bookmark-outline'; // My products icon
             }
-
-            // You can return any component here that you like!
             return <Icon name={iconName} type="ionicon" color={color} size={size} />;
           },
           tabBarActiveTintColor: COLORS.btnBlue, // Color of the active tab
@@ -131,13 +163,26 @@ export default function App() {
         <Tab.Screen name='My Products' component={MyProStackScreen}
           options={{ headerShown: false }} initialParams={{ userId }} />
 
-        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} />
+        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} initialParams={{ userId }} />
 
         <Tab.Screen name="Home" component={HomeStackScreen}
           options={{ headerShown: false }} />
 
 
       </Tab.Navigator>
+  )
+}
+
+const AppStack = createNativeStackNavigator();
+export default function App() {
+  return( 
+    <NavigationContainer>
+      <AppStack.Navigator initialRouteName={'loading'}>
+          <AppStack.Screen options={{headerShown:false}} name="loading"
+            component={LoadingPage} />
+          <AppStack.Screen options={{headerShown: false}} component={AuthStackScreen} name='auth' />
+        <AppStack.Screen options={{headerShown: false}} component={TabStackScreen} name='main'/>
+      </AppStack.Navigator>
     </NavigationContainer>
   );
 }

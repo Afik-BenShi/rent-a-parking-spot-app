@@ -15,6 +15,8 @@ const COLORS = {
   blue2: '#01579B',
   blue3: '#283593',
 
+  red: '#c74545',
+
   purple: '#9575CD',
   lightPurple: '#B39DDB',
 
@@ -30,8 +32,19 @@ const COLORS = {
   lightBackground: '#e8ecf4',  //light grey
   inputTextGrey: '#f3eff6', 
   
-  cardBackground: '#f3f5f9',  
+
+  //cardBackground: '#f3f5f9',  
+  cardBackground: '#F9F9F9',  
+  
   cartTitle: '#173153',
+
+  greyBackground: '#F9F9F9',
+  greyText: '#7b7c7e',
+  orangeLikeStars: '#f26463',
+  greyCityColor: '#5f697d',
+  greyTextInExtendedProduct: '#7b7c7e',
+  greyInSearchBar:  '#EBECEC',
+
 };
 
 const FONT = {

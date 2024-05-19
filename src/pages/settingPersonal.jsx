@@ -12,14 +12,11 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 
-import NextBackBtn from '../components/nextAndBackBtn';
-import { Input } from 'react-native-elements';
+import { Input } from '@rneui/themed';
 import styles from '../components/addProduct.style';
 // Icons:
-import Icon from 'react-native-vector-icons/Ionicons'; 
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function EditProfile ({navigation, route}) {
   

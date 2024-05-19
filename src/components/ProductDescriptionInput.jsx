@@ -4,7 +4,7 @@ import Welcome from './Welcome';
 import styles from './welcome.style';
 
 
-// still not working
+// is not working
 const ProductDescriptionInput = () => {
   const [description, setDescription] = useState('');
 

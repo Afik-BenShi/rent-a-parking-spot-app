@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FeatherIcon from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 import {
   View,
@@ -24,46 +24,47 @@ import SingleSelectedDropDown from "./SingleSelectListDropDown";
  
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
 
-  // not used
-  // State to hold the entered details
-  const [details, setDetails] = useState({
-    ownerName: "",
-    productName: "",
-    category: "",  // add choose from list
-    city: "",
-    price: "",
-    phoneNumber: "",
-    from: "",
-    until: "",  // range of days
-    productDescription: "",
-  });
 
-
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  
-  //const [error, setError] = useState('');
-
-  {/*const validateTimes = (start, end) => {
-    if (start >= end) {
-      setError('End time must be greater than start time');
-    } else {
-      setError('');
-    }
-  };*/}
-
-
-  // this methods are not use. we use the same methods in the parent class called MyNewProduct
-  const onStartDateChange = (selectedDate) => {
-    setStartDate(selectedDate);
-    const start = startDate ? startDate.toLocaleString() : 'Not selected';
-    console.log(start);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date())
     
-    sendStartDateToParent(selectedDate);
+    const [endDateHasChanged, setEndDateHasChanged] = useState(false)
+    const [startDateHasChanged, setStartDateHasChanged] = useState(false)
+    const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
+
+    const [valid, setValid] = useState(false);
+
+  const onStartDateChange = (selectedDate) => {
+    // handle case that user selects start date after end date
+    if (endDateHasChanged  && selectedDate > endDate) {
+        alert("Start date must be before end date, select availability dates again");
+        setValid(false);
+        setStartDate(selectedDate);
+        
+        // Update both start date and end date to the current selected date.
+        // The user needs to change the date range again  
+        sendStartDateToParent(selectedDate);
+        sendEndDateToParent(selectedDate);
+        return;
+    }
+    else if (!valid) {
+        setStartDate(selectedDate);
+        setValueInInvalidInput(selectedDate)
+
+        sendStartDateToParent(selectedDate);
+        sendEndDateToParent(selectedDate);
+        setValid(true);
+    }
+    else{
+        setValueInInvalidInput(null);
+        setStartDate(selectedDate);
+        sendStartDateToParent(selectedDate);
+    }
   };
 
   const onEndDateChange = (selectedDate) => {
     setEndDate(selectedDate);
+    setEndDateHasChanged(true);
     const end = endDate ? endDate.toLocaleString() : 'Not selected';
     console.log(end); 
 
@@ -72,18 +73,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
   };
 
 
-  // Function to handle input change and update details state
-  const onInputChange = (field, value) => {
-    
-    const parsedValue = field === "price" || field === "houseNumber" ? parseInt(value) : value;
-
-    setDetails((prevDetails) => ({
-      ...prevDetails,
-      [field]: parsedValue,
-    }));
-  };
-
-
+  
 return (
   
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -113,7 +103,6 @@ return (
                 <Input
                     label="Product name"
                     labelStyle={styles.inputLabel}
-                    //leftIcon={<MoreIcon name="product" size={18} />}
                     placeholder=" Enter product name"
                     onChangeText={(text) => sendDataToParent("productName", text)}
                     inputStyle={styles.inputControl}
@@ -137,12 +126,10 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
           
-
-                
                 <Input
                     label="Daily Price rate"
                     labelStyle={styles.inputLabel}
-                    leftIcon={<AnotherIcon name="coins" size={18} />}
+                    leftIcon={<Entypo color="#000" name="price-tag" size={16} />  }
                     placeholder=" Enter desired daily price"
                     keyboardType="phone-pad"
                     onChangeText={(text) => sendDataToParent("price", text)}
@@ -162,31 +149,33 @@ return (
                     inputContainerStyle={{ borderBottomWidth: 0 }} 
                 />
               */}
-
-                <Divider width={5} color={COLORS.lightgrey} marginTop={20} />
+                    
+                    <View style={styles.divider}>
+                    <View style={styles.dividerInset} /></View>
 
                 <View>
                     <View>
                         <Text style={styles.sectionTitle}>Choose a range of available days </Text>
                     </View>
-                    <Text style={styles.inputLabel}>  Start day : </Text>
                 </View>
-
-                <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange}/>
+                
+                <View style={styles.dateView}>
+                    <Text style={styles.datesLables}>  Start day : </Text>
+                    <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange}/>
+                </View>
                 <Text> </Text>
-
-                <View>
-                    <Text style={styles.inputLabel}>  End day : </Text>
-                    {/*<Text style={styles.errorText}>Note: end time must be greater than start time</Text>*/}
+                <View style={styles.dateView}>
+                    <Text style={styles.datesLables}>  End day : </Text>
+                    <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} 
+                    valueToDisplay={valueInInvalidInput}/>
                 </View>
 
-                <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} />
                 <Text> </Text>
                 
-                <View>
+                {/* <View>
                     <Text>start: {startDate ? startDate.toLocaleString() : 'Not selected'}</Text>
                     <Text>end: {endDate ? endDate.toLocaleString() : 'Not selected'}</Text>
-                </View>
+                </View> */}
 
 
                 
@@ -208,9 +197,6 @@ return (
                     Upload image</Text>
                 </TouchableOpacity>
     
-
-
-
 
                 {/*
                 <Divider width={5} color={COLORS.lightgrey} marginTop={20} />

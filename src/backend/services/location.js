@@ -30,9 +30,6 @@ const getAndCacheLimited = createCache(rateLimitedGet, 5*60);
  */
 function locationRequest(requestHandler) {
     return async (query) => {
-        if (!query?.userId) {
-            return RESPONSES.noUserData;
-        }
         try {
             return requestHandler(query);
         } catch (error) {
@@ -85,11 +82,12 @@ const getGeocode = locationRequest(async (query) => {
 });
 
 /** @returns {Geocode} */
-const locationFormat = ({ lat, lon, display_name, boundingBox }) => ({
+const locationFormat = ({ lat, lon, display_name, boundingbox, ...rest}) => ({
     lat,
     lon,
     display_name,
-    boundingBox,
+    boundingBox: boundingbox,
+    ...rest
 });
 
 module.exports = { getGeocodeStructured, getGeocode };
