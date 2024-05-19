@@ -2,12 +2,14 @@ const express = require("express");
 const { port } = require("./config");
 
 const db = require("./utils/db")
+const storage = require("./utils/storage")
 const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
 
 db.init();
+storage.init()
 
 const app = express();
 app.use(express.json());
@@ -64,7 +66,7 @@ app.post('/myProducts/add', async (req, res) => {
 
 app.get('/users/suggestion', async (req, res) => {
   const query = req.query;
-  const {status, response} = await users.getUserSuggestions(query);
+  const { status, response } = await users.getUserSuggestions(query);
   res.status(status).send(response);
 })
 
@@ -90,7 +92,7 @@ app.post('/users/upsert', async (req, res) => {
 
 app.get('/orders/owner/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { status, response } = await orders.getOrders(userId, {...req.query, type:"owner"});
+  const { status, response } = await orders.getOrders(userId, { ...req.query, type: "owner" });
   res.status(status).send(response);
 });
 
