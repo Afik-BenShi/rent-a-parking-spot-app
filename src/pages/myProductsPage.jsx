@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
@@ -13,20 +13,23 @@ import CardList from '../components/cardList';
 import config from '../backend/config';
 import { getUser } from '../auth/auth';
 import NoProductsYet from './noProductsYetPage';
-
+import { RefreshContext } from '../context/context';
 
 
 export function MyProductsPage({ navigation, route }) {
+    const { refresh, title, description } = useContext(RefreshContext);  // TODO: finish with use context
+    // title and description are used to update the header title and description from the editable components
+
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
-    const [refreshing, setRefreshing] = useState(false);
+    //const [refreshing, setRefreshing] = useState(false);
     const [noContent, setNoContent] = useState(false);
     
-    function updateProducts () {
-        console.log("hi from updateProducts");
-        setRefreshing(false);
-        setTimeout(() => setRefreshing(true), 0);
-    };
+    // function updateProducts () {
+    //     console.log("hi from updateProducts");
+    //     setRefreshing(false);
+    //     setTimeout(() => setRefreshing(true), 0);
+    // };
 
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
@@ -50,17 +53,27 @@ export function MyProductsPage({ navigation, route }) {
         }
     };
 
+    // useEffect(() => {
+    //     fetchProducts();
+    //     console.log("refresh - fetchProducts");
+
+    //     setTimeout(() => {
+    //         setRefreshing(false);
+    //     }, 100);
+
+    // }, [refreshing]);
+
+
+
     useEffect(() => {
         fetchProducts();
-        console.log("refresh - fetchProducts");
-
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 100);
-
-    }, [refreshing]);
-
+    }, [refresh]);
    
+    // useEffect(() => {
+    //     console.log("get the update in my products page");
+    //     console.log("new title: ", title);
+    //     console.log("new description: ", description);
+    // }, [title, description]);
 
 
     return (
@@ -78,7 +91,7 @@ export function MyProductsPage({ navigation, route }) {
                 <CardList
                     items={myItems}
                     //title="My Products"
-                    onItemPressed={(details) => navigation.navigate('ownerProduct', { updateProducts, details, userId })}
+                    onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
                     style={styles.cardList} // Apply styles to CardList
                 />
             )}
@@ -93,7 +106,7 @@ export function MyProductsPage({ navigation, route }) {
                     <View style={styles.circle} />
                     
                     <TouchableOpacity style={styles.buttonContainer} 
-                        onPress={() => navigation.navigate('addProduct', { updateProducts, userId })}
+                        onPress={() => navigation.navigate('addProduct', { userId })}
                     > 
                     <Ionicons style={styles.newProductBtn} 
                         name="add-circle" 

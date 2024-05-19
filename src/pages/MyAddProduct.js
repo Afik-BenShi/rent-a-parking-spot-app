@@ -15,7 +15,7 @@ import NextBackBtn from '../components/nextAndBackBtn';
 
 export default function AddProductPage ({ navigation, route }) {
   
-   const { updateProducts, userId } = route.params;
+   const { userId } = route.params;
 
    console.log("userId in addProductPage: ", userId);
 
@@ -48,8 +48,8 @@ export default function AddProductPage ({ navigation, route }) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["from"]: start,
-          ["fromDate"]: startDate,
-      }));
+          ["fromDate"]: startDate.toISOString(),  // convert the Date object to a string - to remove the warning
+      }));                                        // after that need to convert it back to Date object
   };
 
   const handleEndDateChange = (endDate) => {
@@ -59,7 +59,7 @@ export default function AddProductPage ({ navigation, route }) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["until"]: end,
-          ["untilDate"]: endDate,
+          ["untilDate"]: endDate.toISOString(),
       }));
   };
 
@@ -96,7 +96,7 @@ export default function AddProductPage ({ navigation, route }) {
         }
 
         navigation.navigate("submitDetailsBeforePost" ,
-        { detailsList: details , user:userId ,onSuccess: updateProducts});
+        { detailsList: details , user:userId });
         
     };
     

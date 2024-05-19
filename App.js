@@ -23,6 +23,7 @@ import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
 import { Text, Icon } from '@rneui/themed';
 import LoadingPage from './src/pages/LoadingPage';
 
+import { RefreshContext, RefreshContextProvider } from './src/context/context';
 
 
 const HomeStack = createNativeStackNavigator();
@@ -58,7 +59,7 @@ function MyProStackScreen({ route }) {
   const { userId } = route.params;
 
   return (
-    
+    <RefreshContextProvider>
     <MyProductsStack.Navigator>
       <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
         options={{ title: 'My products'}} initialParams={{ userId }}
@@ -72,7 +73,7 @@ function MyProStackScreen({ route }) {
       />
 
     </MyProductsStack.Navigator>
-    
+    </RefreshContextProvider>
   );
 }
 

@@ -166,7 +166,7 @@ export default function CardListForMyOrders({ items, title, onItemPressed = (_) 
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    paddingBottom: 140,
+    paddingBottom: 500,
     backgroundColor: COLORS.cardBackground,
   },
   title: {

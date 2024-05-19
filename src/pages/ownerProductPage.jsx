@@ -15,13 +15,15 @@ import "./productDetailsPage.types";
 import { timeStampToDate } from "../utils/dateTime";
 import { getAuth } from "firebase/auth";
 
+import { RefreshContext } from '../context/context';
+
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
 export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
     //const details = parseItem(route.params);
-    const { updateProducts } = route.params;
+    //const { updateProducts } = route.params;
 
     const [details, setDetails] = useState(parseItem(route.params));
     const [editMode, setEditMode] = useState(false);
@@ -105,6 +107,7 @@ export default function OwnerProductPage({ route, navigation }) {
                         ['title']: title.trim(),
                         ['description']: description.trim(),
                     }));
+
                 })
                 .catch((error) => {
                     console.error("Failed to update product details", error);
@@ -113,10 +116,9 @@ export default function OwnerProductPage({ route, navigation }) {
 
 
     // this updates myProducts page
-    useEffect(() => {
-        console.log("using update product");
-        updateProducts();
-    }, [details]);
+    // useEffect(() => {
+    //     console.log("using update product");
+    // }, [details]);
 
     // This tells React to call our effect when `title`, `description`, or `editMode` changes
     useEffect(() => {
