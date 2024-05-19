@@ -23,7 +23,7 @@ export default function LoadingPage({ navigation }) {
                 },
                 doIfNotExists() {
                     console.log(user.uid, 'user have no private data');
-                    navigation.navigate("auth", { /*redirect: "SignUpDetails"*/ });
+                    navigation.navigate("auth", { redirect: "SignUpDetails" });
                 },
             });
         });
