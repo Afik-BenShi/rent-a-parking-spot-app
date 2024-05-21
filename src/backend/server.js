@@ -2,6 +2,7 @@ const express = require("express");
 const { port } = require("./config");
 
 const db = require("./utils/db")
+const storage = require("./utils/storage")
 const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
@@ -11,6 +12,7 @@ const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
 
 db.init();
+storage.init()
 
 const app = express();
 app.use(express.json());
@@ -28,15 +30,15 @@ app.use((req, res, next) => {
   next();
 });
 // Middleware to verify user's authentication token
-const noAuthServices  = ["location"];
+const noAuthServices = ["location"];
 app.use(async (req, res, next) => {
   const splitPath = req.path.split('/');
-  if (noAuthServices.some(service => splitPath.includes(service))){
+  if (noAuthServices.some(service => splitPath.includes(service))) {
     next();
     return;
   }
   const authToken = req.headers.authorization ?? req.headers.Authorization;
-  if (!authToken){
+  if (!authToken) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
@@ -55,7 +57,9 @@ app.use(async (req, res, next) => {
 
 app.get('/products', async (req, res) => {
 
-  const { maxPrice, selectedCategory: mainCategory, city, endDate, startDate } = req.query.filters || {};
+  const { filters: filterQuery, sort, userId } = req.query || {}
+  const { maxPrice, selectedCategory: mainCategory, city, endDate, startDate } = filterQuery || {};
+
   console.log('startDate :', startDate);
   console.log('endDate :', endDate);
 
@@ -64,11 +68,11 @@ app.get('/products', async (req, res) => {
   const parsedEndDate = endDate ? Timestamp.fromDate(new Date(endDate)) : null;
   console.log('parsedStartDate :', parsedStartDate);
   console.log('parsedEndDate :', parsedEndDate);
-  
-  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate:parsedStartDate, endDate:parsedEndDate }
+
+  const filters = { maxPrice: parsedMaxPrice, mainCategory, city, startDate: parsedStartDate, endDate: parsedEndDate }
   console.log('filters from server :', filters);
 
-  const result = await products.getProducts(filters);
+  const result = await products.getProducts(filters, sort, userId);
   res.send(result);
 });
 
@@ -81,12 +85,12 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city } = req.body
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city, imageName } = req.body
 
-  const loweredCity = city.replace(/\b\w/g, function(char) { return char.toLowerCase(); });
+  const loweredCity = city.replace(/\b\w/g, function (char) { return char.toLowerCase(); });
   const words = city.split(' ');
   const capitalizedWords = words.map(word => {
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
   const parsedCity = capitalizedWords.join(' ');
 
@@ -98,7 +102,8 @@ app.post('/myProducts/add', async (req, res) => {
     startDate: Timestamp.fromDate(new Date(fromDate)),
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
-    city: parsedCity
+    city: parsedCity,
+    imageName
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -107,16 +112,50 @@ app.post('/myProducts/add', async (req, res) => {
   res.send(result);
 });
 
+app.post('/myProducts/img', async (req, res) => {
+  const { imageUri, title, ownerId } = req.body;
+  const imageName = `${ownerId}-${title}`
+  try {
+    await storage.uploadImage({
+      name: imageName, imageFile: imageUri
+    });
+  }
+  catch (err) {
+    console.log("error in myProducts/img", JSON.stringify(err));
+
+  }
+  res.json({ data: imageName });
+});
+
+app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { title, description } = req.body;
+    console.log("productId", productId);
+    console.log("title", title);
+    console.log("description", description);
+
+    const newProductData = { title, description };
+
+    const result = await products.updateProductInfo(productId, newProductData);
+    res.send(result);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).send("Error updating product");
+  }
+});
+
+
 app.get('/users/suggestion', async (req, res) => {
   const query = req.query;
-  const {status, response} = await users.getUserSuggestions(query);
+  const { status, response } = await users.getUserSuggestions(query);
   res.status(status).send(response);
 })
 
 app.get('/users/hasPrivateInfo', async (req, res) => {
-  const {user_id} = req.body.token;
+  const { user_id } = req.body.token;
   console.log(user_id);
-  const {status, response} = await users.getUserExists(user_id);
+  const { status, response } = await users.getUserExists(user_id);
   res.status(status).send(response);
 });
 
@@ -136,23 +175,23 @@ app.get('/location/geocode/structured', async (req, res) => {
 });
 
 app.post('/users/upsert', async (req, res) => {
-  try{
+  try {
     const response = await users.upsertPersonalDetails(req.body)
     res.send(response);
   } catch (error) {
-    res.status(500).send({error});
+    res.status(500).send({ error });
   }
 });
 
 app.get('/orders/owner/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { status, response } = await orders.getOrders(userId, {...req.query, type:"owner"});
+  const { status, response } = await orders.getOrders(userId, { ...req.query, type: "owner" });
   res.status(status).send(response);
 });
 
 app.get('/orders/renter/:userId', async (req, res) => {
   const { userId } = req.params;
-  const { status, response } = await orders.getOrders(userId, {...req.query, type:"renter"});
+  const { status, response } = await orders.getOrders(userId, { ...req.query, type: "renter" });
   res.status(status).send(response);
 });
 

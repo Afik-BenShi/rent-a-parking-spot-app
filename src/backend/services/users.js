@@ -31,4 +31,4 @@ const getUserExists = async (userId) => {
     return {status: 200, response: user.exists};
 }
 
-module.exports = { upsertPersonalDetails, getUserSuggestions, getUserExists}
+module.exports = { upsertPersonalDetails, getUserSuggestions, getUserExists }

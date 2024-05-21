@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { TouchableOpacity, ScrollView, StyleSheet, View } from "react-native";
 import { Card, Text } from "@rneui/themed";
@@ -15,17 +15,34 @@ import "./productDetailsPage.types";
 import { timeStampToDate } from "../utils/dateTime";
 import { getAuth } from "firebase/auth";
 
+import { RefreshContext } from '../context/context';
+
+
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
 export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
-    const details = parseItem(route.params);
+    //const details = parseItem(route.params);
+    //const { updateProducts } = route.params;
+
+    const [details, setDetails] = useState(parseItem(route.params));
     const [editMode, setEditMode] = useState(false);
     const [rsvs, setRsvs] = useState({ past: [], next: [] });
     const [userId, setUserId] = useState(route.params.userId);
+
+    // save the title and description in edit mode
+    const [title, setTitle] = useState(details.title);
+    const [description, setDescription] = useState(details.description);
+    
+
+
     const editClickHandler = () => {
+        if (editMode) {
+            updateProductDetails();
+        }
         setEditMode((edit) => !edit);
     };
+
     useEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -66,6 +83,65 @@ export default function OwnerProductPage({ route, navigation }) {
           require("../../assets/parking-details-images/placeholder.png");
 
     const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
+ 
+   
+
+
+    const updateProductDetails = () => {
+        console.log("Updating product details");
+        
+        if (title === details.title && description === details.description) {
+            console.log("No changes to update");
+            return;
+        }
+        getAuth().currentUser?.getIdToken().then(token => 
+            axios
+                .put(SERVER + `/myProducts/updateProductInfo/${details.id}`, {
+                    title,
+                    description
+                }, { headers: { Authorization: token } })
+                .then(() => {
+                    console.log("Product details updated");
+                    setDetails((prevDetails) => ({
+                        ...prevDetails,
+                        ['title']: title.trim(),
+                        ['description']: description.trim(),
+                    }));
+
+                })
+                .catch((error) => {
+                    console.error("Failed to update product details", error);
+                }));
+    };
+
+
+    // this updates myProducts page
+    // useEffect(() => {
+    //     console.log("using update product");
+    // }, [details]);
+
+    // This tells React to call our effect when `title`, `description`, or `editMode` changes
+    useEffect(() => {
+        if (!editMode) {
+            updateProductDetails();
+        }
+    }, [title, description, editMode]); 
+    
+
+    // Function to handle input change and update details state
+    const handleTitleChange = (value) => {
+        console.log("newText title from parent: ", value);
+        const newText = value.trim()
+        setTitle(newText);
+    };
+
+    const handleDescriptionChange = (value) => {
+        console.log("newText descr from parent: ", value);
+        const newText = value.trim()
+        setDescription(newText);
+    };
+    
+
 
     return (
         <View style={styles.pageContainer}>
@@ -75,6 +151,7 @@ export default function OwnerProductPage({ route, navigation }) {
                     editMode={editMode}
                     textStyle={styles.text}
                     onChange={() => {}}
+                    sendDataToParent={handleTitleChange}
                 >
                     {details.title}
                 </EditableText>
@@ -83,6 +160,7 @@ export default function OwnerProductPage({ route, navigation }) {
                     textStyle={styles.description}
                     editMode={editMode}
                     onChange={() => {}}
+                    sendDataToParent={handleDescriptionChange}
                 >
                     {details.description}
                 </EditableText>
@@ -146,6 +224,7 @@ export function parseItem({ details: item }) {
         OrderStartDate,
         OrderEndDate,
         mainCategoryId,
+        OwnerInfo,
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
@@ -160,7 +239,9 @@ export function parseItem({ details: item }) {
         },
         image: imageUrl,
         price: Object.assign(mock.price, { amount: pricePerDay }),
-        owner: Object.assign(mock.owner, { name: ownerId }),
+        owner: Object.assign(mock.owner, { id: ownerId, 
+                                            name: OwnerInfo ? OwnerInfo.fullName : mock.owner.name,
+                                            phoneNumber: OwnerInfo ? OwnerInfo.phoneNumber : mock.owner.phoneNumber}),
         orderDates: Object.assign(mock.orderDates, 
             { startDate: timeStampToDate(OrderStartDate?? startDate),   // in case of missing data, use the start date
                 endDate: timeStampToDate(OrderEndDate?? endDate) }),

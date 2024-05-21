@@ -3,20 +3,29 @@ import { StyleSheet } from "react-native";
 import { COLORS, SIZES } from "../../assets/theme";
 
 const styles = StyleSheet.create({
-  
+  googleInputContainer: {
+    backgroundColor: 'rgba(0,0,0,0)',
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+  },
+  googleTextInput: {
+    height: 38,
+    color: '#5d5d5d',
+    fontSize: 16,
+  },
   container: {
     width: "100%",
-    flex: 1, 
-    justifyContent: 'center', 
+    flex: 1,
+    justifyContent: 'center',
     flexDirection: "column",
     margin: 10,
     backgroundColor: COLORS.lightBackground,
   },
-  dateSelectorContainer:{
-    flex: 1, 
-    justifyContent: 'center', 
-    flexDirection: "column", 
-    marginTop:15,
+  dateSelectorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    flexDirection: "column",
+    marginTop: 15,
   },
   userName: {
     fontSize: 18,
@@ -59,7 +68,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 14,
   },
-  
+
   errorText: {
     color: 'red',
     fontSize: 10,
@@ -94,13 +103,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginLeft: 8,
     height: 50,
-    
-},
-buttonText: {
-  color: COLORS.similarToBlack, 
-  fontWeight: 'bold',
-  fontSize: 16,
-},
+
+  },
+  buttonText: {
+    color: COLORS.similarToBlack,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   container: {
     padding: 24,
     flexGrow: 1,
@@ -158,7 +167,7 @@ buttonText: {
     marginBottom: 8,
     marginLeft: 12,
   },
-  datesLables:{
+  datesLables: {
     fontSize: 16,
     fontWeight: '600',
     color: '#222',
@@ -264,13 +273,13 @@ buttonText: {
     borderStyle: 'dashed',
     marginTop: -2,
   },
-  dateView :{
-      marginTop: 10,
-      marginHorizontal: 15,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    
+  dateView: {
+    marginTop: 10,
+    marginHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
   },
 });
 
