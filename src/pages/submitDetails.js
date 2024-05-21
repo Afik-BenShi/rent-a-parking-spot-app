@@ -36,15 +36,37 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
     return;
   }
 
+  let imgRes;
+
+  try {
+    imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token
+      },
+      body: JSON.stringify({
+        title: detailsList.productName,
+        ownerId: userId,
+        imageUri: detailsList.imageUri
+      })
+    })
+  }
+  catch (err) {
+    console.error("Error while uploading an image:", JSON.stringify(err));
+  }
+  imgRes = await imgRes.json()
+
   const newProduct = {
     title: detailsList.productName,
     pricePerDay: detailsList.price,
     ownerId: userId,
     description: detailsList.productDescription,
-    mainCategoryId: detailsList.category,  
+    mainCategoryId: detailsList.category,
     fromDate: new Date(detailsList.fromDate),
     untilDate: new Date(detailsList.untilDate),
     city: detailsList.city,
+    imageName: imgRes.data
   };
 
   console.log('newProduct', newProduct)
@@ -87,13 +109,13 @@ export default function SubmitDetails({ navigation, route }) {
   };
 
   const data = [
-    {key:'1', value:'Outdoor equipment'},
-    {key:'2', value:'Entertainment & Events'},
-    {key:'3', value:'Home Improvement'},
+    { key: '1', value: 'Outdoor equipment' },
+    { key: '2', value: 'Entertainment & Events' },
+    { key: '3', value: 'Home Improvement' },
   ];
 
-  const categoryName = data.find((item) => item.key === detailsList.category) ? 
-                data.find((item) => item.key === detailsList.category).value : "";
+  const categoryName = data.find((item) => item.key === detailsList.category) ?
+    data.find((item) => item.key === detailsList.category).value : "";
 
   return (
     <View style={{ flex: 1 }}>
@@ -208,7 +230,7 @@ export default function SubmitDetails({ navigation, route }) {
           backText="Back"
           navigation={navigation}
           //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-          onNextPress={() => onClickFinish({ navigation, detailsList, userId, refresh, setRefresh})}
+          onNextPress={() => onClickFinish({ navigation, detailsList, userId, refresh, setRefresh })}
 
           paddingBottom={0}
         />
@@ -226,7 +248,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingBottom:120,
+    paddingBottom: 120,
   },
   overlay: {
     position: 'absolute',

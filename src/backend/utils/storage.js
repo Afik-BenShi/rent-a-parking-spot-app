@@ -15,7 +15,6 @@ const init = () => {
     initializeApp(firebaseConfig);
 
     storage = getStorage();
-    return storage;
 };
 
 const uploadImageTemp = (name = 'test.png') => {
@@ -41,9 +40,9 @@ const uploadImage = async ({ name, imageFile }) => {
     const storageRef = ref(storage, `images/${name}.png`);
 
     //TODO: need to change this to imageFile
-    localFilePath = '/Users/einatgelbort/student/googleWorkshop/rent-a-parking-spot-app/assets/adaptive-icon.png'
+    // localFilePath = '/Users/einatgelbort/student/googleWorkshop/rent-a-parking-spot-app/assets/adaptive-icon.png'
 
-    const fileContent = fs.readFileSync(localFilePath);
+    const fileContent = fs.readFileSync(imageFile);
     await uploadBytes(storageRef, fileContent)
 }
 
@@ -72,4 +71,4 @@ const getImage = async (imageName) => {
 }
 
 
-module.exports = { uploadImage, getImage }
+module.exports = { uploadImage, getImage, init }

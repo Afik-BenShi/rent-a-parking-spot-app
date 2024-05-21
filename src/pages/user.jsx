@@ -14,13 +14,13 @@ import {
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
-
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
 import { Input } from '@rneui/themed';
 import config from '../backend/config'
-import {signOutUser } from '../auth/auth';
+import { signOutUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';
 
 
@@ -52,7 +52,7 @@ export default function Profile({ navigation, route }) {
   const doLogOut = async () => {
     console.log('logging out');
     const isSignedOut = await signOutUser();
-    if (!isSignedOut){
+    if (!isSignedOut) {
       console.error("did not log out", getAuth());
       return;
     }
@@ -114,7 +114,7 @@ export default function Profile({ navigation, route }) {
               <TouchableOpacity
                 onPress={doLogOut}
               >
-                <View style={{...moreStyles.profileAction, backgroundColor:COLORS.red}}>
+                <View style={{ ...moreStyles.profileAction, backgroundColor: COLORS.red }}>
                   <Text style={moreStyles.profileActionText}>Log Out</Text>
 
                   <FeatherIcon color="#fff" name="log-out" size={16} />
@@ -176,6 +176,34 @@ export default function Profile({ navigation, route }) {
                       value={profileData.city}
                     />
 
+                    <GooglePlacesAutocomplete
+                      placeholder="Enter your location"
+                      minLength={3} // minimum length of text to search
+                      fetchDetails={true}
+                      currentLocation={true}
+                      onPress={(data, details = null) => {
+                        console.log(data, details)
+                        handleDataChange("address", data)
+                      }}
+                      onFail={error => console.log(error)}
+                      onNotFound={() => console.log('no results')}
+                      listEmptyComponent={() => (
+                        <View style={{ flex: 1 }}>
+                          <Text>No results were found</Text>
+                        </View>
+                      )}
+                      query={{
+                        key: 'YOUR_GOOGLE_PLACES_API_KEY',
+                        language: 'en', // language of the results
+                      }}
+                      styles={{
+                        textInputContainer: styles.googleInputContainer,
+                        textInput: styles.googleTextInput,
+                        predefinedPlacesDescription: {
+                          color: '#1faadb'
+                        },
+                      }}
+                    />
                     <Input
                       label="Phone Number"
                       labelStyle={styles.inputLabel}

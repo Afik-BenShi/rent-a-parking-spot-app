@@ -1,19 +1,10 @@
-import { useState } from "react";
-import { Input, Divider } from '@rneui/themed';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { Input } from '@rneui/themed';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
-import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-} from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import styles from './addProduct.style'
 import { COLORS } from "../../assets/theme";
@@ -21,201 +12,179 @@ import { COLORS } from "../../assets/theme";
 import DateTimePickerExample from "./DatePick";
 import SingleSelectedDropDown from "./SingleSelectListDropDown";
 
- 
+
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
-
-
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date())
-    
+    const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false);
+
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [startDateHasChanged, setStartDateHasChanged] = useState(false)
     const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
 
     const [valid, setValid] = useState(false);
 
-  const onStartDateChange = (selectedDate) => {
-    // handle case that user selects start date after end date
-    if (endDateHasChanged  && selectedDate > endDate) {
-        alert("Start date must be before end date, select availability dates again");
-        setValid(false);
-        setStartDate(selectedDate);
-        
-        // Update both start date and end date to the current selected date.
-        // The user needs to change the date range again  
-        sendStartDateToParent(selectedDate);
+    const onStartDateChange = (selectedDate) => {
+        // handle case that user selects start date after end date
+        if (endDateHasChanged && selectedDate > endDate) {
+            alert("Start date must be before end date, select availability dates again");
+            setValid(false);
+            setStartDate(selectedDate);
+
+            sendStartDateToParent(selectedDate);
+            sendEndDateToParent(selectedDate);
+            return;
+        }
+        else if (!valid) {
+            setStartDate(selectedDate);
+            setValueInInvalidInput(selectedDate)
+
+            sendStartDateToParent(selectedDate);
+            sendEndDateToParent(selectedDate);
+            setValid(true);
+        }
+        else {
+            setValueInInvalidInput(null);
+            setStartDate(selectedDate);
+            sendStartDateToParent(selectedDate);
+        }
+    };
+
+    const onEndDateChange = (selectedDate) => {
+        setEndDate(selectedDate);
+        setEndDateHasChanged(true);
+        const end = endDate ? endDate.toLocaleString() : 'Not selected';
+        console.log(end);
+
+        //validateTimes(startDate, selectedDate);
         sendEndDateToParent(selectedDate);
-        return;
-    }
-    else if (!valid) {
-        setStartDate(selectedDate);
-        setValueInInvalidInput(selectedDate)
+    };
 
-        sendStartDateToParent(selectedDate);
-        sendEndDateToParent(selectedDate);
-        setValid(true);
-    }
-    else{
-        setValueInInvalidInput(null);
-        setStartDate(selectedDate);
-        sendStartDateToParent(selectedDate);
-    }
-  };
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            aspect: [4, 3],
+            quality: 1,
+        });
 
-  const onEndDateChange = (selectedDate) => {
-    setEndDate(selectedDate);
-    setEndDateHasChanged(true);
-    const end = endDate ? endDate.toLocaleString() : 'Not selected';
-    console.log(end); 
+        console.log('result', result)
+        if (!result.cancelled) {
+            sendDataToParent("imageUri", result.assets[0].uri)
+        }
+    };
 
-    //validateTimes(startDate, selectedDate);
-    sendEndDateToParent(selectedDate);
-  };
+    useEffect(() => {
+        (async () => {
+            const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+            console.log('libraryStatus', libraryStatus)
+            console.log('cameraStatus', cameraStatus)
+
+            if (libraryStatus.status !== 'granted' || cameraStatus.status !== 'granted') {
+                alert('Sorry, we need camera roll and media permissions to make this work!');
+            }
+            else {
+                setImagePermissionsGranted(true)
+            }
+        })();
+    }, [imagePermissionsGranted]);
 
 
-  
-return (
-  
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-        <View style={styles.container}>
+    return (
 
-        
-            <View style={styles.header}>
-                <Text style={styles.title}>Add your product here </Text>
-            </View>
-        </View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
+            <View style={styles.container}>
 
-        <ScrollView>
-            <View>
-                
-                {/*
-                <Input
-                    label="Full name"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<MoreIcon name="person" size={18} />}
-                    placeholder=" Enter your full name"
-                    onChangeText={(text) => sendDataToParent("ownerName", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-              */}
 
-                <Input
-                    label="Product name"
-                    labelStyle={styles.inputLabel}
-                    placeholder=" Enter product name"
-                    onChangeText={(text) => sendDataToParent("productName", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-                
-                <View style={{ flex: 1, padding: 20 }}>
-                <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product category</Text>
-                <SingleSelectedDropDown
-                      onSelectCategory = {sendCatToParent}
-                />
+                <View style={styles.header}>
+                    <Text style={styles.title}>Add your product here </Text>
                 </View>
-                
-                <Input
-                    label="Location"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<MoreIcon name="location-outline" size={18} />}
-                    placeholder=" Enter your location"
-                    onChangeText={(text) => sendDataToParent("city", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-          
-                <Input
-                    label="Daily Price rate"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<Entypo color="#000" name="price-tag" size={16} />  }
-                    placeholder=" Enter desired daily price"
-                    keyboardType="phone-pad"
-                    onChangeText={(text) => sendDataToParent("price", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
+            </View>
 
-                {/*
-                <Input
-                    label="Phone Number"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<AnotherIcon name="phone-alt" size={18} />}
-                    placeholder=" Enter your phone number"
-                    keyboardType="phone-pad"
-                    onChangeText={(text) => sendDataToParent("phoneNumber", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-              */}
-                    
-                    <View style={styles.divider}>
-                    <View style={styles.dividerInset} /></View>
-
+            <ScrollView>
                 <View>
-                    <View>
-                        <Text style={styles.sectionTitle}>Choose a range of available days </Text>
+                    <Input
+                        label="Product name"
+                        labelStyle={styles.inputLabel}
+                        placeholder=" Enter product name"
+                        onChangeText={(text) => sendDataToParent("productName", text)}
+                        inputStyle={styles.inputControl}
+                        inputContainerStyle={{ borderBottomWidth: 0 }}
+                    />
+
+                    <View style={{ flex: 1, padding: 20 }}>
+                        <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Product category</Text>
+                        <SingleSelectedDropDown
+                            onSelectCategory={sendCatToParent}
+                        />
                     </View>
+
+                    <Input
+                        label="Location"
+                        labelStyle={styles.inputLabel}
+                        leftIcon={<MoreIcon name="location-outline" size={18} />}
+                        placeholder=" Enter your location"
+                        onChangeText={(text) => sendDataToParent("city", text)}
+                        inputStyle={styles.inputControl}
+                        inputContainerStyle={{ borderBottomWidth: 0 }}
+                    />
+
+                    <Input
+                        label="Daily Price rate"
+                        labelStyle={styles.inputLabel}
+                        leftIcon={<Entypo color="#000" name="price-tag" size={16} />}
+                        placeholder=" Enter desired daily price"
+                        keyboardType="phone-pad"
+                        onChangeText={(text) => sendDataToParent("price", text)}
+                        inputStyle={styles.inputControl}
+                        inputContainerStyle={{ borderBottomWidth: 0 }}
+                    />
+
+                    <View style={styles.divider}>
+                        <View style={styles.dividerInset} /></View>
+
+                    <View>
+                        <View>
+                            <Text style={styles.sectionTitle}>Choose a range of available days </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.dateView}>
+                        <Text style={styles.datesLables}>  Start day : </Text>
+                        <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange} />
+                    </View>
+                    <Text> </Text>
+                    <View style={styles.dateView}>
+                        <Text style={styles.datesLables}>  End day : </Text>
+                        <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange}
+                            valueToDisplay={valueInInvalidInput} />
+                    </View>
+
+                    <Text> </Text>
+
+                    <Input
+                        //multiline
+                        //numberOfLines={4}
+                        label="Description"
+                        labelStyle={styles.inputLabel}
+                        //leftIcon={<AnotherIcon name="coins" size={18} />}
+                        placeholder=" Enter product description"
+                        onChangeText={(text) => sendDataToParent("productDescription", text)}
+                        inputStyle={styles.inputControl}
+                        inputContainerStyle={{ borderBottomWidth: 0 }}
+                    />
+                    <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
+                        <Text style={styles.buttonText}>
+                            {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
+                            Upload image</Text>
+                    </TouchableOpacity>
                 </View>
-                
-                <View style={styles.dateView}>
-                    <Text style={styles.datesLables}>  Start day : </Text>
-                    <DateTimePickerExample minDate={new Date()} onDateChange={onStartDateChange}/>
-                </View>
-                <Text> </Text>
-                <View style={styles.dateView}>
-                    <Text style={styles.datesLables}>  End day : </Text>
-                    <DateTimePickerExample minDate={startDate} onDateChange={onEndDateChange} 
-                    valueToDisplay={valueInInvalidInput}/>
-                </View>
 
-                <Text> </Text>
-                
-                {/* <View>
-                    <Text>start: {startDate ? startDate.toLocaleString() : 'Not selected'}</Text>
-                    <Text>end: {endDate ? endDate.toLocaleString() : 'Not selected'}</Text>
-                </View> */}
-
-
-                
-                <Input
-                    //multiline
-                    //numberOfLines={4}
-                    label="Description"
-                    labelStyle={styles.inputLabel}
-                    //leftIcon={<AnotherIcon name="coins" size={18} />}
-                    placeholder=" Enter product description"
-                    onChangeText={(text) => sendDataToParent("productDescription", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-
-                <TouchableOpacity style={styles.uploadImgButton} onPress={() => {}}>
-                  <Text style={styles.buttonText}> 
-                    {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
-                    Upload image</Text>
-                </TouchableOpacity>
-    
-
-                {/*
-                <Divider width={5} color={COLORS.lightgrey} marginTop={20} />
-
-                <FlatList
-                    data={detailsArray}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            */}
-
-                
-            </View>
-            
             </ScrollView>
-    </SafeAreaView>
-    
-   
-);
+        </SafeAreaView>
+
+
+    );
 }
 
 export default FillPersonalDetails;

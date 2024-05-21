@@ -28,15 +28,16 @@ import { RefreshContext, RefreshContextProvider } from './src/context/context';
 
 const HomeStack = createNativeStackNavigator();
 
-function HomeStackScreen() {
+function HomeStackScreen({ route }) {
+  const { userId } = route.params;
   return (
     <HomeStack.Navigator
     //screenOptions={{ headerShown: false }}
     >
-      <HomeStack.Screen name="category" component={ChooseCategoryPage} options={{ headerShown: false }}/>
+      <HomeStack.Screen name="category" component={ChooseCategoryPage} options={{ headerShown: false }} />
       <HomeStack.Screen name="HomeCard"
         component={homeCardPage}
-        options={{ headerShown: false }}
+        options={{ headerShown: false }} initialParams={{ userId }}
       //options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.btnBlue }}}
 
       />
@@ -44,11 +45,11 @@ function HomeStackScreen() {
       <HomeStack.Screen
         name="filters"
         component={Filters}
-      options={{ headerShown: false }} // to remove Stack header
+        options={{ headerShown: false }} // to remove Stack header
       />
 
       <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
-      
+
     </HomeStack.Navigator>
   );
 }
@@ -60,19 +61,19 @@ function MyProStackScreen({ route }) {
 
   return (
     <RefreshContextProvider>
-    <MyProductsStack.Navigator>
-      <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
-        options={{ title: 'My products'}} initialParams={{ userId }}
+      <MyProductsStack.Navigator>
+        <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
+          options={{ title: 'My products' }} initialParams={{ userId }}
 
-      />
+        />
 
-      <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} initialParams={{ userId }} />
-      <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
-      <MyProductsStack.Screen name="submitDetailsBeforePost" component={SubmitPersonalDetails} initialParams={{ userId }}
-        options={{ headerShown: false }} // to remove Stack header 
-      />
+        <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} initialParams={{ userId }} />
+        <MyProductsStack.Screen name="ownerProduct" component={OwnerProductPage} />
+        <MyProductsStack.Screen name="submitDetailsBeforePost" component={SubmitPersonalDetails} initialParams={{ userId }}
+          options={{ headerShown: false }} // to remove Stack header 
+        />
 
-    </MyProductsStack.Navigator>
+      </MyProductsStack.Navigator>
     </RefreshContextProvider>
   );
 }
@@ -99,35 +100,39 @@ function MyOrdersStackScreen({ route }) {
   return (
     <MyOrdersStack.Navigator>
       <MyOrdersStack.Screen name="Orders" component={MyOrderAsRenterPage} initialParams={{ userId }}
-      options={{ headerShown: false }} />
+        options={{ headerShown: false }} />
 
       <MyOrdersStack.Screen name="ExtendedProduct" component={ExtendedProduct} initialParams={{ userId }}
-      options={{ headerShown: false }} />
+        options={{ headerShown: false }} />
     </MyOrdersStack.Navigator>
   );
 }
 
 const AuthStack = createNativeStackNavigator();
 
-function AuthStackScreen({route}) {
-  const {redirect} = route.params?? {};
+function AuthStackScreen({ route }) {
+  const { redirect } = route.params ?? {};
   return (
     <AuthStack.Navigator>
-      <AuthStack.Screen options={{headerShown: false}} name="Login" 
-        component={LoginPage} initialParams={{redirect}}
+      <AuthStack.Screen options={{ headerShown: false }} name="Login"
+        component={LoginPage} initialParams={{ redirect }}
       />
-      <AuthStack.Screen options={{headerTitle: () => (
-                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Sign Up to RentalWize
-                </Text>
-            )}} name="SignUp" 
-        component={SignUpAuth} 
+      <AuthStack.Screen options={{
+        headerTitle: () => (
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+            Sign Up to RentalWize
+          </Text>
+        )
+      }} name="SignUp"
+        component={SignUpAuth}
       />
-      <AuthStack.Screen options={{headerTitle: () => (
-                <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Fill in details
-                </Text>
-            )}} name="SignUpDetails" 
+      <AuthStack.Screen options={{
+        headerTitle: () => (
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+            Fill in details
+          </Text>
+        )
+      }} name="SignUpDetails"
         component={SignUpDetails}
       />
     </AuthStack.Navigator>
@@ -135,59 +140,59 @@ function AuthStackScreen({route}) {
 }
 
 const Tab = createBottomTabNavigator();
-function TabStackScreen({route}) {
-  const {userId} = route.params?? {};
+function TabStackScreen({ route }) {
+  const { userId } = route.params ?? {};
   return (
     <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline'; // Home icon
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'settings' : 'settings-outline'; // Settings icon
-            } else if (route.name === 'My Products') {
-              iconName = focused ? 'person' : 'person-outline'; // My products icon
-            } else if (route.name === 'My Orders') {
-              iconName = focused ? 'bookmark' : 'bookmark-outline'; // My products icon
-            }
-            return <Icon name={iconName} type="ionicon" color={color} size={size} />;
-          },
-          tabBarActiveTintColor: COLORS.btnBlue, // Color of the active tab
-          tabBarInactiveTintColor: 'gray', // Color of inactive tabs
-        })}
-        initialRouteName="Home"
-      >
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline'; // Home icon
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline'; // Settings icon
+          } else if (route.name === 'My Products') {
+            iconName = focused ? 'person' : 'person-outline'; // My products icon
+          } else if (route.name === 'My Orders') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline'; // My products icon
+          }
+          return <Icon name={iconName} type="ionicon" color={color} size={size} />;
+        },
+        tabBarActiveTintColor: COLORS.btnBlue, // Color of the active tab
+        tabBarInactiveTintColor: 'gray', // Color of inactive tabs
+      })}
+      initialRouteName="Home"
+    >
 
-        <Tab.Screen name="Settings" component={SettingsStackScreen}
-          options={{ headerShown: false }} initialParams={{ userId }}
-        />
+      <Tab.Screen name="Settings" component={SettingsStackScreen}
+        options={{ headerShown: false }} initialParams={{ userId }}
+      />
 
-        <Tab.Screen name='My Products' component={MyProStackScreen}
-          options={{ headerShown: false }} initialParams={{ userId }} />
+      <Tab.Screen name='My Products' component={MyProStackScreen}
+        options={{ headerShown: false }} initialParams={{ userId }} />
 
-        <Tab.Screen name='My Orders' component={MyOrdersStackScreen} initialParams={{ userId }} />
+      <Tab.Screen name='My Orders' component={MyOrdersStackScreen} initialParams={{ userId }} />
 
-        <Tab.Screen name="Home" component={HomeStackScreen}
-          options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={HomeStackScreen}
+        options={{ headerShown: false }} initialParams={{ userId }} />
 
 
-      </Tab.Navigator>
+    </Tab.Navigator>
   )
 }
 
 const AppStack = createNativeStackNavigator();
 export default function App() {
-  return( 
-    
+  return (
+
 
     <NavigationContainer>
       <AppStack.Navigator initialRouteName={'loading'}>
-          <AppStack.Screen options={{headerShown:false}} name="loading"
-            component={LoadingPage} />
-          <AppStack.Screen options={{headerShown: false}} component={AuthStackScreen} name='auth' />
-        <AppStack.Screen options={{headerShown: false}} component={TabStackScreen} name='main'/>
+        <AppStack.Screen options={{ headerShown: false }} name="loading"
+          component={LoadingPage} />
+        <AppStack.Screen options={{ headerShown: false }} component={AuthStackScreen} name='auth' />
+        <AppStack.Screen options={{ headerShown: false }} component={TabStackScreen} name='main' />
       </AppStack.Navigator>
     </NavigationContainer>
 
