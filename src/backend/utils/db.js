@@ -7,7 +7,6 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
-const { get } = require("lodash");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -81,19 +80,19 @@ const getProductsDb = async (filters) => {
         }
         if (city) {
 
-            const capitalizedCity = city.replace(/\b\w/g, function(char) { return char.toUpperCase(); });
-            const loweredCity = city.replace(/\b\w/g, function(char) { return char.toLowerCase(); });
+            const capitalizedCity = city.replace(/\b\w/g, function (char) { return char.toUpperCase(); });
+            const loweredCity = city.replace(/\b\w/g, function (char) { return char.toLowerCase(); });
             const AllCap = city.toUpperCase();
             const AllLower = city.toLowerCase();
-            
+
             docRef = docRef.where("city", 'in', [city, capitalizedCity, loweredCity, AllCap, AllLower]);
         }
         if (startDate && endDate) {
-            try{
+            try {
                 const productsSnapshot = await docRef.get();
                 const productIds = productsSnapshot.docs.map((doc) => doc.id);
                 const availableProductsPromises = productIds.map((productId) =>
-                        getAvailableProductsWithinDateRange(productId, startDate, endDate));
+                    getAvailableProductsWithinDateRange(productId, startDate, endDate));
                 const availableProducts = await Promise.all(availableProductsPromises);
                 // availableProducts is an array of arrays, you might want to flatten it if needed
 
@@ -103,13 +102,13 @@ const getProductsDb = async (filters) => {
                 throw error;
             }
         }
-        
+
         const result = await docRef.get();
         return result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     } catch (error) {
         console.error("Error fetching product:", error);
         throw error;
-   }
+    }
 };
 
 const updateProductInfoDb = async (productId, newProductData) => {
@@ -173,8 +172,8 @@ const getOrdersWithOptions = async (
         time === "future"
             ? productQuery.where("endDate", ">=", new Date())
             : time === "past"
-            ? productQuery.where("endDate", "<", new Date())
-            : productQuery;
+                ? productQuery.where("endDate", "<", new Date())
+                : productQuery;
 
     const query = timeQuery.orderBy("endDate").orderBy("startDate");
 
@@ -262,13 +261,13 @@ const closeConnection = async () => {
 const getAvailableProductsWithinDateRange = async (productId, startDate, endDate) => {
     try {
         const freeProducts = [];
-        
+
         // Step 1: Query product table for the given productId
         const productDoc = await db.collection('products').doc(productId).get();
         if (!productDoc.exists) {
             throw new Error(`Product with ID ${productId} does not exist`);
         }
-        
+
         const productData = productDoc.data();
         console.log("productData : ", productData);
         const availableStartDate = productData.startDate;
@@ -290,7 +289,7 @@ const getAvailableProductsWithinDateRange = async (productId, startDate, endDate
             // Check if there are any overlapping orders
             if (overlappingOrders.length === 0) {
                 // No overlapping orders found, so the product is free during the given date range
-                freeProducts.push({...productData, productId});
+                freeProducts.push({ ...productData, productId });
             }
         }
 
@@ -309,7 +308,7 @@ const getAvailableProductsWithinDateRange = async (productId, startDate, endDate
 const distinctProducts = async (items) => {
     // Create a map to store unique items based on some identifier (e.g., productId)
     const uniqueProductsMap = new Map();
-    items.forEach((product) => {uniqueProductsMap.set(product.productId, product); });
+    items.forEach((product) => { uniqueProductsMap.set(product.productId, product); });
 
     // Convert the map values back to an array
     const distinctProducts = Array.from(uniqueProductsMap.values());

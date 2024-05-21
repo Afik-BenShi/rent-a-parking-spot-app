@@ -20,6 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import RNPickerSelect from 'react-native-picker-select';
 
 
 import { COLORS } from '../../assets/theme';
@@ -34,40 +35,49 @@ import { useNavigation } from '@react-navigation/native';
 
 
 const items = [
-  {key:'0', label:'Any'},
-  {key:'1', label:'Outdoor Equipment'},
-  {key:'2', label:'Entertainment & Events'},
-  {key:'3', label:'Home Improvement'},
+  { key: '0', label: 'Any' },
+  { key: '1', label: 'Outdoor Equipment' },
+  { key: '2', label: 'Entertainment & Events' },
+  { key: '3', label: 'Home Improvement' },
 ]
 
 const moreOptions = [
-  {key:'0', label:'All Categories'},
-  
+  { key: '0', label: 'All Categories' },
+
 ]
 
+const sortOptions = [
+  { label: 'Price: Low to High', value: 'lowToHigh' },
+  { label: 'Price: High to Low', value: 'highToLow' },
+  { label: 'Time: Earlier Start Time', value: 'earlyStartTime' },
+  { label: 'Distance: Close to Far', value: 'closest' },
+];
 
 
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
-export default function HomeCardPage({ navigation, route}) {
-  
+export default function HomeCardPage({ navigation, route }) {
+
 
   // category is a string between 0-3. 0 -> View All
   const { category } = route.params;
-  console.log("send cat: ",category);
+  console.log("send cat: ", category);
   const [selectedCategory, setSelectedCategory] = useState(category);
+  const [userId, setUserId] = useState(route.params.userId);
+
 
   const [refreshing, setRefreshing] = useState(false);
   const [rentalItems, setRentalItems] = useState([]);
   const [masterData, setMasterData] = useState([]);
   const [filters, setFilters] = useState({
-        "city": "",
-        "endDate": "",
-        "maxPrice": "",
-        "selectedCategory": selectedCategory.toString(), // Set the selected category
-        "startDate": ""
+    "city": "",
+    "endDate": "",
+    "maxPrice": "",
+    "selectedCategory": selectedCategory.toString(), // Set the selected category
+    "startDate": ""
   });
+  const [selectedSort, setSelectedSort] = useState('lowToHigh');
   const [noContent, setNoContent] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -80,20 +90,21 @@ export default function HomeCardPage({ navigation, route}) {
   const [value, setValue] = useState(null);
 
 
-  const fetchProducts = async (filters) => {
+  const fetchProducts = async (filters, selectedSort) => {
     try {
       console.log('fetchProducts in homeCard')
       console.log('fetchProducts filters', filters)
       const token = getAuth().currentUser?.getIdToken()
-      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, { 
+      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, {
         headers: { Authorization: await token },
-        params: { filters } });
+        params: { filters, sort: selectedSort, userId }
+      });
       setRentalItems(response.data);
       setMasterData(response.data);
       updateLocaionsList(response.data);
-           
+
       console.log('response.data', response.data);
-      if (0 == response.data.length){
+      if (0 == response.data.length) {
         console.log('No products found');
         setNoContent(true);
       }
@@ -103,11 +114,11 @@ export default function HomeCardPage({ navigation, route}) {
     }
   };
 
-  
+
   const updateLocaionsList = (data) => {
     const result = locationsList;
-    for (let i = 0; i < data.length; i++){
-      if (!result.includes(data[i].city)){
+    for (let i = 0; i < data.length; i++) {
+      if (!result.includes(data[i].city)) {
         result.push(data[i].city);
       }
     }
@@ -119,33 +130,34 @@ export default function HomeCardPage({ navigation, route}) {
   useEffect(() => {
     setNoContent(false);
     setShowFilters(false);
-    fetchProducts(filters);  
-    useFilters(filters);   
-    
+    fetchProducts(filters, selectedSort);
+    useFilters(filters);
+
     var cnt = 0;
     Object.entries(filters).map(([key, value]) => {
-          if (value && key !== 'selectedCategory'){ cnt ++ } });
-    if (cnt > 0){
+      if (value && key !== 'selectedCategory') { cnt++ }
+    });
+    if (cnt > 0) {
       setShowFilters(true);
     }
 
-  }, [filters]);
+  }, [filters, selectedSort]);
 
   useEffect(() => {
-    fetchProducts(filters);  
+    fetchProducts(filters, selectedSort);
   }, []);
-  
 
 
-  const onRefresh = useCallback((filters) => {
+
+  const onRefresh = useCallback((filters, selectedSort) => {
     setRefreshing(true);
     setSearchTerm("");
 
-    try{
+    try {
       //console.log('onRefresh filters', filters);
-      
-      fetchProducts(filters);    
-      
+
+      fetchProducts(filters, selectedSort);
+
     } catch (err) {
       console.log(JSON.stringify(err))
     }
@@ -153,21 +165,21 @@ export default function HomeCardPage({ navigation, route}) {
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
-  
+
   }, []);
 
 
   const sheet = React.useRef();
-  function handleDonePress (category) {
+  function handleDonePress(category) {
     console.log("Selected category: ", selectedCategory);
     //sheet.current.close();
-    
+
     // Merge the existing filters with the selected category
     setFilters(prevFilters => ({
       ...prevFilters,
       'selectedCategory': selectedCategory.toString()
     }));
-    
+
   }
 
   const onCancleSearchPress = () => {
@@ -179,14 +191,14 @@ export default function HomeCardPage({ navigation, route}) {
 
   const setFiltersWithUpdatedData = (data) => {
     console.log('setFiltersWithData', data);
-    
+
     // overwrite the existing filters with the updated data
     const updatedFilters = { ...filters, ...data };
     setFilters(updatedFilters);
 
     console.log('after update: ', filters);
     setSelectedCategory(data.selectedCategory);
-    
+
   }
 
   const formatDate = (date) => {
@@ -197,8 +209,7 @@ export default function HomeCardPage({ navigation, route}) {
         month: 'short',
         day: 'numeric',
       });
-      // @ts-ignore
-      if (filters.endDate && filters.endDate instanceof Date){
+      if (filters.endDate) {
         var formatEnd = filters.endDate.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
@@ -215,33 +226,33 @@ export default function HomeCardPage({ navigation, route}) {
     switch (key) {
       case 'startDate':
         return <FeatherIcon color="#000" name="calendar" size={18} />;
-        //return 'Start Date';
+      //return 'Start Date';
 
       case 'endDate':
         return <FeatherIcon color="#000" name="calendar" size={18} />;
-        //return 'End Date';
+      //return 'End Date';
 
       case 'maxPrice':
         return <Entypo color="#000" name="price-tag" size={18} />;
-        //return 'Max Price';
+      //return 'Max Price';
       case 'selectedCategory':
-          if (selectedCategory === "0") {
-            return <Entypo color="#000" name="list" size={20} />;
-            //return 'All Categories';
-          } else if (selectedCategory === "1") {
-            return <MaterialCommunityIcons color="#000" name="hiking" size={20} />;
-            //return 'Outdoor equipment';
-          } else if (selectedCategory === "2") {
-            return <MaterialIcons color="#000" name="event" size={20} />;
-            //return 'Entertainment & Events';
-          } else if (selectedCategory === "3") {
-            return <MaterialCommunityIcons color="#000" name="home-city-outline" size={20} />;
-            //return 'Home Improvement';
-          }
-          break;
+        if (selectedCategory === "0") {
+          return <Entypo color="#000" name="list" size={20} />;
+          //return 'All Categories';
+        } else if (selectedCategory === "1") {
+          return <MaterialCommunityIcons color="#000" name="hiking" size={20} />;
+          //return 'Outdoor equipment';
+        } else if (selectedCategory === "2") {
+          return <MaterialIcons color="#000" name="event" size={20} />;
+          //return 'Entertainment & Events';
+        } else if (selectedCategory === "3") {
+          return <MaterialCommunityIcons color="#000" name="home-city-outline" size={20} />;
+          //return 'Home Improvement';
+        }
+        break;
       case 'city':
         return <Ionicons color="#000" name="location-outline" size={16} />;
-        //return 'City';
+      //return 'City';
       default:
         // If no specific formatting is needed, return the original key
         return key;
@@ -250,13 +261,13 @@ export default function HomeCardPage({ navigation, route}) {
 
   const initialFilters = (resetCategory = true) => {
     setFilters({
-    "city": "",
-    "endDate": "",
-    "maxPrice": "",
-    "selectedCategory": resetCategory ? "0" : filters.selectedCategory,
-    "startDate": ""
+      "city": "",
+      "endDate": "",
+      "maxPrice": "",
+      "selectedCategory": resetCategory ? "0" : filters.selectedCategory,
+      "startDate": ""
     });
-    if (resetCategory){
+    if (resetCategory) {
       setSelectedCategory("0");
     }
     setSearchTerm("");
@@ -265,22 +276,22 @@ export default function HomeCardPage({ navigation, route}) {
 
   const searchFilter = (text) => {
     if (text) {
-        const newData = masterData.filter((item) => {
+      const newData = masterData.filter((item) => {
         const itemDataTitle = item.title ? item.title.toUpperCase() : ''.toUpperCase();
         const itemDataDescription = item.description ? item.description.toUpperCase() : ''.toUpperCase();
         const textData = text.toUpperCase();
         return itemDataTitle.indexOf(textData) > -1 || itemDataDescription.indexOf(textData) > -1;
       });
-        if (newData.length == 0){
-           setNoContent(true);
-           setSearchTerm(text);
-           setRentalItems([]);
-        }
-        else{
-          setNoContent(false);
-          setRentalItems(newData);
-          setSearchTerm(text);
-        }
+      if (newData.length == 0) {
+        setNoContent(true);
+        setSearchTerm(text);
+        setRentalItems([]);
+      }
+      else {
+        setNoContent(false);
+        setRentalItems(newData);
+        setSearchTerm(text);
+      }
     }
     else {
       setRentalItems(masterData)
@@ -288,9 +299,9 @@ export default function HomeCardPage({ navigation, route}) {
     }
   };
 
-  
+
   const scrollRef = React.useRef();
-  
+
   const handleScrollToTop = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -304,11 +315,11 @@ export default function HomeCardPage({ navigation, route}) {
   };
 
 
-  function useFilters (filters) {
+  function useFilters(filters) {
     const emptyFilters = {
-      "city": "", 
-      "endDate": "", 
-      "maxPrice": "", 
+      "city": "",
+      "endDate": "",
+      "maxPrice": "",
       "startDate": "",
     }
     const hasFilters = Object.keys(filters).some(key => filters[key] !== emptyFilters[key]);
@@ -321,9 +332,9 @@ export default function HomeCardPage({ navigation, route}) {
   const handleMoreOptionsPress = (index) => {
     console.log('Selected oprtion: ', index);
     // handle the selected option
-    if (index === 0){
+    if (index === 0) {
       navigation.navigate('category');
-    }  
+    }
   }
 
 
@@ -332,86 +343,94 @@ export default function HomeCardPage({ navigation, route}) {
       <View>
 
         <Header
-        leftComponent={
-          <View style={styles.backBtn}>
-          {/* <View style={styles.square} /> */}
-            <TouchableOpacity style={styles.buttonContainer} onPress={navigation.goBack}> 
-                  <Feather style={styles.headerComponent} 
-                    name="chevron-left" 
-                    type="material" 
-                    color={COLORS.black}
-                    size={26}
-                    />
-                    
-                </TouchableOpacity>
+          leftComponent={
+            <View style={styles.backBtn}>
+              {/* <View style={styles.square} /> */}
+              <TouchableOpacity style={styles.buttonContainer} onPress={navigation.goBack}>
+                <Feather style={styles.headerComponent}
+                  name="chevron-left"
+                  type="material"
+                  color={COLORS.black}
+                  size={26}
+                />
+
+              </TouchableOpacity>
             </View>
-        
-        }
-        centerComponent={  
-          <View style={styles.centerHeader}>
-            <Text style={styles.headerText}>
-              Rental{' '}
-              <FontAwesome5 name="box-open" size={25} color={'#BA9166'} style={styles.logoIcon} />
-              {' '}Wise
-            </Text>
-          </View>
-        }
-        rightComponent={ 
-          <View style={styles.backBtn}>
-          {/* <View style={styles.square} /> */}
-            <TouchableOpacity style={styles.buttonContainer} 
-            //onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}
-              onPress={() => sheet.current.open()}
-            >
-                  <Feather name="more-horizontal" color={COLORS.black} size={24} style={styles.headerComponent}/>
-                  
-                </TouchableOpacity>
+
+          }
+          centerComponent={
+            <View style={styles.centerHeader}>
+              <Text style={styles.headerText}>
+                Rental{' '}
+                <FontAwesome5 name="box-open" size={25} color={'#BA9166'} style={styles.logoIcon} />
+                {' '}Wise
+              </Text>
             </View>
-        }
-        containerStyle={styles.headerContainer}
-      />
+          }
+          rightComponent={
+            <View style={styles.backBtn}>
+              {/* <View style={styles.square} /> */}
+              <TouchableOpacity style={styles.buttonContainer}
+                //onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}
+                onPress={() => sheet.current.open()}
+              >
+                <Feather name="more-horizontal" color={COLORS.black} size={24} style={styles.headerComponent} />
+
+              </TouchableOpacity>
+            </View>
+          }
+          containerStyle={styles.headerContainer}
+        />
       </View>
 
       <ScrollView
-        ref = {scrollRef}
+        ref={scrollRef}
         refreshControl={
           <RefreshControl
             refreshing={refreshing} // Set refreshing state here
-            onRefresh={() => {if (!searchTerm) onRefresh(filters) }} // Pass onRefresh function here 
+            onRefresh={() => { if (!searchTerm) onRefresh(filters, selectedSort) }} // Pass onRefresh function here 
           />}
-          >
+      >
 
-      <View style={{ borderBottomWidth: 0, padding:10 }} > 
-        <View style={styles.searchSectionWrapper}>
-          <View style={styles.searchBarNew}>
-            <Ionicons 
-            name="search" 
-            size={18}
-            style={{marginRight:5}}
-            color={COLORS.black} />
-            <TextInput 
-              placeholder="Search here...                 " 
-              placeholderTextColor={COLORS.grey3}
-              onChangeText={(text) => searchFilter(text)}
-              value={searchTerm}
+        <View style={{ borderBottomWidth: 0, padding: 10 }} >
+          <View style={styles.searchSectionWrapper}>
+            <View style={styles.searchBarNew}>
+              <Ionicons
+                name="search"
+                size={18}
+                style={{ marginRight: 5 }}
+                color={COLORS.black} />
+              <TextInput
+                placeholder="Search here...                 "
+                placeholderTextColor={COLORS.grey3}
+                onChangeText={(text) => searchFilter(text)}
+                value={searchTerm}
               />
-          </View>
+            </View>
 
-          {searchTerm && 
-          (<TouchableOpacity onPress={onCancleSearchPress} style={{marginRight:-15, zIndex:999}}>
+            {searchTerm &&
+              (<TouchableOpacity onPress={onCancleSearchPress} style={{ marginRight: -15, zIndex: 999 }}>
                 <MaterialCommunityIcons name="window-close" size={15} color={COLORS.black} style={styles.timesIcon} />
-          </TouchableOpacity>)}
+              </TouchableOpacity>)}
 
-          <TouchableOpacity style={styles.filterBtn}
-              onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
-                
-            <Ionicons name="options" size={28} color={'#fff'} />
-          </TouchableOpacity>
-        </View>
-        </View>
-        
+            <TouchableOpacity style={styles.filterBtn}
+              onPress={() => navigation.navigate('filters', { locationsList, items, onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) }, filters })}>
+              <Ionicons name="options" size={28} color={'#fff'} />
+            </TouchableOpacity>
 
-        
+          </View>
+          <RNPickerSelect
+            onValueChange={(value) => setSelectedSort(value)}
+            items={sortOptions}
+            style={styles.sortBtn}
+            value={selectedSort}
+            placeholder={{ label: "Select a Sort Option", value: null }}
+            useNativeAndroidPickerStyle={false}
+          />
+        </View>
+
+
+
         {/* <View style={styles.btnGroupHomePage}>
           <Input
             style={styles.searchBar}
@@ -428,19 +447,19 @@ export default function HomeCardPage({ navigation, route}) {
                 onPress={onCancleSearchPress}/>}
           />
         </View> */}
-        
 
-          {/************** start filters buttons *********************/}
-          <View style={{justifyContent:'center', backgroundColor: COLORS.cardBackground}}>
-              {/* <View style={{ 
+
+        {/************** start filters buttons *********************/}
+        <View style={{ justifyContent: 'center', backgroundColor: COLORS.cardBackground }}>
+          {/* <View style={{ 
                       backgroundColor: COLORS.cardBackground, 
                       justifyContent: 'space-between', 
                       flexDirection: 'row',
                       marginHorizontal: 20}}> */}
-                  
-                 
-            
-              {/* <TouchableOpacity
+
+
+
+          {/* <TouchableOpacity
             onPress={() => sheet.current.open()}
             style={[styles.picker, { paddingVertical: 10 }]}>
 
@@ -455,8 +474,8 @@ export default function HomeCardPage({ navigation, route}) {
                   </View>
                   </TouchableOpacity>  */}
 
-                  
-                  {/* <Pressable style={[styles.picker, { paddingVertical: 10 }]}
+
+          {/* <Pressable style={[styles.picker, { paddingVertical: 10 }]}
                     //style={{flexDirection: 'row'}} 
                       onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
                       
@@ -464,111 +483,112 @@ export default function HomeCardPage({ navigation, route}) {
                       <MaterialCommunityIcons name="filter-outline" size={18} style={styles.filterIcon}/>
                       Filters  </Text>
                     </Pressable> */}
-                   
-           
-              {/* </View> */}
-              
+
+
+          {/* </View> */}
+
 
           {/* Selected category lable */}
-            < Animated.View 
-              style={[
-                {backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch'}
-              ]}
-            >
-                  <Text style={styles.title}>{selectedCategoryLabel}</Text>
-            </Animated.View>
-          </View>
+          < Animated.View
+            style={[
+              { backgroundColor: COLORS.cardBackground, flexDirection: 'row', alignContent: 'stretch' }
+            ]}
+          >
+            <Text style={styles.title}>{selectedCategoryLabel}</Text>
+          </Animated.View>
+        </View>
 
-          {/************** end filters buttons *********************/}
+        {/************** end filters buttons *********************/}
 
-          {/************* start show filters ****************************/}
-          {showFilters &&
-         
-           ( <View style={styles.list}>
+        {/************* start show filters ****************************/}
+        {showFilters &&
+
+          (<View style={styles.list}>
             <View style={styles.listHeader}>
 
-          </View>
+            </View>
 
-          <ScrollView
-            contentContainerStyle={styles.listContent}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}>
-            {Object.entries(filters).map(([key, value]) => (
-              
-              (value && key !== 'selectedCategory' && key !== 'endDate') && (
-                <View key={key}>
-                  <View style={[styles.filterBox, { backgroundColor: COLORS.cardBackground }]}>
-                  <Text style={styles.cardLabel}>
-                      {formatKeyBeforeShow(key)}
-                      {key === 'startDate' ? formatDate(value) : value}
-                    </Text>
-                    <MaterialCommunityIcons
-                      name="close"
-                      color={COLORS.black}
-                      size={14}
-                      style={styles.closeIcon}
-                      onPress={() => {
-                        if (key === 'startDate') {
-                          setFilters({ ...filters, startDate: "", endDate: "" });
-                        }
-                        else{
-                          setFilters({ ...filters, [key]: "" });
-                        }
-                       useFilters(filters);
-                      }}
-                    />
+            <ScrollView
+              contentContainerStyle={styles.listContent}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}>
+              {Object.entries(filters).map(([key, value]) => (
 
+                (value && key !== 'selectedCategory' && key !== 'endDate') && (
+                  <View key={key}>
+                    <View style={[styles.filterBox, { backgroundColor: COLORS.cardBackground }]}>
+                      <Text style={styles.cardLabel}>
+                        {formatKeyBeforeShow(key)}
+                        {key === 'startDate' ? formatDate(value) : value}
+                      </Text>
+                      <MaterialCommunityIcons
+                        name="close"
+                        color={COLORS.black}
+                        size={14}
+                        style={styles.closeIcon}
+                        onPress={() => {
+                          if (key === 'startDate') {
+                            setFilters({ ...filters, startDate: "", endDate: "" });
+                          }
+                          else {
+                            setFilters({ ...filters, [key]: "" });
+                          }
+                          useFilters(filters);
+                        }}
+                      />
+
+                    </View>
                   </View>
-                </View>
-              )
-            ))}
-          </ScrollView>
-          
-          {activeFilters && (<Pressable style={styles.removeFilterBtn} onPress={() => {
+                )
+              ))}
+            </ScrollView>
+
+            {activeFilters && (<Pressable style={styles.removeFilterBtn} onPress={() => {
               setShowFilters(false);
-              initialFilters(false); }}>
-            <Text style={{ textDecorationLine: 'underline' }}> Clear </Text>
-          </Pressable>)}
-        </View>)   }    
+              initialFilters(false);
+            }}>
+              <Text style={{ textDecorationLine: 'underline' }}> Clear </Text>
+            </Pressable>)}
+          </View>)}
 
         {/************* end show filters ****************************/}
 
 
         <View style={styles.container}>
-          { !noContent &&
-          (<CardList
-            items={rentalItems}
-            title=""
-            onItemPressed={(details) => navigation.navigate("productDetails", { details })}
-          />) }
-          
+          {!noContent &&
+            (<CardList
+              items={rentalItems}
+              title=""
+              onItemPressed={(details) => navigation.navigate("productDetails", { details })}
+            />)}
+
           {noContent && <OopsNoProducts />}
-        
+
         </View>
 
       </ScrollView>
 
-      
+
 
       <View style={styles.buttonContainer}>
         <View style={styles.circle} />
-        
-        <TouchableOpacity style={styles.buttonContainer} onPress={handleScrollToTop}> 
-          <Feather style={styles.scrollTopButton} 
-            name="chevron-up" 
-            type="material" 
+
+        <TouchableOpacity style={styles.buttonContainer} onPress={handleScrollToTop}>
+          <Feather style={styles.scrollTopButton}
+            name="chevron-up"
+            type="material"
             color={COLORS.black}
             size={26}
-            />
+          />
         </TouchableOpacity>
       </View>
-      
 
-      
+
+
 
 
       {/*****************************************/}
-       <RBSheet
+      <RBSheet
         customStyles={{ container: styles.sheet }}
         height={380}
         openDuration={250}
@@ -596,13 +616,13 @@ export default function HomeCardPage({ navigation, route}) {
                 onPress={() => {
                   setValue(index);
                   handleMoreOptionsPress(index);
-                  
+
                 }}>
                 <View style={styles.radio}>
 
                   <Text style={styles.radioLabel}>{label}</Text>
 
-                  
+
                 </View>
               </TouchableOpacity>
             );
@@ -619,8 +639,8 @@ export default function HomeCardPage({ navigation, route}) {
             </Text>
           </TouchableOpacity> */}
         </View>
-      </RBSheet> 
-      {/*****************************************/}   
+      </RBSheet>
+      {/*****************************************/}
 
     </SafeAreaView>
   );
@@ -638,7 +658,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#173153',
     marginLeft: 25,
-    marginTop:10,
+    marginTop: 10,
   },
   sec_title: {
     fontSize: 20,
@@ -683,17 +703,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    
+
   },
   logoIcon: {
     marginRight: 5,
-    
+
   },
   menuIcon: {
     marginTop: 0,
   },
   filterIcon: {
-    paddingHorizontal:4,
+    paddingHorizontal: 4,
     color: '#4c6cfd',
     //color: COLORS.cartTitle,
 
@@ -703,7 +723,7 @@ const styles = StyleSheet.create({
   picker: {
     marginTop: -10,  //12
     //paddingVertical: 10,
-    paddingHorizontal:15,
+    paddingHorizontal: 15,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -742,7 +762,7 @@ const styles = StyleSheet.create({
   },
   circle: {
     position: 'absolute',
-    backgroundColor: COLORS.greyInSearchBar, 
+    backgroundColor: COLORS.greyInSearchBar,
     borderRadius: 20,
     width: 40,
     height: 40,
@@ -752,13 +772,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#f5f5f5',
     elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.2, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.2, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
   },
   pickerAction: {
     marginLeft: 'auto',
@@ -863,13 +883,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderColor: '#f5f5f5',
     elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.2, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.2, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
 
   },
   card: {
@@ -888,46 +908,46 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', // Allow the card to expand based on text length
     paddingHorizontal: 10, // Add padding to ensure text doesn't touch the edges
   },
-  
-  
-  btnGroupHomePage:{
-    paddingTop :0,
-    backgroundColor: COLORS.cardBackground, 
+
+
+  btnGroupHomePage: {
+    paddingTop: 0,
+    backgroundColor: COLORS.cardBackground,
     justifyContent: 'flex-start',
-    flexDirection: 'column' ,
-    
+    flexDirection: 'column',
+
   },
-  iconFrame: { 
-      height: 40,
-      width: 88,
-      marginTop: -5,
-      paddingHorizontal:5,
-      borderRadius: 12,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#fff',
-      borderWidth: 0.5,
-      borderColor: '#f5f5f5',
-      margin: 5,
-      elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.1, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
+  iconFrame: {
+    height: 40,
+    width: 88,
+    marginTop: -5,
+    paddingHorizontal: 5,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 0.5,
+    borderColor: '#f5f5f5',
+    margin: 5,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
   },
-  searchBar:{
-      height: 40,
-      //backgroundColor: '#f3eff6',   
-      backgroundColor: COLORS.greyInSearchBar,
-      paddingHorizontal: 25,
-      borderRadius: 10,
-      fontSize: 15,
-      fontWeight: '500',
-      color: '#222',
+  searchBar: {
+    height: 40,
+    //backgroundColor: '#f3eff6',   
+    backgroundColor: COLORS.greyInSearchBar,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
   },
   inputControl: {
     height: 44,
@@ -938,7 +958,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#222',
   },
-  timesIcon:{
+  timesIcon: {
     marginLeft: -35,
     marginTop: 17,
   },
@@ -947,17 +967,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#000',
   },
-  removeFilterBtn:{
-    backgroundColor: COLORS.cardBackground, 
+  removeFilterBtn: {
+    backgroundColor: COLORS.cardBackground,
     justifyContent: 'left',
     flexDirection: 'row',
     marginHorizontal: 10,
     marginBottom: 10,
-    marginLeft:20,
+    marginLeft: 20,
   },
-  backBtn:{
+  backBtn: {
     position: 'absolute',
-    top: 25,  
+    top: 25,
     left: 80,
     zIndex: 999, // Ensure it's above other content
     // flexDirection: 'row',
@@ -980,46 +1000,47 @@ const styles = StyleSheet.create({
     //borderWidth: 1,
     //borderColor: '#f5f5f5',
     elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.1, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
   },
-      
-  searchSectionWrapper:{
-      flexDirection: 'row',
-      marginVertical:20,
-      elevation: 2, // Android shadow
-      shadowColor: '#000', // iOS shadow
-      shadowOpacity: 0.1, // iOS shadow
-      shadowRadius: 2, // iOS shadow
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
+
+  searchSectionWrapper: {
+    flexDirection: 'row',
+    marginVertival: 20,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 2, // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 1,
     },
-  searchBarNew:{
-      flex:1,
-      flexDirection:'row',
-      backgroundColor: '#fff',
-      padding:16,
-      borderRadius:10,
-      paddingHorizontal: 25,
-      marginRight:10,
-    },
-    filterBtn:{
-      backgroundColor: COLORS.orangeLikeStars,
-      padding:12,
-      borderRadius:10,
-      marginLeft:10,
-    }
-    
-  
-
-  
-
-
+  },
+  searchBarNew: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    paddingHorizontal: 25,
+    marginRight: 10,
+  },
+  filterBtn: {
+    backgroundColor: COLORS.orangeLikeStars,
+    padding: 12,
+    borderRadius: 10,
+    marginLeft: 10,
+  },
+  sortBtn: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.lightPurple,
+    padding: 12,
+    borderRadius: 10,
+    marginRight: 10,
+  }
 });
