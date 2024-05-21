@@ -1,7 +1,7 @@
 
 const dayjs = require("dayjs");
 
-const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb, getProductsByCatgeoryDb } = require("../utils/db")
+const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb, updateProductInfoDb } = require("../utils/db")
 const {
     getFirestore,
     Timestamp,
@@ -31,4 +31,9 @@ const addMyProduct = async (newProductData) => {
     return result;
 }
 
-module.exports = { getProducts, getMyProducts, getProducts, addMyProduct }
+const updateProductInfo = async (productId, newProductData) => {
+    const result = await updateProductInfoDb(productId, newProductData);
+    return result;
+}
+
+module.exports = { getProducts, getMyProducts, getProducts, addMyProduct, updateProductInfo }

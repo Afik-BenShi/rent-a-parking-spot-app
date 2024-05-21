@@ -4,7 +4,7 @@ const {firestore: {GeoPoint}} = require('firebase-admin');
 
 const upsertPersonalDetails = async (data) => {
     const relevantData = _.pick(data, ['fullName', 'phoneNumber', 'city', 'coordinates', 'street', 'addressNotes', 'imageUrl' ]);
-    relevantData.coordinates = new GeoPoint(relevantData.coordinates?.lat, relevantData.coordinates?.lon);
+    //relevantData.coordinates = new GeoPoint(relevantData.coordinates?.lat, relevantData.coordinates?.lon);
     const collection = 'users'
     const resultId = await upsertDocument({ collection, data: relevantData, docId: data.token.user_id });
     return resultId;
@@ -31,4 +31,4 @@ const getUserExists = async (userId) => {
     return {status: 200, response: user.exists};
 }
 
-module.exports = { upsertPersonalDetails, getUserSuggestions, getUserExists}
+module.exports = { upsertPersonalDetails, getUserSuggestions, getUserExists }

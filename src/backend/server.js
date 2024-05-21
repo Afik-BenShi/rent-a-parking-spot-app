@@ -109,6 +109,25 @@ app.post('/myProducts/add', async (req, res) => {
   res.send(result);
 });
 
+app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { title, description } = req.body;
+    console.log("productId", productId);
+    console.log("title", title);
+    console.log("description", description);
+    
+    const newProductData = { title, description };
+
+    const result = await products.updateProductInfo(productId, newProductData);
+    res.send(result);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).send("Error updating product");
+  }
+});
+
+
 app.get('/users/suggestion', async (req, res) => {
   const query = req.query;
   const { status, response } = await users.getUserSuggestions(query);

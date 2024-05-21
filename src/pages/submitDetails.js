@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,16 +15,26 @@ import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
 
+import { getUser } from '../auth/auth';
 import config from '../backend/config'
+import { RefreshContext } from '../context/context';
 
 const productImage = require("../../assets/parking-details-images/placeholder.png");
 
 
-const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
+const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
   console.log("Product details submitted: ", detailsList);
 
   // Send the details to the backend
   // Send a POST request to your server
+  let token;
+  try {
+    token = await getUser()?.getIdToken();
+  } catch (error) {
+    console.error("Error getting user token:", error);
+    // Handle the error appropriately
+    return;
+  }
 
   const newProduct = {
     title: detailsList.productName,
@@ -32,8 +42,8 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
     ownerId: userId,
     description: detailsList.productDescription,
     mainCategoryId: detailsList.category,  
-    fromDate: detailsList.fromDate,
-    untilDate: detailsList.untilDate,
+    fromDate: new Date(detailsList.fromDate),
+    untilDate: new Date(detailsList.untilDate),
     city: detailsList.city,
   };
 
@@ -42,7 +52,8 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
   fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      Authorization: token
     },
     body: JSON.stringify(newProduct)
   })
@@ -54,8 +65,10 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
       console.error("Error while posting new product:", JSON.stringify(error));
     });
 
-    onSuccess();
   // Navigate to the My Products page
+  // Use CONTEXT - to remove the Non-seriazable warning
+  setRefresh(true);
+  setTimeout(() => setRefresh(false), 10);
   navigation.navigate("My Products cardList");
 
 };
@@ -63,9 +76,11 @@ const onClickFinish = ({ navigation, detailsList, userId, onSuccess }) => {
 
 
 export default function SubmitDetails({ navigation, route }) {
-  const { detailsList, userId: user, onSuccess } = route.params;
+  const { refresh, setRefresh } = useContext(RefreshContext);
+  const { detailsList, user } = route.params;
 
   const [userId, setUserId] = useState(user);
+  console.log("userId in submitDetails: ", userId);
 
   const onGoBackPress = () => {
     navigation.goBack();
@@ -193,7 +208,7 @@ export default function SubmitDetails({ navigation, route }) {
           backText="Back"
           navigation={navigation}
           //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-          onNextPress={() => onClickFinish({ navigation, detailsList, userId, onSuccess})}
+          onNextPress={() => onClickFinish({ navigation, detailsList, userId, refresh, setRefresh})}
 
           paddingBottom={0}
         />

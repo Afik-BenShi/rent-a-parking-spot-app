@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
@@ -7,16 +7,29 @@ import {
     View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import { NavigationContainer } from '@react-navigation/native';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import config from '../backend/config';
 import { getUser } from '../auth/auth';
+import NoProductsYet from './noProductsYetPage';
+import { RefreshContext } from '../context/context';
 
-export default function MyProductsPage({ navigation, route }) {
+
+export function MyProductsPage({ navigation, route }) {
+    const { refresh, title, description } = useContext(RefreshContext);  // TODO: finish with use context
+    // title and description are used to update the header title and description from the editable components
+
     const [myItems, setMyItems] = useState([]);
     const [userId, setUserId] = useState(route.params.userId);
-    const [refreshing, setRefreshing] = useState(false);
+    //const [refreshing, setRefreshing] = useState(false);
+    const [noContent, setNoContent] = useState(false);
+    
+    // function updateProducts () {
+    //     console.log("hi from updateProducts");
+    //     setRefreshing(false);
+    //     setTimeout(() => setRefreshing(true), 0);
+    // };
 
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
@@ -24,26 +37,44 @@ export default function MyProductsPage({ navigation, route }) {
             const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, {
                 headers: {Authorization: token},
                 params: { userId } });
-            setMyItems(response.data);
+            const items = response.data;
+            setMyItems(items);
+            console.log("myItems : " + JSON.stringify(items));
+            
+            // Check if the fetched items are empty
+            if (!items || items.length === 0) {
+                setNoContent(true);
+            } else {
+                setNoContent(false);
+            }           
         }
         catch (err) {
             console.log(JSON.stringify(err))
         }
     };
 
+    // useEffect(() => {
+    //     fetchProducts();
+    //     console.log("refresh - fetchProducts");
+
+    //     setTimeout(() => {
+    //         setRefreshing(false);
+    //     }, 100);
+
+    // }, [refreshing]);
+
+
+
     useEffect(() => {
         fetchProducts();
-        console.log("refresh - fetchProducts");
+    }, [refresh]);
+   
+    // useEffect(() => {
+    //     console.log("get the update in my products page");
+    //     console.log("new title: ", title);
+    //     console.log("new description: ", description);
+    // }, [title, description]);
 
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 100);
-
-    }, [refreshing]);
-
-    const updateProducts = () => {
-         (true);
-    };
 
     return (
         <SafeAreaView style={styles.layout}>
@@ -56,20 +87,26 @@ export default function MyProductsPage({ navigation, route }) {
 
 
             <View style={styles.container}>
+            {!noContent && (
                 <CardList
                     items={myItems}
                     //title="My Products"
-                    title=""
-                    
                     onItemPressed={(details) => navigation.navigate('ownerProduct', { details, userId })}
+                    style={styles.cardList} // Apply styles to CardList
                 />
+            )}
+
+            { noContent && <NoProductsYet />   }
+                
             </View>
 
+
             <View style={styles.buttonContainer}>
+                
                     <View style={styles.circle} />
                     
                     <TouchableOpacity style={styles.buttonContainer} 
-                        onPress={() => navigation.navigate('addProduct', { updateProducts })}
+                        onPress={() => navigation.navigate('addProduct', { userId })}
                     > 
                     <Ionicons style={styles.newProductBtn} 
                         name="add-circle" 
@@ -82,6 +119,7 @@ export default function MyProductsPage({ navigation, route }) {
 
 
         </SafeAreaView>
+        
     );
 }
 
@@ -103,8 +141,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         flexDirection: 'column',
+        backgroundColor: COLORS.cardBackground,
     },
     btnContainer: {
         flexDirection: 'row',
@@ -173,4 +212,8 @@ const styles = StyleSheet.create({
     right: 150,
     zIndex: -1, // Ensure it's behind the button
   },
+  cardList: {
+    flex: 1, // Ensure the CardList takes up the full height of the container
+},
+
 });

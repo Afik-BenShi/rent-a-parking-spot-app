@@ -9,7 +9,7 @@ import ExpandableImage from "../components/ExpandableImage";
 import { COLORS } from "../../assets/theme";
 import { ContactButtons } from "../components/contactButtons";
 import { timeStampToDate } from "../utils/dateTime";
-
+import { parseItem } from "./ownerProductPage";
 /**
  *  @type {React.FC}
  *  @param {ProductDetailsPageProps} Props
@@ -98,61 +98,62 @@ const styles = StyleSheet.create({
     },
 });
 
-// TODO use consistent data instead of parsing
-/** @returns {ProductDetails} */
-export function parseItem({ details: item }) {
-    const {
-        id,
-        title,
-        pricePerDay,
-        startDate,
-        startDay,
-        endDate,
-        endDay,
-        description,
-        ownerId,
-        city,
-        distanceFromMe,
-        imageUrl,
-    } = item;
-    console.log("item:",item)
-    return Object.assign(mock, {
-        id,
-        title,
-        description,
-        city,
-        availability: {
-            startDate: timeStampToDate(startDay?? startDate),
-            endDate: timeStampToDate(endDay?? endDate),
-        },
-        image: imageUrl,
-        price: Object.assign(mock.price, { amount: pricePerDay }),
-        owner: Object.assign(mock.owner, { name: ownerId }),
-    });
-}
-/**@type {ProductDetails} */
-const mock = {
-    id: "1",
-    title: "Little Black Dress",
-    description:
-        "Every girl needs a little black dress. But if you don't have one, rent have mine for a night",
-    price: {
-        amount: 10,
-        currency: "$",
-        duration: "day",
-    },
-    location: {
-        latitude: 32.07789,
-        longitude: 34.774304,
-        address: "Dizengoff square",
-    },
-    owner: {
-        id: "2",
-        name: "Anna Zak",
-        phoneNumber: "972522708541",
-    },
-    availability: {
-        startDate: new Date("2024-02-14T10:00"),
-        endDate: new Date("2024-02-17T18:00"),
-    },
-};
+
+// // TODO use consistent data instead of parsing
+// /** @returns {ProductDetails} */
+// export function parseItem({ details: item }) {
+//     const {
+//         id,
+//         title,
+//         pricePerDay,
+//         startDate,
+//         startDay,
+//         endDate,
+//         endDay,
+//         description,
+//         ownerId,
+//         city,
+//         distanceFromMe,
+//         imageUrl,
+//     } = item;
+//     console.log("item:",item)
+//     return Object.assign(mock, {
+//         id,
+//         title,
+//         description,
+//         city,
+//         availability: {
+//             startDate: timeStampToDate(startDay?? startDate),
+//             endDate: timeStampToDate(endDay?? endDate),
+//         },
+//         image: imageUrl,
+//         price: Object.assign(mock.price, { amount: pricePerDay }),
+//         owner: Object.assign(mock.owner, { name: ownerId }),
+//     });
+// }
+// /**@type {ProductDetails} */
+// const mock = {
+//     id: "1",
+//     title: "Little Black Dress",
+//     description:
+//         "Every girl needs a little black dress. But if you don't have one, rent have mine for a night",
+//     price: {
+//         amount: 10,
+//         currency: "$",
+//         duration: "day",
+//     },
+//     location: {
+//         latitude: 32.07789,
+//         longitude: 34.774304,
+//         address: "Dizengoff square",
+//     },
+//     owner: {
+//         id: "2",
+//         name: "Anna Zak",
+//         phoneNumber: "972522708541",
+//     },
+//     availability: {
+//         startDate: new Date("2024-02-14T10:00"),
+//         endDate: new Date("2024-02-17T18:00"),
+//     },
+// };

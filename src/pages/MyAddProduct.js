@@ -15,7 +15,9 @@ import NextBackBtn from '../components/nextAndBackBtn';
 
 export default function AddProductPage ({ navigation, route }) {
   
-   const { updateProducts } = route.params;
+   const { userId } = route.params;
+
+   console.log("userId in addProductPage: ", userId);
 
     // State to hold the entered details
     const [details, setDetails] = useState({
@@ -46,8 +48,8 @@ export default function AddProductPage ({ navigation, route }) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["from"]: start,
-          ["fromDate"]: startDate,
-      }));
+          ["fromDate"]: startDate.toISOString(),  // convert the Date object to a string - to remove the warning
+      }));                                        // after that need to convert it back to Date object
   };
 
   const handleEndDateChange = (endDate) => {
@@ -57,7 +59,7 @@ export default function AddProductPage ({ navigation, route }) {
       setDetails((prevDetails) => ({
           ...prevDetails,
           ["until"]: end,
-          ["untilDate"]: endDate,
+          ["untilDate"]: endDate.toISOString(),
       }));
   };
 
@@ -94,7 +96,7 @@ export default function AddProductPage ({ navigation, route }) {
         }
 
         navigation.navigate("submitDetailsBeforePost" ,
-        { detailsList: details , onSuccess: updateProducts});
+        { detailsList: details , user:userId });
         
     };
     
@@ -187,37 +189,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  finishButton: {
-    backgroundColor: 'lightgreen',
-    paddingVertical: 15,
-    paddingHorizontal: 80,
-    borderRadius: 10,
-    alignSelf: 'center',
-    marginTop: 20,
-    height: 50,
-},
-startButtonText: {
-    color: '#333',
-    fontWeight: 'bold',
-},
-btn: {
-  borderWidth: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: 8,
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  backgroundColor: 'transparent',
-  borderColor: '#266EF1',
-},
-btnGroup: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginHorizontal: -6,
-  marginTop: 18,
-},
+
 btnText: {
   fontSize: 14,
   lineHeight: 20,
@@ -235,30 +207,11 @@ btnPrimary: {
   backgroundColor: '#266EF1',
   borderColor: '#266EF1',
 },
-btnPrimaryText: {
-  fontSize: 14,
-  lineHeight: 20,
-  fontWeight: '600',
-  color: '#fff',
-},
 backButton: {
   position: 'absolute',
   top: 20,
   left: 2,
   zIndex: 1,
-},
-
-divider: {
-  overflow: 'hidden',
-  width: '100%',
-},
-dividerInset: {
-  width: '100%',
-  borderWidth: 2,
-  borderColor: '#e5e5e5',
-  borderStyle: 'dashed',
-  marginTop: -2,
-  marginRight:5,    
 },
 /** Action */
 action: {
