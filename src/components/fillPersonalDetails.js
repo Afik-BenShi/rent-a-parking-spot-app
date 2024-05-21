@@ -141,7 +141,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         //     </View>
                         // )}
                         query={{
-                            key: "AIzaSyDGMVgvnkeNr8urkP_YfBWStWKvWTbn4jk",
+                            key: "fill_your_key",
                             language: 'en', // language of the results
                         }}
                         styles={{
