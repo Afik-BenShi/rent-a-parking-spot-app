@@ -12,8 +12,7 @@ export default function useValidatedText(
     const [text, setText] = useState(initial);
     /** @type {[Validation, function]} */
     const [validation, setValidation] = useState({ isValid: true });
-    const [customValidator, setCustomValidator] = useState();
-    const _customValidator = {
+    const customValidator = {
         /** @type {ValidationFn} */ validate(value, reject) {},
     };
 
@@ -28,7 +27,7 @@ export default function useValidatedText(
 
     /** @param {ValidationFn} validator */
     function defineCustomValidation(validator) {
-        _customValidator.validate = validator;
+        customValidator.validate = validator;
     }
 
     function validate() {
@@ -40,7 +39,7 @@ export default function useValidatedText(
                 return validation;
             }
         }
-        _customValidator.validate(text, reject);
+        customValidator.validate(text, reject);
         return validation;
     }
 
@@ -49,7 +48,7 @@ export default function useValidatedText(
             return text;
         },
         setText(text) {
-            setText(text.trim());
+            setText(text);
         },
         defineCustomValidation,
         validate,
