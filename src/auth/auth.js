@@ -77,7 +77,7 @@ async function branchOnInfoExistance({user, doIfExists=()=>{}, doIfNotExists=()=
     const token = await user.getIdToken();
     const isUserInfoExists = await axios.get(`http://${config.serverIp}:${config.port}/users/hasPrivateInfo`, {
         headers: { Authorization: await token},
-    }).then(({data}) => data).catch(console.warn);
+    }).then(({data}) => data);
     if (isUserInfoExists){
         doIfExists();
     } else {

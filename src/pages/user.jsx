@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
@@ -34,6 +35,7 @@ export default function Profile({ navigation, route }) {
   const [profileData, setProfileData] = useState(curData);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [lastProfileData, setLastProfileData] = useState(curData);
+  const [isSignOutLoading, setSignOutLoading] = useState(false);
 
   const handleDataChange = (field, value) => {
     setProfileData((prevDetails) => ({
@@ -51,20 +53,24 @@ export default function Profile({ navigation, route }) {
 
   const doLogOut = async () => {
     console.log('logging out');
+    setSignOutLoading(true);
     const isSignedOut = await signOutUser();
     if (!isSignedOut){
       console.error("did not log out", getAuth());
       return;
     }
-    navigation.navigate('auth');
+    navigation.navigate('auth', {screen: 'Login'});
+    setSignOutLoading(false);
   }
 
   // Function to handle 'save' button press
   const handleSave = async () => {
+    const token = await getAuth().currentUser.getIdToken();
     await axios({
       method: 'post',
       url: `http://${config.serverIp}:${config.port}/users/upsert`,
-      data: { ...profileData, id: userId }
+      data: { ...profileData, id: userId },
+      headers: { Authorization: token },
     })
     setShowEditProfile(false);
   };
@@ -113,11 +119,17 @@ export default function Profile({ navigation, route }) {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={doLogOut}
+                disabled={isSignOutLoading}
               >
                 <View style={{...moreStyles.profileAction, backgroundColor:COLORS.red}}>
+                {!isSignOutLoading?(
+                  <>
                   <Text style={moreStyles.profileActionText}>Log Out</Text>
-
                   <FeatherIcon color="#fff" name="log-out" size={16} />
+                  </>
+                ):(
+                  <ActivityIndicator color="#fff" size="small"/>
+                )}
                 </View>
               </TouchableOpacity>
 

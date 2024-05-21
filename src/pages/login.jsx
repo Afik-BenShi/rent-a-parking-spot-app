@@ -9,7 +9,6 @@ import { getAuth } from "firebase/auth";
 import LoadingPage from "./LoadingPage";
 
 export function LoginPage({ navigation, route }) {
-    const {redirect}= route?.params;
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -18,12 +17,14 @@ export function LoginPage({ navigation, route }) {
     const password = useValidatedText("");
     const [isFailedLogin, setLoginFailed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
+    
+    const {redirect} = route?.params?? {};
     useEffect(() => {
         if (redirect) {
             navigation.replace(redirect);
         }
     }, [route]);
+
     const doLogin = async () => {
         if (!email.isValid || !password.isValid) {
             return;

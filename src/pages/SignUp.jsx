@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, Input, Text, Icon, Button } from "@rneui/themed";
 import {
     View,
@@ -19,7 +19,7 @@ import axios from "axios";
 import config from "../backend/config";
 import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";
 
-export function SignUpAuth({ navigation }) {
+export function SignUpAuth({ navigation, route}) {
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -46,6 +46,16 @@ export function SignUpAuth({ navigation }) {
         }, [])
     );
 
+    const clearForm = async () => {
+        email.setText("");
+        password.setText("");
+        setErrorMessage("");
+        setIsLoading(false);
+    };
+    useEffect(()=> {
+        return navigation.addListener('focus', clearForm)
+    }, [navigation]);
+
     const authSignUpHandler = async () => {
         const isValid = validateRequiredFields(email, password);
         if (!isValid) {
@@ -57,6 +67,7 @@ export function SignUpAuth({ navigation }) {
             const user = await signUpWithEmail(email.text, password.text);
             if (user) {
                 setErrorMessage("");
+                clearForm();
                 navigation.navigate("SignUpDetails");
             }
         } catch (error) {
@@ -133,7 +144,7 @@ export function SignUpAuth({ navigation }) {
 export function SignUpDetails({ navigation }) {
     const fullName = useValidatedText(
         "",
-        /^[a-zA-z ]{2,}$/,
+        /^[a-zA-z]{1}[a-zA-z ]{1,}$/,
         "Please Insert your full name"
     );
     const phoneNumber = useValidatedText(
@@ -150,7 +161,21 @@ export function SignUpDetails({ navigation }) {
     const [showAddressError, setAddressShow] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [signUpError, setSignUpError] = useState("");
-
+    const [addressKey, setAddressKey] = useState(0);
+    
+    const clearForm = () => {
+        fullName.setText("");
+        phoneNumber.setText("");
+        addressNotes.setText("");
+        setIsLoading(false);
+        setSignUpError("");
+        setCoord({ lat: "", lon: "" });
+        setAddressDetails({ city: "", streetAndNumber: "" });
+        setAddressKey((current) => current + 1);
+    };
+    useEffect(()=> {
+        return navigation.addListener('focus', clearForm)
+    }, [navigation]);
     const coordSelectedHandler = ({ lat, lon }, newAddressDetails) => {
         setCoord({ lat, lon });
         setAddressDetails(newAddressDetails);
@@ -174,28 +199,31 @@ export function SignUpDetails({ navigation }) {
             setIsLoading(false);
             return;
         }
-        const result = await axios
-            .post(
-                `http:/${config.serverIp}:${config.port}/users/upsert`,
-                {
-                    fullName: fullName.text,
-                    phoneNumber: phoneNumber.text,
-                    coordinates: coord,
-                    city: addressDetails.city,
-                    street: addressDetails.streetAndNumber,
-                    addressNotes: addressNotes.text,
-                },
-                { headers: { Authorization: await token } }
-            )
-            .then(({ data }) => data)
-            .catch((error) => ({ error }));
-        if (result.error) {
-            setSignUpError(`${result.error}`);
+        try {
+            const result = await axios
+                .post(
+                    `http:/${config.serverIp}:${config.port}/users/upsert`,
+                    {
+                        fullName: fullName.text,
+                        phoneNumber: phoneNumber.text,
+                        coordinates: coord,
+                        city: addressDetails.city,
+                        street: addressDetails.streetAndNumber,
+                        addressNotes: addressNotes.text,
+                    },
+                    { headers: { Authorization: await token } }
+                )
+                .then(({ data }) => data);
+            if (result.error) {
+                throw result.error;
+            }
+        } catch (error) {
+            setSignUpError(`${error.message}`);
             setIsLoading(false);
             return;
         }
         setIsLoading(false);
-        navigation.navigate('main');
+        navigation.navigate("main");
     };
 
     return (
@@ -207,6 +235,7 @@ export function SignUpDetails({ navigation }) {
                     inputContainerStyle={styles.input}
                     label="Full Name"
                     leftIcon={<FeatherIcon size={16} name="user" />}
+                    value={fullName.text}
                     errorMessage={fullName.errorMessage}
                     onEndEditing={fullName.validate}
                     onChangeText={fullName.setText}
@@ -229,6 +258,7 @@ export function SignUpDetails({ navigation }) {
                             iconSize={16}
                         />
                     }
+                    value={phoneNumber.text}
                     errorMessage={phoneNumber.errorMessage}
                     onEndEditing={phoneNumber.validate}
                     onChangeText={phoneNumber.setText}
@@ -240,6 +270,7 @@ export function SignUpDetails({ navigation }) {
                     onChooseSuggestion={coordSelectedHandler}
                     onEdit={addressEditHandler}
                     disabled={isLoading}
+                    key={addressKey}
                 />
                 {showAddressError && (
                     <Text style={styles.failText}>
@@ -257,6 +288,7 @@ export function SignUpDetails({ navigation }) {
                             iconSize={16}
                         />
                     }
+                    value={addressNotes.text}
                     errorMessage={addressNotes.errorMessage}
                     onEndEditing={addressNotes.validate}
                     onChangeText={addressNotes.setText}
@@ -356,6 +388,7 @@ function AddressSuggestionsBox({
                         name="city-variant-outline"
                     />
                 }
+                value={city.text}
                 errorMessage={city.errorMessage}
                 disabled={disabled}
                 onEndEditing={() => {
@@ -372,8 +405,9 @@ function AddressSuggestionsBox({
                 inputContainerStyle={styles.input}
                 leftIcon={<FeatherIcon size={16} name="map-pin" />}
                 label="Street and number"
-                errorMessage={streetAndNumber.errorMessage}
                 disabled={disabled}
+                value={streetAndNumber.text}
+                errorMessage={streetAndNumber.errorMessage}
                 onEndEditing={() => {
                     streetAndNumber.validate();
                     detailsChange();
