@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "/Users/einatgelbort/student/googleWorkshop/rent-a-parking-spot-app/src/backend/server.js"
+            "program": "${workspaceFolder}/src/backend/server.js"
         }
     ]
 }
