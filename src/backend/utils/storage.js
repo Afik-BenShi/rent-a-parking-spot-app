@@ -1,4 +1,4 @@
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+// const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const { initializeApp } = require("firebase/app");
 const { getStorage, ref, uploadBytes, getBlob, getDownloadURL } = require("firebase/storage");
 const fs = require('fs');
