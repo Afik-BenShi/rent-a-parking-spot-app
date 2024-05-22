@@ -12,7 +12,9 @@ import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
 import SingleSelectedDropDown from "./SingleSelectListDropDown";
-
+import useValidatedText, {
+    validateRequiredFields,
+} from "../customStates/useTextValidation";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
