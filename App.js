@@ -24,6 +24,7 @@ import { Text, Icon } from '@rneui/themed';
 import LoadingPage from './src/pages/LoadingPage';
 
 import { RefreshContext, RefreshContextProvider } from './src/context/context';
+import { ResetPassword } from './src/pages/ResetPassword';
 
 
 const HomeStack = createNativeStackNavigator();
@@ -134,6 +135,10 @@ function AuthStackScreen({ route }) {
         )
       }} name="SignUpDetails"
         component={SignUpDetails}
+      />
+      <AuthStack.Screen options={{ headerShown:false }} 
+        name="ResetPassword"
+        component={ResetPassword}
       />
     </AuthStack.Navigator>
   )

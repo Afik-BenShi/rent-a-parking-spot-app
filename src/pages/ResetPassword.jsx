@@ -1,50 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Card, Input, Button, Text } from "@rneui/themed";
 import { View, SafeAreaView, Pressable } from "react-native";
 import useValidatedText from "../customStates/useTextValidation";
-import { signInWithEmail } from "../auth/auth";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { styles } from "./signUpAndLogin.styles";
-import LoadingPage from "./LoadingPage";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { COLORS } from "../../assets/theme";
 
-export function LoginPage({ navigation, route }) {
+export function ResetPassword({ navigation, route }) {
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
         "Invalid email"
     );
-    const password = useValidatedText("");
-    const [isFailedLogin, setLoginFailed] = useState(false);
+    const [isFailedReset, setResetFailed] = useState(false);
+    const [isResetSuccess, setResetSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     
-    const {redirect} = route?.params?? {};
-    useEffect(() => {
-        if (redirect) {
-            navigation.replace(redirect);
-        }
-    }, [route]);
-
-    const doLogin = async () => {
-        if (!email.isValid || !password.isValid) {
+    const doResetPassword = async () => {
+        if (!email.isValid) {
             return;
         }
         setIsLoading(true);
-        const login = await signInWithEmail(email.text, password.text);
-        if (login) {
-            setLoginFailed(false);
-            navigation.navigate('loading');
-        } else {
-            setLoginFailed(true);
+        const auth = getAuth();
+        try{
+            await sendPasswordResetEmail(auth, email.text);
+            setResetFailed(false);
+            setResetSuccess(true);
+        } catch(e) {
+            console.error(e);
+            setResetFailed(true);
+            setResetSuccess(false);
         }
         setIsLoading(false);
     };
-    if (redirect) {
-        return <LoadingPage navigation={navigation} />
-    }
     return (
         <SafeAreaView style={styles.loginContainer}>
             <Card containerStyle={styles.profile}>
-                <Card.Title style={styles.profileName}>Login</Card.Title>
+                <Card.Title style={styles.profileName}>Reset your password</Card.Title>
                 <Card.Divider />
                 <View>
                     <Input
@@ -56,29 +49,24 @@ export function LoginPage({ navigation, route }) {
                         onChangeText={email.setText}
                         disabled={isLoading}
                     />
-                    <Input
-                        inputContainerStyle={styles.input}
-                        label="Password"
-                        leftIcon={<FeatherIcon name="lock" />}
-                        errorMessage={password.errorMessage}
-                        onEndEditing={password.validate}
-                        onChangeText={password.setText}
-                        secureTextEntry={true}
-                        disabled={isLoading}
-                    />
-                    {isFailedLogin && (
+                    {isFailedReset && (
                         <Text style={styles.failText}>
-                            Incorrect email or password.
+                            We had an error, please try again later
+                        </Text>
+                    )}
+                    {isResetSuccess && (
+                        <Text style={{...styles.failText, color:COLORS.cartTitle}}>
+                            Reset email will be sent to you in a few minutes
                         </Text>
                     )}
                     <Button
                         buttonStyle={styles.actionButtons}
                         titleStyle={styles.profileActionText}
-                        onPress={doLogin}
+                        onPress={doResetPassword}
                         disabled={isLoading}
                         loading={isLoading}
                     >
-                        Log In
+                        Send reset link
                     </Button>
                     <Pressable
                         style={{ alignItems: "center" }}
@@ -88,9 +76,9 @@ export function LoginPage({ navigation, route }) {
                     </Pressable>
                     <Pressable
                         style={{ alignItems: "center" }}
-                        onPress={() => navigation.navigate("ResetPassword")}
+                        onPress={() => navigation.navigate("Login")}
                     >
-                        <Text style={styles.link}>Reset password</Text>
+                        <Text style={styles.link}>Back to log in</Text>
                     </Pressable>
                 </View>
             </Card>
