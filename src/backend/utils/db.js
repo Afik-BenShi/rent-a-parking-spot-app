@@ -65,6 +65,7 @@ async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
     return productsWithEmptySlots;
 }
 
+
 const getProductsDb = async (filters) => {
     try {
         const { startDate, endDate, maxPrice, mainCategory, city } = filters;
@@ -104,7 +105,25 @@ const getProductsDb = async (filters) => {
         }
 
         const result = await docRef.get();
-        return result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        let docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
+        try {
+            const enrichmentProps = [
+                { key: "ownerId", collection: "users" }
+            ];
+            const enrichPromises = enrichmentProps.map(
+                async ({ key, collection }) => {
+                    docs = await enrichWithReferencedId(docs, key, collection);
+                }
+            );
+            await Promise.all(enrichPromises);
+        } catch (err) {
+            throw new Error(`[getProdusts in home page][ownerEnrichment] ${err}`);
+        }
+        
+        return docs;
+
+        
     } catch (error) {
         console.error("Error fetching product:", error);
         throw error;

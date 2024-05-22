@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingBottom: 140,
+    paddingBottom: 400,
     padding: 20,
     backgroundColor: COLORS.cardBackground,
   },
