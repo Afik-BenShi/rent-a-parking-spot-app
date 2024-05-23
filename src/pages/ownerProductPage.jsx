@@ -24,6 +24,9 @@ export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
     //const details = parseItem(route.params);
     //const { updateProducts } = route.params;
+    //const { updatedTitle, setUpdatedTitle, updatedDescription, setUpdatedDescription } = useContext(RefreshContext);
+    const { updatedItem, setUpdatedItem } = useContext(RefreshContext);
+
 
     const [details, setDetails] = useState(parseItem(route.params));
     const [editMode, setEditMode] = useState(false);
@@ -34,6 +37,8 @@ export default function OwnerProductPage({ route, navigation }) {
     const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
     
+    console.log(details);
+
 
 
     const editClickHandler = () => {
@@ -63,7 +68,6 @@ export default function OwnerProductPage({ route, navigation }) {
         });
     }, [editMode, navigation]);
 
-    console.log(details);
 
     const updateReservations = () => {
         getAuth().currentUser?.getIdToken().then(token => 
@@ -115,10 +119,14 @@ export default function OwnerProductPage({ route, navigation }) {
     };
 
 
-    // this updates myProducts page
-    // useEffect(() => {
-    //     console.log("using update product");
-    // }, [details]);
+    // In order to updates myProducts page
+    useEffect(() => {
+        console.log("hi from useEffect[details] in ownerProductPage");
+        // details.title and details.description is already updated after the edit
+        setUpdatedItem({ id: details.id, title: details.title, description: details.description });
+        //setUpdatedTitle(details.title); 
+        //setUpdatedDescription(details.description); 
+    }, [details]);
 
     // This tells React to call our effect when `title`, `description`, or `editMode` changes
     useEffect(() => {
@@ -301,108 +309,108 @@ const mock = {
     },
 };
 
-/** @type {Record<string, ProductReservation[]>} */
-const mockReservations = {
-    next: [
-        {
-            id: "1",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2026-08-12T15:45:00Z"),
-                endDate: new Date("2026-09-05T12:00:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972522708541",
-            },
-        },
-        {
-            id: "2",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2027-11-08T08:30:00Z"),
-                endDate: new Date("2027-11-25T18:20:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-        {
-            id: "3",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2025-03-25T10:15:00Z"),
-                endDate: new Date("2025-04-10T20:30:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-    ],
-    prev: [
-        {
-            id: "4",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2022-05-10T08:00:00Z"),
-                endDate: new Date("2022-06-01T16:20:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-        {
-            id: "5",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2023-08-15T12:30:00Z"),
-                endDate: new Date("2023-09-02T18:45:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-        {
-            id: "6",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2021-11-20T14:45:00Z"),
-                endDate: new Date("2021-12-05T22:10:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-        {
-            id: "7",
-            title: "Little Black Dress",
-            scheduling: {
-                startDate: new Date("2023-9-06T14:45:00Z"),
-                endDate: new Date("2023-9-06T22:12:00Z"),
-            },
-            productId: "1",
-            reservingUser: {
-                id: "1",
-                name: "Sasha Baron Cohen",
-                phoneNumber: "972555555555",
-            },
-        },
-    ],
-};
+// /** @type {Record<string, ProductReservation[]>} */
+// const mockReservations = {
+//     next: [
+//         {
+//             id: "1",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2026-08-12T15:45:00Z"),
+//                 endDate: new Date("2026-09-05T12:00:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972522708541",
+//             },
+//         },
+//         {
+//             id: "2",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2027-11-08T08:30:00Z"),
+//                 endDate: new Date("2027-11-25T18:20:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//         {
+//             id: "3",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2025-03-25T10:15:00Z"),
+//                 endDate: new Date("2025-04-10T20:30:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//     ],
+//     prev: [
+//         {
+//             id: "4",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2022-05-10T08:00:00Z"),
+//                 endDate: new Date("2022-06-01T16:20:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//         {
+//             id: "5",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2023-08-15T12:30:00Z"),
+//                 endDate: new Date("2023-09-02T18:45:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//         {
+//             id: "6",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2021-11-20T14:45:00Z"),
+//                 endDate: new Date("2021-12-05T22:10:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//         {
+//             id: "7",
+//             title: "Little Black Dress",
+//             scheduling: {
+//                 startDate: new Date("2023-9-06T14:45:00Z"),
+//                 endDate: new Date("2023-9-06T22:12:00Z"),
+//             },
+//             productId: "1",
+//             reservingUser: {
+//                 id: "1",
+//                 name: "Sasha Baron Cohen",
+//                 phoneNumber: "972555555555",
+//             },
+//         },
+//     ],
+// };

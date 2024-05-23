@@ -17,7 +17,7 @@ import { RefreshContext } from '../context/context';
 
 
 export function MyProductsPage({ navigation, route }) {
-    const { refresh, title, description } = useContext(RefreshContext);  // TODO: finish with use context
+    const { refresh, setRefresh, updatedItem } = useContext(RefreshContext);  // TODO: finish with use context
     // title and description are used to update the header title and description from the editable components
 
     const [myItems, setMyItems] = useState([]);
@@ -30,6 +30,7 @@ export function MyProductsPage({ navigation, route }) {
     //     setRefreshing(false);
     //     setTimeout(() => setRefreshing(true), 0);
     // };
+
 
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
@@ -67,15 +68,31 @@ export function MyProductsPage({ navigation, route }) {
 
     useEffect(() => {
         fetchProducts();
+        setRefresh(false);
     }, [refresh]);
+
+    useEffect(() => {
+        console.log("get the update of editable text in my products page");
+        console.log("updatedItem: ", updatedItem);
+        // get the updated title and description from the context
+        const idUpdated = updatedItem.id;
+        const newTitle = updatedItem.title;
+        const newDescription = updatedItem.description;
+        // find the item from myItems that has the same id as the updated item and update it
+        const selectedItem = myItems.find(item => item.id === idUpdated);
+        if (selectedItem) {
+            selectedItem.title = newTitle;
+            selectedItem.description = newDescription;
+        }
+        // update the state with the updated selected item
+        //setMyItems([...myItems]);
+        
+        // create a new array with the updated item
+        const newItems = myItems.map(item => item.id === idUpdated ? { ...item, title: newTitle, description: newDescription } : item);
+        // update the state with the new array
+        setMyItems(newItems);
+    }, [updatedItem]);
    
-    // useEffect(() => {
-    //     console.log("get the update in my products page");
-    //     console.log("new title: ", title);
-    //     console.log("new description: ", description);
-    // }, [title, description]);
-
-
     return (
         <SafeAreaView style={styles.layout}>
 

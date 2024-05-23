@@ -90,7 +90,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
   // Navigate to the My Products page
   // Use CONTEXT - to remove the Non-seriazable warning
   setRefresh(true);
-  setTimeout(() => setRefresh(false), 10);
+  //setTimeout(() => setRefresh(false), 10);
   navigation.navigate("My Products cardList");
 
 };
