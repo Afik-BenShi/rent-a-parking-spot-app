@@ -85,14 +85,7 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city, imageName } = req.body
-
-  const loweredCity = city.replace(/\b\w/g, function (char) { return char.toLowerCase(); });
-  const words = city.split(' ');
-  const capitalizedWords = words.map(word => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  });
-  const parsedCity = capitalizedWords.join(' ');
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, address, imageName } = req.body
 
   const newProductData = {
     title,
@@ -102,8 +95,8 @@ app.post('/myProducts/add', async (req, res) => {
     startDate: Timestamp.fromDate(new Date(fromDate)),
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
-    city: parsedCity,
-    imageName
+    address,
+    // imageName
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -124,9 +117,9 @@ app.post('/myProducts/img', async (req, res) => {
   }
   catch (err) {
     console.log("error in myProducts/img", JSON.stringify(err));
-    res.status(500).send({error:err});
+    res.status(500).send({ error: err });
   }
-  res.json({ data: {imageName, uri} });
+  res.json({ data: { imageName, uri } });
 });
 
 app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
@@ -159,6 +152,12 @@ app.get('/users/hasPrivateInfo', async (req, res) => {
   console.log(user_id);
   const { status, response } = await users.getUserExists(user_id);
   res.status(status).send(response);
+});
+
+app.get('/users/personalDetails', async (req, res) => {
+  const { userId } = req.query;
+  const userDetails = await db.getById({ collection: "users", id: userId })
+  res.json(userDetails.data)
 });
 
 app.get('/products/:id', (req, res) => { });

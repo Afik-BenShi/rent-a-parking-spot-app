@@ -67,7 +67,20 @@ export default function AddProductPage({ navigation, route }) {
 
   // Function to handle input change and update details state
   const handleInputChange = (field, value) => {
-    const parsedValue = field === "price" ? parseInt(value) : value.trim();
+    let parsedValue;
+    switch (field) {
+      case 'price': {
+        parsedValue = parseInt(value)
+        break;
+      }
+      case 'address': {
+        parsedValue = value
+        break;
+      }
+      default: {
+        parsedValue = value.trim()
+      }
+    }
 
     setDetails((prevDetails) => ({
       ...prevDetails,
@@ -122,7 +135,7 @@ export default function AddProductPage({ navigation, route }) {
 
         </View>
 
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
 
           <FillPersonalDetails
             sendDataToParent={handleInputChange}
