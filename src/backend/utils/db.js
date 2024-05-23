@@ -14,7 +14,6 @@ const config = require('../config');
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
-
 const init = () => {
     const serviceAccount = require("../../../rental-wize-firebase-adminsdk.json");
 

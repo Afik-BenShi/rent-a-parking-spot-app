@@ -101,6 +101,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         })();
     }, [imagePermissionsGranted]);
 
+
     const clearImgSelection = () => {
         setImgSelected(false);
         sendDataToParent("imageUri", "");
@@ -118,7 +119,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
             </View>
 
             <ScrollView keyboardShouldPersistTaps='handled' >
-                {/* listViewDisplayed={false} > */}
                 <View>
                     <Input
                         label="Product name"
@@ -135,6 +135,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onSelectCategory={sendCatToParent}
                         />
                     </View>
+
 
                     {/* <GooglePlacesAutocomplete
                         disableScroll={true}
@@ -166,6 +167,35 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             },
                         }}
                     />  */}
+
+                    <View style={{ flex: 1, padding: 20 }}>
+                        <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
+
+                        <GooglePlacesAutocomplete
+                            disableScroll={true}
+                            placeholder="Enter your location"
+                            minLength={3} // minimum length of text to search
+                            fetchDetails={true}
+                            returnKeyType={'default'}
+                            onPress={(data, details = null) => {
+                                console.log('GooglePlacesAutocomplete address:', details.geometry.location)
+                                sendDataToParent("address", details.geometry.location)
+                            }}
+                            onFail={error => console.log(error)}
+                            onNotFound={() => console.log('no results')}
+                            query={{
+                                key: "fill_this_key",
+                                language: 'en',
+                            }}
+                            styles={{
+                                textInputContainer: styles.googleInputContainer,
+                                textInput: styles.googleTextInput,
+                                predefinedPlacesDescription: {
+                                    color: '#1faadb'
+                                },
+                            }}
+                        />
+                    </View>
 
                     <Input
                         label="Location"

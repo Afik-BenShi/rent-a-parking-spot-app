@@ -69,6 +69,7 @@ export default function AddProductPage({ navigation, route }) {
   // Function to handle input change and update details state
   const handleInputChange = (field, value) => {
     let parsedValue;
+
     if (field !== "ImageUri"){
       parsedValue = field === "price" ? parseInt(value) : value.trim();
     }
@@ -76,6 +77,21 @@ export default function AddProductPage({ navigation, route }) {
       parsedValue = value;
     }
     
+
+    switch (field) {
+      case 'price': {
+        parsedValue = parseInt(value)
+        break;
+      }
+      case 'address': {
+        parsedValue = value
+        break;
+      }
+      default: {
+        parsedValue = value.trim()
+      }
+    }
+
     setDetails((prevDetails) => ({
       ...prevDetails,
       [field]: parsedValue,
@@ -129,7 +145,7 @@ export default function AddProductPage({ navigation, route }) {
 
         </View>
 
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps='handled'>
 
           <FillPersonalDetails
             sendDataToParent={handleInputChange}
