@@ -26,20 +26,13 @@ export async function uploadImage(storagePath, uri) {
 
 export async function convertToBytes(uri) {
     const response = await fetch(uri);
-
-    if (!response.ok || !response.body) {
-        throw new Error("Network request failed");
-    }
-
-    const reader = response.body.getReader();
-    const chunks = [];
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value); // Process each received chunk (e.g., display on UI)
-    }
-
-    const data = new Blob(chunks);
-    return data;
+    const blob = await response.blob();
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    const base64img = await new Promise((res, rej) => {
+        reader.onload = (e) => {
+            res(e.target.result);
+        };
+    });
+    return base64img;
 }

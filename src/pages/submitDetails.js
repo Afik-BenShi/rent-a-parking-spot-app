@@ -39,8 +39,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
 
   let imgRes;
   try {
-    const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
-    const imageBlobPromise = convertToBytes(path);
+    const imageBlobPromise = convertToBytes(detailsList.imageUri);
     const formData = new FormData();
     formData.append('title', detailsList.productName);
     formData.append('image', await imageBlobPromise);
@@ -57,7 +56,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
     console.error("Error while uploading an image:", JSON.stringify(err));
   }
   imgRes = await imgRes?.json();
-
+  console.log(imgRes);
   const newProduct = {
     title: detailsList.productName,
     pricePerDay: detailsList.price,

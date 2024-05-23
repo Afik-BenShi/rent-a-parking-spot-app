@@ -113,6 +113,7 @@ app.post('/myProducts/add', async (req, res) => {
 });
 
 app.post('/myProducts/img', async (req, res) => {
+  console.warn("image add");
   const { image, title, token } = req.body;
   const imageName = `${token.user_Id}-${title}-${Date.now()}`
   console.log(imageName)
