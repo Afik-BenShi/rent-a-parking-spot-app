@@ -96,12 +96,24 @@ const getProductsDb = async (filters) => {
             try {
                 const productsSnapshot = await docRef.get();
                 const productIds = productsSnapshot.docs.map((doc) => doc.id);
+
                 const availableProductsPromises = productIds.map((productId) =>
                     getAvailableProductsWithinDateRange(productId, startDate, endDate));
+                
+                console.log("availableProductsPromises : ", availableProductsPromises);
+
                 const availableProducts = await Promise.all(availableProductsPromises);
                 // availableProducts is an array of arrays, you might want to flatten it if needed
 
-                return distinctProducts(availableProducts.flat());
+                const distincts = await distinctProducts(availableProducts.flat());
+                
+                //Map distinct products to the required format
+                docs = distincts.map(product => ({
+                    ...product,
+                    id: product.id // id is productId
+                }));
+                //  return distincts;
+                
             } catch (error) {
                 console.error("Error fetching product by dates range:", error);
                 throw error;
@@ -111,7 +123,7 @@ const getProductsDb = async (filters) => {
             const result = await docRef.get();
             docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         }
-        
+
         try {
             const enrichmentProps = [
                 { key: "ownerId", collection: "users" }
@@ -121,7 +133,7 @@ const getProductsDb = async (filters) => {
                     docs = await enrichWithReferencedId(docs, key, collection);
                 }
             );
-            await Promise.all(enrichPromises);
+            const availableProducts = await Promise.all(enrichPromises);
         } catch (err) {
             throw new Error(`[getProdusts in home page][ownerEnrichment] ${err}`);
         }
@@ -312,7 +324,7 @@ const getAvailableProductsWithinDateRange = async (productId, startDate, endDate
             // Check if there are any overlapping orders
             if (overlappingOrders.length === 0) {
                 // No overlapping orders found, so the product is free during the given date range
-                freeProducts.push({ ...productData, productId });
+                freeProducts.push({ ...productData, id: productId });
             }
         }
 
