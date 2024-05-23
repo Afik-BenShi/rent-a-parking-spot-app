@@ -7,6 +7,10 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
+const { storage } = require("firebase-admin");
+const { getImage } = require('./storage');
+const config = require('../config');
+
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -66,6 +70,7 @@ async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
 
 
 const getProductsDb = async (filters) => {
+    let docs;
     try {
         const { startDate, endDate, maxPrice, mainCategory, city } = filters;
 
@@ -102,10 +107,11 @@ const getProductsDb = async (filters) => {
                 throw error;
             }
         }
-
-        const result = await docRef.get();
-        let docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-
+        else{
+            const result = await docRef.get();
+            docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        }
+        
         try {
             const enrichmentProps = [
                 { key: "ownerId", collection: "users" }
@@ -119,7 +125,6 @@ const getProductsDb = async (filters) => {
         } catch (err) {
             throw new Error(`[getProdusts in home page][ownerEnrichment] ${err}`);
         }
-        
         return docs;
 
         
@@ -130,12 +135,12 @@ const getProductsDb = async (filters) => {
 };
 
 const updateProductInfoDb = async (productId, newProductData) => {
-    const { title, description } = newProductData;
+    const { description } = newProductData;
     try {
         const docRef = db.collection("products").doc(productId);
         // Update only specific fields (title and description)
-        await docRef.update({ title, description });
-        return { id: docRef.id, title, description };
+        await docRef.update({ description });
+        return { id: docRef.id, description };
     } catch (error) {
         console.error("Error updating product:", error);
         throw error;

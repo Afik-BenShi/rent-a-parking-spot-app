@@ -6,30 +6,43 @@ export default function SingleSelectListDropDown({ dataToShow, onSelectCategory,
     
     const [selected, setSelected] = useState("");
     
-    let data = [
-        {key:'1', value:'Outdoor equipment'},
-        {key:'2', value:'Entertainment & Events'},
-        {key:'3', value:'Home Improvement'},
+    // let data = [
+    //     {key:'1', value:'Outdoor equipment'},
+    //     {key:'2', value:'Entertainment & Events'},
+    //     {key:'3', value:'Home Improvement'},
+    // ];
+    
+    // let formattedData = [];
+    // data = dataToShow ? dataToShow : data;
+    // if (!dataToShow) {
+    //     formattedData = data;
+    // }
+    // else{
+    //     formattedData = dataToShow.map((value, index) => ({
+    //         key: index.toString(), // Use the index as the key
+    //         value: value // Use the item itself as the label
+    //     }));
+    // }
+
+    // Default data in case dataToShow is not provided
+    const defaultData = [
+        { key: '1', value: 'Outdoor equipment' },
+        { key: '2', value: 'Entertainment & Events' },
+        { key: '3', value: 'Home Improvement' },
     ];
     
-    let formattedData = [];
-    data = dataToShow ? dataToShow : data;
-    if (!dataToShow) {
-        formattedData = data;
-    }
-    else{
-        formattedData = dataToShow.map((value, index) => ({
-            key: index.toString(), // Use the index as the key
-            value: value // Use the item itself as the label
-        }));
-    }
+    // Use provided dataToShow or fallback to defaultData
+    const data = dataToShow ? dataToShow.map((value, index) => ({
+        key: index.toString(),
+        value: value
+    })).filter(item => item.value !== undefined) : defaultData;
 
-    console.log("dataToShow: " + data);
-
+    console.log("dataToShow: ", data);
+    
     return (
         <SelectList 
         setSelected={(val) => setSelected(val)} 
-        data={formattedData} 
+        data={data} 
         save="key"
         placeholder={placeholderText ? placeholderText : "Select product category"}
         //placeholderStyle={{color: 'black', fontSize: 16, fontWeight: 'bold'}}
