@@ -136,7 +136,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         />
                     </View>
 
-                    <GooglePlacesAutocomplete
+                    {/* <GooglePlacesAutocomplete
                         disableScroll={true}
                         placeholder="Enter your location"
                         minLength={3} // minimum length of text to search
@@ -165,7 +165,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                                 color: '#1faadb'
                             },
                         }}
-                    /> 
+                    />  */}
 
                     <Input
                         label="Location"
