@@ -18,8 +18,9 @@ import { debounce } from "../utils/utils";
 import axios from "axios";
 import config from "../backend/config";
 import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-export function SignUpAuth({ navigation, route}) {
+export function SignUpAuth({ navigation, route }) {
     const email = useValidatedText(
         "",
         /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
@@ -52,7 +53,7 @@ export function SignUpAuth({ navigation, route}) {
         setErrorMessage("");
         setIsLoading(false);
     };
-    useEffect(()=> {
+    useEffect(() => {
         return navigation.addListener('focus', clearForm)
     }, [navigation]);
 
@@ -152,49 +153,30 @@ export function SignUpDetails({ navigation }) {
         /^05[\d]{8}$/,
         "Invalid phone number"
     );
-    const [addressDetails, setAddressDetails] = useState({
-        city: "",
-        streetAndNumber: "",
-    });
-    const [coord, setCoord] = useState({ lat: "", lon: "" });
+    const [address, setAddress] = useState(null)
     const addressNotes = useValidatedText("", /^[\w ]*$/);
-    const [showAddressError, setAddressShow] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [signUpError, setSignUpError] = useState("");
     const [addressKey, setAddressKey] = useState(0);
-    
+
     const clearForm = () => {
         fullName.setText("");
         phoneNumber.setText("");
         addressNotes.setText("");
         setIsLoading(false);
         setSignUpError("");
-        setCoord({ lat: "", lon: "" });
-        setAddressDetails({ city: "", streetAndNumber: "" });
+        setAddress(null)
         setAddressKey((current) => current + 1);
     };
-    useEffect(()=> {
+    useEffect(() => {
         return navigation.addListener('focus', clearForm)
     }, [navigation]);
-    const coordSelectedHandler = ({ lat, lon }, newAddressDetails) => {
-        setCoord({ lat, lon });
-        setAddressDetails(newAddressDetails);
-        setAddressShow(false);
-    };
-    const addressEditHandler = () => {
-        setCoord({ lat: "", lon: "" });
-        setAddressDetails({ city: "", streetAndNumber: "" });
-    };
 
     const detailsSignUpHandler = async () => {
         setIsLoading(true);
         const token = getUser()?.getIdToken();
         const isValid =
-            validateRequiredFields(fullName, phoneNumber, addressNotes) &&
-            coord.lat &&
-            coord.lon &&
-            addressDetails.city &&
-            addressDetails.streetAndNumber;
+            validateRequiredFields(fullName, phoneNumber, addressNotes, address)
         if (!isValid) {
             setIsLoading(false);
             return;
@@ -206,9 +188,7 @@ export function SignUpDetails({ navigation }) {
                     {
                         fullName: fullName.text,
                         phoneNumber: phoneNumber.text,
-                        coordinates: coord,
-                        city: addressDetails.city,
-                        street: addressDetails.streetAndNumber,
+                        address,
                         addressNotes: addressNotes.text,
                     },
                     { headers: { Authorization: await token } }
@@ -228,7 +208,7 @@ export function SignUpDetails({ navigation }) {
 
     return (
         <SafeAreaView style={styles.signUpContainer}>
-            <ScrollView style={{ marginTop: 24, flex: 1 }}>
+            <ScrollView style={{ marginTop: 24, flex: 1 }} keyboardShouldPersistTaps='handled' >
                 <Card.Title style={styles.sections}>Basic Info</Card.Title>
                 <Card.Divider />
                 <Input
@@ -264,19 +244,36 @@ export function SignUpDetails({ navigation }) {
                     onChangeText={phoneNumber.setText}
                     disabled={isLoading}
                 />
-                <Card.Title style={styles.sections}>Address</Card.Title>
-                <Card.Divider />
-                <AddressSuggestionsBox
-                    onChooseSuggestion={coordSelectedHandler}
-                    onEdit={addressEditHandler}
-                    disabled={isLoading}
-                    key={addressKey}
-                />
-                {showAddressError && (
-                    <Text style={styles.failText}>
-                        Please insert and select a valid address
-                    </Text>
-                )}
+
+                <View style={{ flex: 1, padding: 20 }}>
+                    <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
+
+                    <GooglePlacesAutocomplete
+                        disableScroll={true}
+                        placeholder="Enter your location"
+                        minLength={3} // minimum length of text to search
+                        fetchDetails={true}
+                        returnKeyType={'default'}
+                        onPress={(data, details = null) => {
+                            console.log('GooglePlacesAutocomplete address:', details.geometry.location)
+                            setAddress(details.geometry.location)
+                        }}
+                        onFail={error => console.log(error)}
+                        onNotFound={() => console.log('no results')}
+                        query={{
+                            key: "fill_this_key",
+                            language: 'en',
+                        }}
+                        styles={{
+                            textInputContainer: styles.googleInputContainer,
+                            textInput: styles.googleTextInput,
+                            predefinedPlacesDescription: {
+                                color: '#1faadb'
+                            },
+                        }}
+                    />
+                </View>
+
                 <Input
                     inputContainerStyle={styles.input}
                     label="More address details"
@@ -309,130 +306,6 @@ export function SignUpDetails({ navigation }) {
                 </Button>
             </ScrollView>
         </SafeAreaView>
-    );
-}
-
-function AddressSuggestionsBox({
-    onChooseSuggestion,
-    onEdit,
-    disabled = false,
-}) {
-    const [isShow, setIsShow] = useState(false);
-    const city = useValidatedText("", /^[\w\ ]+$/, "Invalid city");
-    const streetAndNumber = useValidatedText(
-        "",
-        /^[\w\ ]+$/,
-        "Invalid street address"
-    );
-    const [suggestions, setSuggestions] = useState([
-        { label: "loading...", value: null },
-    ]);
-
-    const findAddress = useCallback(async ({ city, street }) => {
-        const suggestions = await axios
-            .get(`http://${config.serverIp}:${config.port}/location/geocode`, {
-                params: { q: `${city} ${street}` },
-            })
-            .then(({ data }) =>
-                data.map(({ display_name, ...value }) => ({
-                    label: display_name,
-                    value,
-                }))
-            )
-            .catch((_) => [{ label: "address not found", value: null }]);
-        if (suggestions.length === 0) {
-            return [{ label: "address not found", value: null }];
-        }
-        return suggestions;
-    }, []);
-
-    const debouncedFindAddress = useCallback(
-        debounce(async (details) => {
-            const newSuggestions = await findAddress(details);
-            setSuggestions(newSuggestions);
-        }, 1500),
-        []
-    );
-
-    const pressSuggestion = (suggestion) => {
-        if (!suggestion.value) return;
-        setIsShow(false);
-        onChooseSuggestion(suggestion.value, {
-            city: city.text,
-            streetAndNumber: streetAndNumber.text,
-        });
-    };
-
-    const detailsChange = () => {
-        setSuggestions([{ label: "loading...", value: null }]);
-        const cityInserted = city.isValid && city.text.length > 3;
-        const streetInserted =
-            streetAndNumber.isValid && streetAndNumber.text.length > 3;
-        if (!cityInserted || !streetInserted) {
-            setIsShow(false);
-            return;
-        }
-        setIsShow(true);
-        debouncedFindAddress({ city: city.text, street: streetAndNumber.text });
-        onEdit();
-    };
-    return (
-        <>
-            <Input
-                inputContainerStyle={styles.input}
-                label="City"
-                leftIcon={
-                    <Icon
-                        size={18}
-                        type="material-community"
-                        name="city-variant-outline"
-                    />
-                }
-                value={city.text}
-                errorMessage={city.errorMessage}
-                disabled={disabled}
-                onEndEditing={() => {
-                    city.validate();
-                    detailsChange();
-                }}
-                onChangeText={(text) => {
-                    city.setText(text);
-                    city.validate();
-                    detailsChange();
-                }}
-            />
-            <Input
-                inputContainerStyle={styles.input}
-                leftIcon={<FeatherIcon size={16} name="map-pin" />}
-                label="Street and number"
-                disabled={disabled}
-                value={streetAndNumber.text}
-                errorMessage={streetAndNumber.errorMessage}
-                onEndEditing={() => {
-                    streetAndNumber.validate();
-                    detailsChange();
-                }}
-                onChangeText={(text) => {
-                    streetAndNumber.setText(text);
-                    streetAndNumber.validate();
-                    detailsChange();
-                }}
-            />
-            {isShow && !disabled && (
-                <View style={moreStyles.container}>
-                    <Text style={moreStyles.label}>Please choose one</Text>
-                    {suggestions.map(({ label, value }) => (
-                        <TouchableOpacity
-                            style={moreStyles.suggestion}
-                            key={label}
-                            onPress={() => pressSuggestion({ label, value })}
-                        >
-                            <Text>{label}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            )}
-        </>
     );
 }
 
