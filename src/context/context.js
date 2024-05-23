@@ -4,10 +4,6 @@ import React, { createContext, useState } from "react";
 export const RefreshContext = createContext({
   refresh: false, 
   setRefresh: () => {},
-  updatedTitle: "", 
-  setUpdatedTitle: () => {},
-  updatedDescription: "",
-  setUpdatedDescription: () => {},
 });
 
 export const RefreshContextProvider = ({ children }) => {
@@ -17,13 +13,11 @@ export const RefreshContextProvider = ({ children }) => {
   //const [updatedDescription, setUpdatedDescription] = useState("");
   const [updatedItem, setUpdatedItem] = useState({
     id: "",
-    title: "",
     description: "",
   });
 
   return (
     <RefreshContext.Provider value={{ refresh, setRefresh,
-      //updatedTitle, setUpdatedTitle, updatedDescription, setUpdatedDescription
       updatedItem, setUpdatedItem
     }}>
       {children}

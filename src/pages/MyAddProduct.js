@@ -18,10 +18,11 @@ export default function AddProductPage({ navigation, route }) {
   const { userId } = route.params;
 
   console.log("userId in addProductPage: ", userId);
+  
 
   // State to hold the entered details
   const [details, setDetails] = useState({
-    ownerId: "",    // get the owner ID from the data base
+    ownerId: userId,    // get the owner ID from the data base
     productName: "",
     category: "",
     city: "",
@@ -67,8 +68,14 @@ export default function AddProductPage({ navigation, route }) {
 
   // Function to handle input change and update details state
   const handleInputChange = (field, value) => {
-    const parsedValue = field === "price" ? parseInt(value) : value.trim();
-
+    let parsedValue;
+    if (field !== "ImageUri"){
+      parsedValue = field === "price" ? parseInt(value) : value.trim();
+    }
+    else {
+      parsedValue = value;
+    }
+    
     setDetails((prevDetails) => ({
       ...prevDetails,
       [field]: parsedValue,

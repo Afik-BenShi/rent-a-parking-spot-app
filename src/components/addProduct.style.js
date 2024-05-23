@@ -247,6 +247,9 @@ const styles = StyleSheet.create({
   pickerDatesText: {
     fontSize: 13,
     fontWeight: '500',
+    marginRight: 15,
+    marginTop: 5,
+    marginBottom: 5,
   },
   pickerAction: {
     marginLeft: 'auto',

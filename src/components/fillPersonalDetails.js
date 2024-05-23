@@ -3,6 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity, SafeAreaView } from 'react-na
 import { Input } from '@rneui/themed';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -15,12 +16,14 @@ import SingleSelectedDropDown from "./SingleSelectListDropDown";
 import useValidatedText, {
     validateRequiredFields,
 } from "../customStates/useTextValidation";
+import { Icon } from "react-native-elements";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date())
     const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false);
     // const [showGoogleAutocomplete, setShowGoogleAutocomplete] = useState(true);
+    const [imgSelected, setImgSelected] = useState(false);
 
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [startDateHasChanged, setStartDateHasChanged] = useState(false)
@@ -73,7 +76,12 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
 
         console.log('result', result)
         if (!result.cancelled) {
+            setImgSelected(true);
             sendDataToParent("imageUri", result.assets[0].uri)
+        }
+        else {
+            setImgSelected(false);
+            console.log('Image not selected (cancelled)');
         }
     };
 
@@ -93,6 +101,10 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         })();
     }, [imagePermissionsGranted]);
 
+    const clearImgSelection = () => {
+        setImgSelected(false);
+        sendDataToParent("imageUri", "");
+    };
 
     return (
 
@@ -209,11 +221,41 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         inputStyle={styles.inputControl}
                         inputContainerStyle={{ borderBottomWidth: 0 }}
                     />
+                    <View style={{flexDirection: 'row',
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    }}>
                     <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
                         <Text style={styles.buttonText}>
                             {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
                             Upload image</Text>
                     </TouchableOpacity>
+
+                                    
+                    {!imgSelected && 
+                    <View> 
+                        <Text style={styles.pickerDatesText}> No Image Chosen</Text>
+                    </View>
+                    }
+
+                {imgSelected && 
+                    <View> 
+                        <Text style={styles.pickerDatesText}> Image Uploaded</Text>
+        
+                        <TouchableOpacity onPress={clearImgSelection}>
+                        <Text style={{ textDecorationLine: 'underline' }}>
+                         &nbsp;
+                         {<MaterialCommunityIcons
+                                color="#242329"
+                                name="image-remove" 
+                                size={20} />}
+                            {'   '}Clear&nbsp; </Text>
+                        </TouchableOpacity>
+                    </View>
+                    }           
+
+                    </View>
+
                 </View>
 
             </ScrollView>
