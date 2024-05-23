@@ -42,8 +42,8 @@ const uploadImage = async ({ name, imageFile }) => {
     //TODO: need to change this to imageFile
     // localFilePath = '/Users/einatgelbort/student/googleWorkshop/rent-a-parking-spot-app/assets/adaptive-icon.png'
 
-    const fileContent = fs.readFileSync(imageFile);
-    await uploadBytes(storageRef, fileContent)
+    const response = await uploadBytes(storageRef, imageFile);
+    return response.ref?.fullPath;
 }
 
 

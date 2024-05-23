@@ -18,8 +18,9 @@ import ExpandableImage from "../components/ExpandableImage";
 import { getUser } from '../auth/auth';
 import config from '../backend/config'
 import { RefreshContext } from '../context/context';
+import { uploadImage, convertToBytes } from '../utils/imageStorage';
 
-const productImage = require("../../assets/parking-details-images/placeholder.png");
+const defaultImage = require("../../assets/parking-details-images/placeholder.png");
 
 
 const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
@@ -37,25 +38,25 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
   }
 
   let imgRes;
-
   try {
+    const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+    const imageBlobPromise = convertToBytes(path);
+    const formData = new FormData();
+    formData.append('title', detailsList.productName);
+    formData.append('image', await imageBlobPromise);
     imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: token
       },
-      body: JSON.stringify({
-        title: detailsList.productName,
-        ownerId: userId,
-        imageUri: detailsList.imageUri
-      })
+      body: formData
     })
   }
   catch (err) {
     console.error("Error while uploading an image:", JSON.stringify(err));
   }
-  imgRes = await imgRes.json()
+  imgRes = await imgRes?.json();
 
   const newProduct = {
     title: detailsList.productName,
@@ -66,7 +67,8 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
     fromDate: new Date(detailsList.fromDate),
     untilDate: new Date(detailsList.untilDate),
     city: detailsList.city,
-    imageName: imgRes.data
+    imageName: imgRes?.imageName,
+    imageUri: imgRes?.uri,
   };
 
   console.log('newProduct', newProduct)
@@ -108,6 +110,7 @@ export default function SubmitDetails({ navigation, route }) {
     navigation.goBack();
   };
 
+  const productImage = detailsList.imageUri?{uri: detailsList.imageUri} : defaultImage;
   const data = [
     { key: '1', value: 'Outdoor equipment' },
     { key: '2', value: 'Entertainment & Events' },

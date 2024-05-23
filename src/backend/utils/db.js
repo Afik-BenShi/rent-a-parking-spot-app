@@ -10,7 +10,6 @@ const createCache = require("./cache");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
-
 const init = () => {
     const serviceAccount = require("../../../rental-wize-firebase-adminsdk.json");
 

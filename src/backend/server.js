@@ -113,18 +113,20 @@ app.post('/myProducts/add', async (req, res) => {
 });
 
 app.post('/myProducts/img', async (req, res) => {
-  const { imageUri, title, ownerId } = req.body;
-  const imageName = `${ownerId}-${title}`
+  const { image, title, token } = req.body;
+  const imageName = `${token.user_Id}-${title}-${Date.now()}`
+  console.log(imageName)
+  let uri;
   try {
-    await storage.uploadImage({
-      name: imageName, imageFile: imageUri
+    uri = await storage.uploadImage({
+      name: imageName, imageFile: image
     });
   }
   catch (err) {
     console.log("error in myProducts/img", JSON.stringify(err));
-
+    res.status(500).send({error:err});
   }
-  res.json({ data: imageName });
+  res.json({ data: {imageName, uri} });
 });
 
 app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
