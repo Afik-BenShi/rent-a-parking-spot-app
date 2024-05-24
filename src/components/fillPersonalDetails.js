@@ -3,6 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity, SafeAreaView } from 'react-na
 import { Input } from '@rneui/themed';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -12,13 +13,17 @@ import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
 import SingleSelectedDropDown from "./SingleSelectListDropDown";
-
+import useValidatedText, {
+    validateRequiredFields,
+} from "../customStates/useTextValidation";
+import { Icon } from "react-native-elements";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date())
     const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false);
     // const [showGoogleAutocomplete, setShowGoogleAutocomplete] = useState(true);
+    const [imgSelected, setImgSelected] = useState(false);
 
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [startDateHasChanged, setStartDateHasChanged] = useState(false)
@@ -71,7 +76,12 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
 
         console.log('result', result)
         if (!result.cancelled) {
+            setImgSelected(true);
             sendDataToParent("imageUri", result.assets[0].uri)
+        }
+        else {
+            setImgSelected(false);
+            console.log('Image not selected (cancelled)');
         }
     };
 
@@ -92,6 +102,11 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     }, [imagePermissionsGranted]);
 
 
+    const clearImgSelection = () => {
+        setImgSelected(false);
+        sendDataToParent("imageUri", "");
+    };
+
     return (
 
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -104,7 +119,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
             </View>
 
             <ScrollView keyboardShouldPersistTaps='handled' >
-                {/* listViewDisplayed={false} > */}
                 <View>
                     <Input
                         label="Product name"
@@ -122,7 +136,8 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         />
                     </View>
 
-                    <GooglePlacesAutocomplete
+
+                    {/* <GooglePlacesAutocomplete
                         disableScroll={true}
                         placeholder="Enter your location"
                         minLength={3} // minimum length of text to search
@@ -151,7 +166,36 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                                 color: '#1faadb'
                             },
                         }}
-                    />
+                    />  */}
+
+                    <View style={{ flex: 1, padding: 20 }}>
+                        <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
+
+                        <GooglePlacesAutocomplete
+                            disableScroll={true}
+                            placeholder="Enter your location"
+                            minLength={3} // minimum length of text to search
+                            fetchDetails={true}
+                            returnKeyType={'default'}
+                            onPress={(data, details = null) => {
+                                console.log('GooglePlacesAutocomplete address:', details.geometry.location)
+                                sendDataToParent("address", details.geometry.location)
+                            }}
+                            onFail={error => console.log(error)}
+                            onNotFound={() => console.log('no results')}
+                            query={{
+                                key: "fill_this_key",
+                                language: 'en',
+                            }}
+                            styles={{
+                                textInputContainer: styles.googleInputContainer,
+                                textInput: styles.googleTextInput,
+                                predefinedPlacesDescription: {
+                                    color: '#1faadb'
+                                },
+                            }}
+                        />
+                    </View>
 
                     <Input
                         label="Location"
@@ -207,11 +251,41 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         inputStyle={styles.inputControl}
                         inputContainerStyle={{ borderBottomWidth: 0 }}
                     />
+                    <View style={{flexDirection: 'row',
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    }}>
                     <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
                         <Text style={styles.buttonText}>
                             {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
                             Upload image</Text>
                     </TouchableOpacity>
+
+                                    
+                    {!imgSelected && 
+                    <View> 
+                        <Text style={styles.pickerDatesText}> No Image Chosen</Text>
+                    </View>
+                    }
+
+                {imgSelected && 
+                    <View> 
+                        <Text style={styles.pickerDatesText}> Image Uploaded</Text>
+        
+                        <TouchableOpacity onPress={clearImgSelection}>
+                        <Text style={{ textDecorationLine: 'underline' }}>
+                         &nbsp;
+                         {<MaterialCommunityIcons
+                                color="#242329"
+                                name="image-remove" 
+                                size={20} />}
+                            {'   '}Clear&nbsp; </Text>
+                        </TouchableOpacity>
+                    </View>
+                    }           
+
+                    </View>
+
                 </View>
 
             </ScrollView>

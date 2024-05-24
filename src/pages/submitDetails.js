@@ -65,9 +65,9 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
     mainCategoryId: detailsList.category,
     fromDate: new Date(detailsList.fromDate),
     untilDate: new Date(detailsList.untilDate),
-    city: detailsList.city,
+    address: detailsList.address,
     imageName: imgRes?.imageName,
-    imageUri: imgRes?.uri,
+    // imageUri: imgRes?.uri,
   };
 
   console.log('newProduct', newProduct)
@@ -91,7 +91,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
   // Navigate to the My Products page
   // Use CONTEXT - to remove the Non-seriazable warning
   setRefresh(true);
-  setTimeout(() => setRefresh(false), 10);
+  //setTimeout(() => setRefresh(false), 10);
   navigation.navigate("My Products cardList");
 
 };
@@ -109,7 +109,7 @@ export default function SubmitDetails({ navigation, route }) {
     navigation.goBack();
   };
 
-  const productImage = detailsList.imageUri?{uri: detailsList.imageUri} : defaultImage;
+  const productImage = detailsList.imageUri ? { uri: detailsList.imageUri } : defaultImage;
   const data = [
     { key: '1', value: 'Outdoor equipment' },
     { key: '2', value: 'Entertainment & Events' },

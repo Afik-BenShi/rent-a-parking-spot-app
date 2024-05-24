@@ -38,7 +38,8 @@
     "react-native-picker-select": "^9.1.3",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-virtualized-view": "^1.0.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

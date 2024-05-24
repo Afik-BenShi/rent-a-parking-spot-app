@@ -7,6 +7,10 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
+const { storage } = require("firebase-admin");
+const { getImage } = require('./storage');
+const config = require('../config');
+
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -64,7 +68,9 @@ async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
     return productsWithEmptySlots;
 }
 
+
 const getProductsDb = async (filters) => {
+    let docs;
     try {
         const { startDate, endDate, maxPrice, mainCategory, city } = filters;
 
@@ -90,20 +96,50 @@ const getProductsDb = async (filters) => {
             try {
                 const productsSnapshot = await docRef.get();
                 const productIds = productsSnapshot.docs.map((doc) => doc.id);
+
                 const availableProductsPromises = productIds.map((productId) =>
                     getAvailableProductsWithinDateRange(productId, startDate, endDate));
+                
+                console.log("availableProductsPromises : ", availableProductsPromises);
+
                 const availableProducts = await Promise.all(availableProductsPromises);
                 // availableProducts is an array of arrays, you might want to flatten it if needed
 
-                return distinctProducts(availableProducts.flat());
+                const distincts = await distinctProducts(availableProducts.flat());
+                
+                //Map distinct products to the required format
+                docs = distincts.map(product => ({
+                    ...product,
+                    id: product.id // id is productId
+                }));
+                //  return distincts;
+                
             } catch (error) {
                 console.error("Error fetching product by dates range:", error);
                 throw error;
             }
         }
+        else{
+            const result = await docRef.get();
+            docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        }
 
-        const result = await docRef.get();
-        return result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        try {
+            const enrichmentProps = [
+                { key: "ownerId", collection: "users" }
+            ];
+            const enrichPromises = enrichmentProps.map(
+                async ({ key, collection }) => {
+                    docs = await enrichWithReferencedId(docs, key, collection);
+                }
+            );
+            const availableProducts = await Promise.all(enrichPromises);
+        } catch (err) {
+            throw new Error(`[getProdusts in home page][ownerEnrichment] ${err}`);
+        }
+        return docs;
+
+        
     } catch (error) {
         console.error("Error fetching product:", error);
         throw error;
@@ -111,12 +147,12 @@ const getProductsDb = async (filters) => {
 };
 
 const updateProductInfoDb = async (productId, newProductData) => {
-    const { title, description } = newProductData;
+    const { description } = newProductData;
     try {
         const docRef = db.collection("products").doc(productId);
         // Update only specific fields (title and description)
-        await docRef.update({ title, description });
-        return { id: docRef.id, title, description };
+        await docRef.update({ description });
+        return { id: docRef.id, description };
     } catch (error) {
         console.error("Error updating product:", error);
         throw error;
@@ -288,7 +324,7 @@ const getAvailableProductsWithinDateRange = async (productId, startDate, endDate
             // Check if there are any overlapping orders
             if (overlappingOrders.length === 0) {
                 // No overlapping orders found, so the product is free during the given date range
-                freeProducts.push({ ...productData, productId });
+                freeProducts.push({ ...productData, id: productId });
             }
         }
 

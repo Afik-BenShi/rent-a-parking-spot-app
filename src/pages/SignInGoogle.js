@@ -12,7 +12,7 @@ import { COLORS } from '../../assets/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-
+// not used 
 function SignInGoogle({navigation}) {
   const [form, setForm] = useState({
     email: '',

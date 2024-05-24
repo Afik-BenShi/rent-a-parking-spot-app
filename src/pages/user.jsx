@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import {
@@ -16,25 +16,23 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+// import Geocoder from 'react-native-geocoding';
 
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
 import { Input } from '@rneui/themed';
 import config from '../backend/config'
-import { signOutUser } from '../auth/auth';
+import { signOutUser, getUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';
 
+// Geocoder.init("YOUR_GOOGLE_MAPS_API_KEY");
 
 export default function Profile({ navigation, route }) {
-
-  const curData =
-    { fullName: "default name", city: "default city", phoneNumber: "default phone number" };
-
-
   const [userId, setUserId] = useState(route.params.userId);
-  const [profileData, setProfileData] = useState(curData);
+  const [profileData, setProfileData] = useState(null);
+  const [address, setAddress] = useState(null);
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const [lastProfileData, setLastProfileData] = useState(curData);
+  const [lastProfileData, setLastProfileData] = useState(null);
   const [isSignOutLoading, setSignOutLoading] = useState(false);
 
   const handleDataChange = (field, value) => {
@@ -44,6 +42,36 @@ export default function Profile({ navigation, route }) {
     }));
     console.log("profileDetails: ", profileData);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log('before token')
+        const token = await getUser()?.getIdToken();
+        console.log('after token', token)
+        const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
+          headers: { Authorization: token },
+          params: { userId }
+        });
+        const details = response.data;
+        // if (details.latitude && details.longitude) {
+        //   const geocodeResult = await Geocoder.from(details.latitude, details.longitude);
+        //   const formattedAddress = geocodeResult.results[0].formatted_address;
+        //   setAddress(formattedAddress);
+        // }
+
+        console.log('user details', details);
+        setProfileData(details);
+        console.log('profile data after set', profileData)
+        setLastProfileData(details);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
 
   // Function to handle navigation to EditProfile screen
   const goToEditProfile = () => {
@@ -59,7 +87,7 @@ export default function Profile({ navigation, route }) {
       console.error("did not log out", getAuth());
       return;
     }
-    navigation.navigate('auth', {screen: 'Login'});
+    navigation.navigate('auth', { screen: 'Login' });
     setSignOutLoading(false);
   }
 
@@ -79,6 +107,15 @@ export default function Profile({ navigation, route }) {
     setProfileData(lastProfileData);
     setShowEditProfile(false);
   };
+
+  if (!profileData) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
 
   return (
 
@@ -100,7 +137,8 @@ export default function Profile({ navigation, route }) {
                 <View>
                   <Text style={moreStyles.profileName}>{profileData.fullName}</Text>
 
-                  <Text style={moreStyles.profileHandle}>{profileData.city}</Text>
+                  {/* //TODO: need to change this */}
+                  <Text style={moreStyles.profileHandle}>{profileData.address}</Text>
 
                   <Text style={moreStyles.profileHandle}>{profileData.phoneNumber}</Text>
                 </View>
@@ -122,14 +160,14 @@ export default function Profile({ navigation, route }) {
                 disabled={isSignOutLoading}
               >
                 <View style={{ ...moreStyles.profileAction, backgroundColor: COLORS.red }}>
-                {!isSignOutLoading?(
-                  <>
-                  <Text style={moreStyles.profileActionText}>Log Out</Text>
-                  <FeatherIcon color="#fff" name="log-out" size={16} />
-                  </>
-                ):(
-                  <ActivityIndicator color="#fff" size="small"/>
-                )}
+                  {!isSignOutLoading ? (
+                    <>
+                      <Text style={moreStyles.profileActionText}>Log Out</Text>
+                      <FeatherIcon color="#fff" name="log-out" size={16} />
+                    </>
+                  ) : (
+                    <ActivityIndicator color="#fff" size="small" />
+                  )}
                 </View>
               </TouchableOpacity>
 
@@ -144,7 +182,7 @@ export default function Profile({ navigation, route }) {
                 style={moreStyles.container}
                 behavior="padding"
               >
-                <ScrollView>
+                <ScrollView keyboardShouldPersistTaps='handled' >
 
                   <SafeAreaView style={moreStyles.container}>
 
@@ -177,45 +215,38 @@ export default function Profile({ navigation, route }) {
                       value={profileData.fullName}
                     />
 
-                    <Input
-                      label="Location"
-                      labelStyle={styles.inputLabel}
-                      leftIcon={<MoreIcon name="location-outline" size={18} />}
-                      placeholder=" Enter your City"
-                      onChangeText={(text) => handleDataChange("city", text)}
-                      inputStyle={styles.inputControl}
-                      inputContainerStyle={{ borderBottomWidth: 0 }}
-                      value={profileData.city}
-                    />
+                    <View style={{ flex: 1, padding: 20 }}>
+                      <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
 
-                    <GooglePlacesAutocomplete
-                      placeholder="Enter your location"
-                      minLength={3} // minimum length of text to search
-                      fetchDetails={true}
-                      currentLocation={true}
-                      onPress={(data, details = null) => {
-                        console.log(data, details)
-                        handleDataChange("address", data)
-                      }}
-                      onFail={error => console.log(error)}
-                      onNotFound={() => console.log('no results')}
-                      listEmptyComponent={() => (
-                        <View style={{ flex: 1 }}>
-                          <Text>No results were found</Text>
-                        </View>
-                      )}
-                      query={{
-                        key: 'YOUR_GOOGLE_PLACES_API_KEY',
-                        language: 'en', // language of the results
-                      }}
-                      styles={{
-                        textInputContainer: styles.googleInputContainer,
-                        textInput: styles.googleTextInput,
-                        predefinedPlacesDescription: {
-                          color: '#1faadb'
-                        },
-                      }}
-                    />
+                      <GooglePlacesAutocomplete
+                        disableScroll={true}
+                        placeholder="Enter your location"
+                        minLength={3} // minimum length of text to search
+                        fetchDetails={true}
+                        returnKeyType={'default'}
+                        onPress={(data, details = null) => {
+                          console.log('GooglePlacesAutocomplete address:', details.geometry.location)
+                          handleDataChange("address_lat", details.geometry.location.lat)
+                          handleDataChange("address_lng", details.geometry.location.lng)
+                        }}
+                        onFail={error => console.log(error)}
+                        onNotFound={() => console.log('no results')}
+                        query={{
+                          key: "fill_this_key",
+                          language: 'en',
+                        }}
+                        styles={{
+                          textInputContainer: styles.googleInputContainer,
+                          textInput: styles.googleTextInput,
+                          predefinedPlacesDescription: {
+                            color: '#1faadb'
+                          },
+                        }}
+                        defaultValue={profileData.address}
+
+                      />
+                    </View>
+
                     <Input
                       label="Phone Number"
                       labelStyle={styles.inputLabel}
@@ -227,21 +258,6 @@ export default function Profile({ navigation, route }) {
                       inputContainerStyle={{ borderBottomWidth: 0 }}
                       value={profileData.phoneNumber}
                     />
-
-
-
-                    {/*
-                      <NextBackBtn
-                        backText={"Cancel"}
-                        nextText={"Save"}
-                        onBackPress={() => {
-                          setProfileData(lastProfileData);
-                          setShowEditProfile(false)
-                        }}
-                        onNextPress={handleSave}
-                        />
-                      */}
-
 
 
                   </SafeAreaView>
