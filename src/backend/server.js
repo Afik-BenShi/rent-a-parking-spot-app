@@ -10,6 +10,8 @@ const orders = require("./services/orders");
 
 const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
+const multer = require('multer'); // Multer for handling file uploads
+
 
 db.init();
 storage.init()
@@ -53,6 +55,9 @@ app.use(async (req, res, next) => {
   }
 });
 //---------------------------------------------------------
+// Multer setup for file uploads
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage });
 
 
 app.get('/products', async (req, res) => {
@@ -105,14 +110,38 @@ app.post('/myProducts/add', async (req, res) => {
   res.send(result);
 });
 
-app.post('/myProducts/img', async (req, res) => {
-  const { image, title, token } = req.body;
-  const imageName = `${token.user_Id}-${title}-${Date.now()}`
-  console.log(imageName)
+// ----------------previous implementation: -------------
+
+// app.post('/myProducts/img', async (req, res) => {
+  
+//   const { image, title, token } = req.body;
+//   const imageName = `${token.user_Id}-${title}-${Date.now()}`
+//   console.log(imageName)
+//   let uri;
+//   try {
+//     uri = await storage.uploadImage({
+//       name: imageName, imageFile: image
+//     });
+//   }
+//   catch (err) {
+//     console.log("error in myProducts/img", JSON.stringify(err));
+//     res.status(500).send({ error: err });
+//   }
+//   res.json({ data: { imageName, uri } });
+// });
+
+
+app.post('/myProducts/img', upload.single('image'), async (req, res) => {
+  const { title } = req.body;
+  const image = req.file;
+  const token = req.headers.authorization;
+  const imageName = `${token.user_Id}-${title}-${Date.now()}`;
+  console.log(imageName);
   let uri;
   try {
     uri = await storage.uploadImage({
-      name: imageName, imageFile: image
+      name: imageName,
+      imageFile: image.buffer
     });
   }
   catch (err) {

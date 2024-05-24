@@ -156,7 +156,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         //     </View>
                         // )}
                         query={{
-                            key: "fill_your_key",
+                            key: "AIzaSyAn_Yb93_Ea5YkSYFWWIHyEueOukc_Ynao",
                             language: 'en', // language of the results
                         }}
                         styles={{
@@ -184,7 +184,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
                             query={{
-                                key: "fill_this_key",
+                                key: "AIzaSyAn_Yb93_Ea5YkSYFWWIHyEueOukc_Ynao",
                                 language: 'en',
                             }}
                             styles={{

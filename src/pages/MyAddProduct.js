@@ -70,12 +70,12 @@ export default function AddProductPage({ navigation, route }) {
   const handleInputChange = (field, value) => {
     let parsedValue;
 
-    if (field !== "ImageUri"){
-      parsedValue = field === "price" ? parseInt(value) : value.trim();
-    }
-    else {
-      parsedValue = value;
-    }
+    // if (field !== "ImageUri"){
+    //   parsedValue = field === "price" ? parseInt(value) : value.trim();
+    // }
+    // else {
+    //   parsedValue = value;
+    // }
     
 
     switch (field) {

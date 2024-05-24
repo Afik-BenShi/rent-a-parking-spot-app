@@ -38,26 +38,25 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
   }
 
   let imgRes;
-  // try {
-  //   const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
-  //   const imageBlobPromise = convertToBytes(path);
-  //   const formData = new FormData();
-  //   formData.append('title', detailsList.productName);
-  //   formData.append('image', await imageBlobPromise);
-  //   imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //       Authorization: token
-  //     },
-  //     body: formData
-  //   })
-  // }
-  // catch (err) {
-  //   console.error("Error while uploading an image:", JSON.stringify(err));
-  // }
-  // console.log('imgRes', imgRes)
-  // imgRes = await imgRes?.json();
+  try {
+    const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+    const imageBlobPromise = convertToBytes(path);
+    const formData = new FormData();
+    formData.append('title', detailsList.productName);
+    formData.append('image', await imageBlobPromise);
+    imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
+      method: 'POST',
+      headers: {
+        Authorization: token
+      },
+      body: formData
+    });
+  }
+  catch (err) {
+    console.error("Error while uploading an image:", JSON.stringify(err));
+  }
+  console.log('imgRes', imgRes)
+  imgRes = await imgRes?.json();
 
   const newProduct = {
     title: detailsList.productName,
