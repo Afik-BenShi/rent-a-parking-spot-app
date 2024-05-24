@@ -115,6 +115,7 @@ export function parseItem({ details: item }) {
         city,  // city from product details, not from owner
         distanceFromMe,
         imageUrl,
+        urlToimage,
         mainCategoryId,
         enriched_ownerId,
     } = item;
@@ -129,7 +130,7 @@ export function parseItem({ details: item }) {
             startDate: timeStampToDate(startDate?? startDay),
             endDate: timeStampToDate(endDate ?? endDay),
         },
-        image: imageUrl,
+        image: urlToimage,
         price: Object.assign(mock.price, { amount: pricePerDay }),
         owner: Object.assign(mock.owner, {  id: ownerId, 
                                             name: enriched_ownerId ? enriched_ownerId.fullName : mock.owner.name,

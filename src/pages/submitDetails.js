@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   SafeAreaView,
   ScrollView,
   Text,
-  TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -23,86 +23,15 @@ import { uploadImage, convertToBytes } from '../utils/imageStorage';
 const defaultImage = require("../../assets/parking-details-images/placeholder.png");
 
 
-const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
-  console.log("Product details submitted: ", detailsList);
 
-  // Send the details to the backend
-  // Send a POST request to your server
-  let token;
-  try {
-    token = await getUser()?.getIdToken();
-  } catch (error) {
-    console.error("Error getting user token:", error);
-    // Handle the error appropriately
-    return;
-  }
 
-  let imgRes;
-  try {
-    const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
-    const imageBlobPromise = convertToBytes(path);
-    const formData = new FormData();
-    formData.append('title', detailsList.productName);
-    formData.append('image', await imageBlobPromise);
-    imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
-      method: 'POST',
-      headers: {
-        Authorization: token
-      },
-      body: formData
-    });
-  }
-  catch (err) {
-    console.error("Error while uploading an image:", JSON.stringify(err));
-  }
-  console.log('imgRes', imgRes)
-  imgRes = await imgRes?.json();
-
-  const newProduct = {
-    title: detailsList.productName,
-    pricePerDay: detailsList.price,
-    ownerId: userId,
-    description: detailsList.productDescription,
-    mainCategoryId: detailsList.category,
-    fromDate: new Date(detailsList.fromDate),
-    untilDate: new Date(detailsList.untilDate),
-    address: detailsList.address,
-    imageName: imgRes?.imageName,
-    // imageUri: imgRes?.uri,
-  };
-
-  console.log('newProduct', newProduct)
-
-  fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token
-    },
-    body: JSON.stringify(newProduct)
-  })
-    .then(response => {
-      console.log("success to post new product")
-      console.log("Response from server:", response.ok);
-    })
-    .catch(error => {
-      console.error("Error while posting new product:", JSON.stringify(error));
-    });
-
-  // Navigate to the My Products page
-  // Use CONTEXT - to remove the Non-seriazable warning
-  setRefresh(true);
-  //setTimeout(() => setRefresh(false), 10);
-  navigation.navigate("My Products cardList");
-
-};
 
 
 
 export default function SubmitDetails({ navigation, route }) {
   const { refresh, setRefresh } = useContext(RefreshContext);
   const { detailsList, user } = route.params;
-
+  const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(user);
   console.log("userId in submitDetails: ", userId);
 
@@ -119,6 +48,215 @@ export default function SubmitDetails({ navigation, route }) {
 
   const categoryName = data.find((item) => item.key === detailsList.category) ?
     data.find((item) => item.key === detailsList.category).value : "";
+
+  // --------------------------------------------------------
+  const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
+    console.log("Product details submitted: ", detailsList);
+  
+    // Send the details to the backend
+    // Send a POST request to your server
+    let token;
+    try {
+      token = await getUser()?.getIdToken();
+    } catch (error) {
+      console.error("Error getting user token:", error);
+      // Handle the error appropriately
+      return;
+    }
+  
+    let imageUrl;
+    try {
+      const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+      // Assuming detailsList.imageUri contains the local path to the image
+      imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
+      console.log('Firebase Storage Image URL:', imageUrl);
+  
+  
+      //const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+      try{
+          const imageBlob = await convertToBytes(imageUrl);
+          console.log('Image blob created:', imageBlob);
+  
+          // const formData = new FormData();
+          // formData.append('title', detailsList.productName);
+          // formData.append('image', imageBlob);
+  
+          // post product int the db:
+          const urlFromFirebase = imageUrl;
+          await postNewProduct(urlFromFirebase, detailsList);
+          // Navigate to the My Products page
+          // Use CONTEXT - to remove the Non-seriazable warning
+          //setRefresh(true);
+          
+          setTimeout(() => setRefresh(true), 2);
+          setRefresh(true);
+          setTimeout(() => setRefresh(false), 3);
+          //setLoading(false);
+          navigation.navigate("My Products cardList");
+  
+      }
+      catch (err) {
+        console.error("Error while converting image to blob:", JSON.stringify(err));
+      }
+      
+      
+      // imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
+      //   method: 'POST',
+      //   headers: {
+      //     Authorization: token
+      //   },
+      //   body: formData
+      // });
+      
+    }
+    catch (err) {
+      console.error("Error while uploading an image:", JSON.stringify(err));
+      return;
+    }
+   // console.log('imgRes', imgRes)
+    //imgRes = await imgRes?.json();
+    
+    
+    // const newProduct = {
+    //   title: detailsList.productName,
+    //   pricePerDay: detailsList.price,
+    //   ownerId: userId,
+    //   description: detailsList.productDescription,
+    //   mainCategoryId: detailsList.category,
+    //   fromDate: new Date(detailsList.fromDate),
+    //   untilDate: new Date(detailsList.untilDate),
+    //   address: detailsList.address,
+    //   //imageName: imgRes?.imageName,
+    //   imageUrl: urlFromFirebase,  // url to firebase storage
+    // };
+  
+    // console.log('newProduct', newProduct)
+  
+    // fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: token
+    //   },
+    //   body: JSON.stringify(newProduct)
+    // })
+    //   .then(response => {
+    //     console.log("success to post new product")
+    //     console.log("Response from server:", response.ok);
+    //   })
+    //   .catch(error => {
+    //     console.error("Error while posting new product:", JSON.stringify(error));
+    //   });
+  
+    // -------------------------------------
+    // ->
+  
+    // // Navigate to the My Products page
+    // // Use CONTEXT - to remove the Non-seriazable warning
+    // setRefresh(true);
+    // //setTimeout(() => setRefresh(false), 10);
+    // navigation.navigate("My Products cardList");
+  
+  };
+
+
+  //-----------------------------------------------------------------------
+
+
+  // const uploadImageToStorage = async (userId, detailsList) => {
+  //   let token;
+  //   try {
+  //     token = await getUser()?.getIdToken();
+  //   } catch (error) {
+  //     console.error("Error getting user token:", error);
+  //     // Handle the error appropriately
+  //     return;
+  //   }
+
+  //   try {
+  //     const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+  //     // Assuming detailsList.imageUri contains the local path to the image
+  //     const imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
+  //     console.log('Firebase Storage Image URL:', imageUrl);
+      
+
+  //     try{
+  //         const imageBlob = await convertToBytes(imageUrl);
+  //         console.log('Image blob created:', imageBlob);
+  //         setUrlFromFirebase(imageUrl);   // important: set the url to the state -> useEffect will be triggered
+  //     }
+  //     catch (err) {
+  //       console.error("Error while converting image to blob:", JSON.stringify(err));
+  //     }
+        
+  //   }
+  //   catch (err) {
+  //     console.error("Error while uploading an image:", JSON.stringify(err));
+  //     return;
+  //   }
+  // };
+
+
+
+  const postNewProduct = async (urlFromFirebase, detailsList) => {
+    
+    let token;
+    try {
+      token = await getUser()?.getIdToken();
+    } catch (error) {
+      console.error("Error getting user token:", error);
+      // Handle the error appropriately
+      return;
+    }
+
+    console.log("url from firebase in post new product :", urlFromFirebase);
+    
+    const newProduct = {
+      title: detailsList.productName,
+      pricePerDay: detailsList.price,
+      ownerId: userId,
+      description: detailsList.productDescription,
+      mainCategoryId: detailsList.category,
+      fromDate: new Date(detailsList.fromDate),
+      untilDate: new Date(detailsList.untilDate),
+      address: detailsList.address,
+      //imageName: imgRes?.imageName,
+      imageUrl: urlFromFirebase,  // url to firebase storage
+    };
+
+    console.log('newProduct', newProduct)
+
+    fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token
+      },
+      body: JSON.stringify(newProduct)
+    })
+      .then(response => {
+        console.log("success to post new product")
+        console.log("Response from server:", response.ok);
+      })
+      .catch(error => {
+        console.error("Error while posting new product:", JSON.stringify(error));
+      });
+
+  };
+
+  // const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
+  //   console.log("Product details submitted: ", detailsList);
+
+  //   uploadImageToStorage(userId, detailsList);
+
+  //   // Navigate to the My Products page
+  //   // Use CONTEXT - to remove the Non-seriazable warning
+  //   //setRefresh(true);
+  //    setTimeout(() => setRefresh(true), 0);
+  //   //setTimeout(() => setRefresh(false), 1);
+  //   navigation.navigate("My Products cardList");
+  // };
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -149,13 +287,6 @@ export default function SubmitDetails({ navigation, route }) {
             <View style={styles.details}>
               <Text style={styles.detailsTitle}>Product details</Text>
 
-              {/*<View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Owner full name</Text>
-
-                                    <Text style={styles.detailsValue}>{detailsList.ownerName}</Text>
-                                </View>
-                                */}
-
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Product name</Text>
 
@@ -184,14 +315,6 @@ export default function SubmitDetails({ navigation, route }) {
                 <Text style={styles.detailsValue}>{detailsList.price}
                   <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
               </View>
-
-              {/*
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Phone Number</Text>
-
-                                    <Text style={styles.detailsValue}>{detailsList.phoneNumber}</Text>
-                                </View>
-                              */}
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Days of availability</Text>
@@ -232,12 +355,20 @@ export default function SubmitDetails({ navigation, route }) {
           nextText="Finish"
           backText="Back"
           navigation={navigation}
-          //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-          onNextPress={() => onClickFinish({ navigation, detailsList, userId, refresh, setRefresh })}
-
+          onNextPress={() => { /*setLoading(true);*/
+            onClickFinish({ navigation, detailsList, userId, refresh, setRefresh });
+          }}
           paddingBottom={0}
         />
       </View>
+
+    {/* {loading && (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    )} */}
+    
+  
 
 
     </View>

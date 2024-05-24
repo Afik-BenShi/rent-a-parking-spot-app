@@ -90,7 +90,9 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, address, imageName } = req.body
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, address, imageUrl, imageName } = req.body
+  console.log("From server");
+  console.log(imageUrl);
 
   const newProductData = {
     title,
@@ -101,7 +103,7 @@ app.post('/myProducts/add', async (req, res) => {
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
     address,
-    // imageName
+    urlToimage: imageUrl,
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -136,7 +138,7 @@ app.post('/myProducts/img', upload.single('image'), async (req, res) => {
   const image = req.file;
   const token = req.headers.authorization;
   const imageName = `${token.user_Id}-${title}-${Date.now()}`;
-  console.log(imageName);
+  console.log("image name from server fetch : ", imageName);
   let uri;
   try {
     uri = await storage.uploadImage({

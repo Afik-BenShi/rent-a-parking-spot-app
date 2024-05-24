@@ -23,20 +23,17 @@ const SERVER = `http://${config.serverIp}:${config.port}`;
 export default function OwnerProductPage({ route, navigation }) {
     /** @type {ProductDetails} */
     //const details = parseItem(route.params);
-    //const { updateProducts } = route.params;
-    //const { updatedTitle, setUpdatedTitle, updatedDescription, setUpdatedDescription } = useContext(RefreshContext);
+
     const { updatedItem, setUpdatedItem } = useContext(RefreshContext);
 
 
-    const [details, setDetails] = useState(parseItem(route.params));
+    const [details, setDetails] = useState(parseItem(route.params));  // Parsing 
     const [editMode, setEditMode] = useState(false);
     const [rsvs, setRsvs] = useState({ past: [], next: [] });
     const [userId, setUserId] = useState(route.params.userId);
 
     // save the title and description in edit mode
-    //const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
-    
     console.log(details);
 
 
@@ -228,10 +225,12 @@ export function parseItem({ details: item }) {
         city,
         distanceFromMe,
         imageUrl,
+        urlToimage,
         OrderStartDate,
         OrderEndDate,
         mainCategoryId,
         OwnerInfo,
+        
     } = item;
     console.log("item",item)
     return Object.assign(mock, {
@@ -244,7 +243,7 @@ export function parseItem({ details: item }) {
             startDate: timeStampToDate(startDate?? startDay),
             endDate: timeStampToDate(endDate ?? endDay),
         },
-        image: imageUrl,
+        image: urlToimage,
         price: Object.assign(mock.price, { amount: pricePerDay }),
         owner: Object.assign(mock.owner, { id: ownerId, 
                                             name: OwnerInfo ? OwnerInfo.fullName : mock.owner.name,

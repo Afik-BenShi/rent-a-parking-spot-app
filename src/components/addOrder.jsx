@@ -67,6 +67,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
         const response = await axios.post(SERVER + '/orders/add', payload, { headers: { Authorization: await token } });
         if (response.status === 200){
             onSuccess(response.data);
+            toggleExpand(false);
             return true;
         }
         console.error(response.data);

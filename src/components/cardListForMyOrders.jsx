@@ -96,9 +96,10 @@ export default function CardListForMyOrders({ items, title, onItemPressed = (_) 
                 mainCategoryId, 
                 OrderStartDate ,
                 OrderEndDate ,
-                imageUrl } = item;
+                urlToimage,
+               } = item;
               
-                const image = imageUrl? { uri: imageUrl } : placeholderImage;
+                const image = urlToimage? { uri: urlToimage } : placeholderImage;
                 
                 const { startDay, endDay } = dateRangeFormat(timeStampToDate(OrderStartDate), timeStampToDate(OrderEndDate));
                 console.log("after parsing : " + startDay + " " + endDay);

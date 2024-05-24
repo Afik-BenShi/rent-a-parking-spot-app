@@ -18,7 +18,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { COLORS } from '../../assets/theme';
 import { parseItem } from "./ownerProductPage";
 import { dateRangeFormat } from "../utils/dateTime";
-import { UrlTile } from 'react-native-maps';
+import ExpandableImage from "../components/ExpandableImage";
 import { ContactButtons } from "../components/contactButtons";
 import GoogleMaps from "../components/GoogleMaps";
 import config from '../backend/config';
@@ -26,19 +26,19 @@ import { disabledDatesForProduct } from "../utils/dateTime";
 
 import CalendarComponent from '../components/calendar';
 import { getAuth } from 'firebase/auth';
-import { set } from 'lodash';
 
 const sections = [
   { name: 'Information' },
   { name: 'Availability' },
-  { name: 'Reviews' }
+  // { name: 'Reviews' }
 ];
 
 export default function ExtendedProduct({ route, navigation }) {
-  
+
     const details = parseItem(route.params);
-    console.log("details in extended");
-    console.log(details)
+
+    //console.log("details in extended");
+    //console.log(details)
 
     const productImage = details.image
         ? { uri: details.image }
@@ -53,13 +53,13 @@ export default function ExtendedProduct({ route, navigation }) {
         availability,
         city, 
         price,
-        image,
         location,
         orderDates,
         mainCategoryId,
+        image,
         } = details;
 
-    const { rate, reviews } = { rate: 4, reviews: 18 };   // TODO: CHANGE TO ACTUAL VALUES
+    //const { rate, reviews } = { rate: 4, reviews: 18 };   // TODO: CHANGE TO ACTUAL VALUES
 
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
@@ -158,12 +158,14 @@ export default function ExtendedProduct({ route, navigation }) {
 
       { value == 0 &&
       (<ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
+        <ExpandableImage source={productImage} initialHeight={200} />
         <View style={styles.photos}>
-            <Image
-            alt=""
+            {/* <Image
+            alt="description"
             source={productImage} // Specify the source of your image
             style={styles.photosImg}
-            />
+            /> */}
+            
             
           {/* <Swiper
             renderPagination={(index, total) => (
@@ -212,7 +214,7 @@ export default function ExtendedProduct({ route, navigation }) {
             </View>
           </View>
 
-          <View style={styles.headerRow}>
+          {/* <View style={styles.headerRow}>
             <View style={styles.headerStars}>
                 {[...Array(rate)].map((_, index) => (
                 <FontAwesome
@@ -233,7 +235,7 @@ export default function ExtendedProduct({ route, navigation }) {
                 ))}
                 <Text style={styles.headerStarsText}>{reviews} reviews</Text>
             </View>
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.picker}>
@@ -441,13 +443,18 @@ const styles = StyleSheet.create({
   },
   /** Photos */
   photos: {
-    paddingTop: 6,
-    paddingHorizontal: 20,
-    marginTop: 12,
-    position: 'relative',
-    height: 240,
-    overflow: 'hidden',
-    borderRadius: 12,
+    paddingVertical: 12,
+        gap: 6,
+        overflow: "scroll",
+
+    // paddingTop: 6,
+    // paddingHorizontal: 20,
+    // marginTop: 12,
+    // position: 'relative',
+    // height: 240,
+    // overflow: 'hidden',
+    // borderRadius: 12,
+    
   },
   photosPagination: {
     position: 'absolute',
@@ -472,8 +479,9 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     width: '100%',
-    height: 240,
+    //height: 240,
     borderRadius: 12,
+    objectFit: 'cover', // Add this line
   },
   /** Header */
   header: {
