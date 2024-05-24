@@ -18,7 +18,7 @@ import ExpandableImage from "../components/ExpandableImage";
 import { getUser } from '../auth/auth';
 import config from '../backend/config'
 import { RefreshContext } from '../context/context';
-import { uploadImage, convertToBytes } from '../utils/imageStorage';
+import { uploadImage, convertImageToBase64 } from '../utils/imageStorage';
 
 const defaultImage = require("../../assets/parking-details-images/placeholder.png");
 
@@ -39,18 +39,19 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
 
   let imgRes;
   try {
-    const imageBlobPromise = convertToBytes(detailsList.imageUri);
-    const formData = new FormData();
-    formData.append('title', detailsList.productName);
-    formData.append('image', await imageBlobPromise);
+    const base64Image = await convertImageToBase64(detailsList.imageUri);
+    const formData = {
+      'title': detailsList.productName,
+      'image': base64Image,
+    }
     imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
         Authorization: token
       },
-      body: formData
-    })
+      body: JSON.stringify(formData)
+    });
   }
   catch (err) {
     console.error("Error while uploading an image:", JSON.stringify(err));

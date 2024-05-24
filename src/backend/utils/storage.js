@@ -1,6 +1,6 @@
 // const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const { initializeApp } = require("firebase/app");
-const { getStorage, ref, uploadBytes, getBlob, getDownloadURL } = require("firebase/storage");
+const { getStorage, ref, uploadBytes, getBlob, getDownloadURL, uploadString } = require("firebase/storage");
 const fs = require('fs');
 const path = require('path');
 
@@ -39,11 +39,12 @@ const uploadImage = async ({ name, imageFile }) => {
     // Points to the root reference
     const storageRef = ref(storage, `images/${name}.png`);
 
-    //TODO: need to change this to imageFile
-    // localFilePath = '/Users/einatgelbort/student/googleWorkshop/rent-a-parking-spot-app/assets/adaptive-icon.png'
+    const splitFile = imageFile.split(',');
+    const base64Image = splitFile[splitFile.length - 1];
 
-    const response = await uploadBytes(storageRef, imageFile);
-    return response.ref?.fullPath;
+    const response = await uploadString(storageRef, imageFile, 'base64');
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
 }
 
 

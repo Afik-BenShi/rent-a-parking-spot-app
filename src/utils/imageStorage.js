@@ -24,7 +24,7 @@ export async function uploadImage(storagePath, uri) {
     return response.ref.fullPath;
 }
 
-export async function convertToBytes(uri) {
+export async function convertImageToBase64(uri) {
     const response = await fetch(uri);
     const blob = await response.blob();
     const reader = new FileReader();
