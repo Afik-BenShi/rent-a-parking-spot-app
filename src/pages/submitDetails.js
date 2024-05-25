@@ -25,9 +25,6 @@ const defaultImage = require("../../assets/parking-details-images/placeholder.pn
 
 
 
-
-
-
 export default function SubmitDetails({ navigation, route }) {
   const { refresh, setRefresh } = useContext(RefreshContext);
   const { detailsList, user } = route.params;
@@ -50,6 +47,7 @@ export default function SubmitDetails({ navigation, route }) {
     data.find((item) => item.key === detailsList.category).value : "";
 
   // --------------------------------------------------------
+  // Function to handle the Finish button click
   const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
     console.log("Product details submitted: ", detailsList);
   
@@ -71,7 +69,6 @@ export default function SubmitDetails({ navigation, route }) {
       imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
       console.log('Firebase Storage Image URL:', imageUrl);
   
-  
       //const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
       try{
           const imageBlob = await convertToBytes(imageUrl);
@@ -84,6 +81,7 @@ export default function SubmitDetails({ navigation, route }) {
           // post product int the db:
           const urlFromFirebase = imageUrl;
           await postNewProduct(urlFromFirebase, detailsList);
+          
           // Navigate to the My Products page
           // Use CONTEXT - to remove the Non-seriazable warning
           //setRefresh(true);
@@ -112,94 +110,13 @@ export default function SubmitDetails({ navigation, route }) {
     catch (err) {
       console.error("Error while uploading an image:", JSON.stringify(err));
       return;
-    }
-   // console.log('imgRes', imgRes)
-    //imgRes = await imgRes?.json();
     
-    
-    // const newProduct = {
-    //   title: detailsList.productName,
-    //   pricePerDay: detailsList.price,
-    //   ownerId: userId,
-    //   description: detailsList.productDescription,
-    //   mainCategoryId: detailsList.category,
-    //   fromDate: new Date(detailsList.fromDate),
-    //   untilDate: new Date(detailsList.untilDate),
-    //   address: detailsList.address,
-    //   //imageName: imgRes?.imageName,
-    //   imageUrl: urlFromFirebase,  // url to firebase storage
-    // };
-  
-    // console.log('newProduct', newProduct)
-  
-    // fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: token
-    //   },
-    //   body: JSON.stringify(newProduct)
-    // })
-    //   .then(response => {
-    //     console.log("success to post new product")
-    //     console.log("Response from server:", response.ok);
-    //   })
-    //   .catch(error => {
-    //     console.error("Error while posting new product:", JSON.stringify(error));
-    //   });
-  
-    // -------------------------------------
-    // ->
-  
-    // // Navigate to the My Products page
-    // // Use CONTEXT - to remove the Non-seriazable warning
-    // setRefresh(true);
-    // //setTimeout(() => setRefresh(false), 10);
-    // navigation.navigate("My Products cardList");
-  
+    //imgRes = await imgRes?.json();  
   };
-
-
-  //-----------------------------------------------------------------------
-
-
-  // const uploadImageToStorage = async (userId, detailsList) => {
-  //   let token;
-  //   try {
-  //     token = await getUser()?.getIdToken();
-  //   } catch (error) {
-  //     console.error("Error getting user token:", error);
-  //     // Handle the error appropriately
-  //     return;
-  //   }
-
-  //   try {
-  //     const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
-  //     // Assuming detailsList.imageUri contains the local path to the image
-  //     const imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
-  //     console.log('Firebase Storage Image URL:', imageUrl);
-      
-
-  //     try{
-  //         const imageBlob = await convertToBytes(imageUrl);
-  //         console.log('Image blob created:', imageBlob);
-  //         setUrlFromFirebase(imageUrl);   // important: set the url to the state -> useEffect will be triggered
-  //     }
-  //     catch (err) {
-  //       console.error("Error while converting image to blob:", JSON.stringify(err));
-  //     }
-        
-  //   }
-  //   catch (err) {
-  //     console.error("Error while uploading an image:", JSON.stringify(err));
-  //     return;
-  //   }
-  // };
 
 
 
   const postNewProduct = async (urlFromFirebase, detailsList) => {
-    
     let token;
     try {
       token = await getUser()?.getIdToken();
@@ -244,18 +161,6 @@ export default function SubmitDetails({ navigation, route }) {
 
   };
 
-  // const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefresh }) => {
-  //   console.log("Product details submitted: ", detailsList);
-
-  //   uploadImageToStorage(userId, detailsList);
-
-  //   // Navigate to the My Products page
-  //   // Use CONTEXT - to remove the Non-seriazable warning
-  //   //setRefresh(true);
-  //    setTimeout(() => setRefresh(true), 0);
-  //   //setTimeout(() => setRefresh(false), 1);
-  //   navigation.navigate("My Products cardList");
-  // };
 
 
   return (
