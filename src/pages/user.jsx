@@ -45,38 +45,37 @@ export default function Profile({ navigation, route }) {
     console.log("profileDetails: ", profileData);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getUser()?.getIdToken();
-        const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
-          headers: { Authorization: token },
-          params: { userId }
-        });
-        const details = response.data;
-        if (details.address.lat && details.address.lng) {
-          const geocodeResult = await axios.get(`http://${config.serverIp}:${config.port}/location/geocode`, {
-            headers:{
-              'Content-Type': 'application/json',
-              Authorization: token,
-            },
-            params:{latlng : `${details.address.lat},${details.address.lng}`},
-          }).then(({data}) => data);
-          const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
-          console.log('formattedAddress', formattedAddress)
+  const fetchData = async () => {
+    try {
+      const token = await getUser()?.getIdToken();
+      const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
+        headers: { Authorization: token },
+        params: { userId }
+      });
+      const details = response.data;
+      if (details.address.lat && details.address.lng) {
+        const geocodeResult = await axios.get(`http://${config.serverIp}:${config.port}/location/geocode`, {
+          headers:{
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          params:{latlng : `${details.address.lat},${details.address.lng}`},
+        }).then(({data}) => data);
+        const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
+        console.log('formattedAddress', formattedAddress)
 
-          setAddress(formattedAddress);
-        }
-
-        console.log('user details', details);
-        setProfileData(details);
-        console.log('profile data after set', profileData)
-        setLastProfileData(details);
-      } catch (error) {
-        console.error('Error fetching user details:', error);
+        setAddress(formattedAddress);
       }
-    };
 
+      console.log('user details', details);
+      setProfileData(details);
+      console.log('profile data after set', profileData)
+      setLastProfileData(details);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, [userId]);
 
@@ -109,6 +108,7 @@ export default function Profile({ navigation, route }) {
       headers: { Authorization: token },
     })
     setShowEditProfile(false);
+    fetchData();
   };
 
   const handleCancel = () => {
