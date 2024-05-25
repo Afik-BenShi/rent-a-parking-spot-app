@@ -152,7 +152,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
                             query={{
-                                key: "AIzaSyBLQACLuFBRwMMP19Y0dhAjs9cMfYFFyx4",
+                                key: "fill_your_key",
                                 language: 'en',
                             }}
                             styles={{
