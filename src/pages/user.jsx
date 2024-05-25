@@ -232,7 +232,7 @@ export default function Profile({ navigation, route }) {
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
                         query={{
-                          key: "AIzaSyAn_Yb93_Ea5YkSYFWWIHyEueOukc_Ynao",
+                          key: "fill_your_key",
                           language: 'en',
                         }}
                         styles={{
