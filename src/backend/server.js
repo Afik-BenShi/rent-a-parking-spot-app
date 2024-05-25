@@ -195,19 +195,6 @@ app.get('/users/personalDetails', async (req, res) => {
 
 app.get('/products/:id', (req, res) => { });
 
-
-app.get('/location/geocode', async (req, res) => {
-  const query = req.query;
-  const { status, response } = await location.getGeocode(query);
-  res.status(status).send(response);
-});
-
-app.get('/location/geocode/structured', async (req, res) => {
-  const query = req.query;
-  const { status, response } = await location.getGeocodeStructured(query);
-  res.status(status).send(response);
-});
-
 app.post('/users/upsert', async (req, res) => {
   try {
     const response = await users.upsertPersonalDetails(req.body)
@@ -265,6 +252,18 @@ app.get('/place/details/json', async (req, res)=> {
   }
 })
 
+app.get('/location/geocode', async (req, res) => {
+  const {key, ...query} = req.query;
+  const paramString = Object.entries(query).map(([key, val]) => `${key}=${val}`).join('&')
+  try {
+    const googleApi = "https://maps.google.com/maps/api/geocode/json";
+    const suggestions = await fetch(googleApi + `?key=${mapsKey}&` + paramString)
+      .then(resp=> resp.json());
+    res.status(200).send(suggestions);
+  } catch(e) {
+    res.status(500).send({e});
+  }
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

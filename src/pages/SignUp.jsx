@@ -29,10 +29,6 @@ export function SignUpAuth({ navigation, route }) {
     const password = useValidatedText("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [userToken, setToken] = useState('');
-    useEffect(()=> {(async () => {
-        setToken(await getUser().getIdToken());
-    })()});
     password.defineCustomValidation(
         useCallback((password, reject) => {
             if (password.length < 8) {
@@ -162,7 +158,11 @@ export function SignUpDetails({ navigation }) {
     const [isLoading, setIsLoading] = useState(false);
     const [signUpError, setSignUpError] = useState("");
     const [addressKey, setAddressKey] = useState(0);
-
+    const [userToken, setToken] = useState('');
+    useEffect(()=> {(async () => {
+        setToken(await getUser().getIdToken());
+    })()});
+    
     const clearForm = () => {
         fullName.setText("");
         phoneNumber.setText("");
