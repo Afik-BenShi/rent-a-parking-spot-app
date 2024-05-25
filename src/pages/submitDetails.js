@@ -56,6 +56,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
   catch (err) {
     console.error("Error while uploading an image:", JSON.stringify(err));
   }
+  console.log('imgRes', imgRes)
   imgRes = await imgRes?.json();
 
   const newProduct = {
@@ -66,7 +67,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
     mainCategoryId: detailsList.category,
     fromDate: new Date(detailsList.fromDate),
     untilDate: new Date(detailsList.untilDate),
-    city: detailsList.city,
+    address: detailsList.address,
     imageName: imgRes?.imageName,
     imageUri: imgRes?.uri,
   };
@@ -110,7 +111,7 @@ export default function SubmitDetails({ navigation, route }) {
     navigation.goBack();
   };
 
-  const productImage = detailsList.imageUri?{uri: detailsList.imageUri} : defaultImage;
+  const productImage = detailsList.imageUri ? { uri: detailsList.imageUri } : defaultImage;
   const data = [
     { key: '1', value: 'Outdoor equipment' },
     { key: '2', value: 'Entertainment & Events' },

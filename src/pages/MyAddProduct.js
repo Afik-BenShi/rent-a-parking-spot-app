@@ -24,7 +24,7 @@ export default function AddProductPage({ navigation, route }) {
     ownerId: "",    // get the owner ID from the data base
     productName: "",
     category: "",
-    city: "",
+    address: "",
     price: "",
     from: "",
     until: "",
@@ -83,7 +83,7 @@ export default function AddProductPage({ navigation, route }) {
   }
 
   const isValidInput = () => {
-    return details.productName !== "" && details.city !== "" && details.price !== "" && details.from !== "" && details.until !== "" && details.productDescription !== "" && details.category !== "";
+    return details.productName !== "" && details.address !== "" && details.price !== "" && details.from !== "" && details.until !== "" && details.productDescription !== "" && details.category !== "";
   }
 
   // Function to handle 'next' button press
@@ -92,6 +92,10 @@ export default function AddProductPage({ navigation, route }) {
     console.log("Submitted Details (before submit):", details);
     if (!isValidInput()) {
       alert("Please fill all the fields");
+      return;
+    }
+    if (isNaN(details.price)) {
+      alert("Price must be valid number");
       return;
     }
 

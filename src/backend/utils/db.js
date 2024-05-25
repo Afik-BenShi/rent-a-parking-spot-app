@@ -7,6 +7,7 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
+const _ = require("lodash");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -119,10 +120,10 @@ const getProductsDb = async (filters) => {
         } catch (err) {
             throw new Error(`[getProdusts in home page][ownerEnrichment] ${err}`);
         }
-        
+
         return docs;
 
-        
+
     } catch (error) {
         console.error("Error fetching product:", error);
         throw error;
@@ -238,16 +239,25 @@ const enrichWithReferencedId = async (docs, refKey, refCollection) => {
     return await Promise.all(enrichPromises);
 };
 
+
+function getNextString(str) {
+    return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + 1);
+}
+
 const getUserSuggestions = async (q) => {
     const collectionRef = db.collection("users");
-    const byName = collectionRef.where("fullName", "==", q);
-    const byPhoneNum = collectionRef.where("phoneNumber", "==", q);
-    const promises = [byName, byPhoneNum].map(async (query) => {
-        const { docs } = await query.get();
-        return docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    });
-    const users = await Promise.all(promises);
-    return users.flat();
+
+    const resByName = await collectionRef
+        .orderBy('fullName')
+        .startAt(q)
+        .endAt(getNextString(q)).get();
+    const resByPhoneNum = await collectionRef
+        .orderBy('phoneNumber')
+        .startAt(q)
+        .endAt(getNextString(q)).get();
+
+    const users = _.uniq([...resByName.docs, ...resByPhoneNum.docs].map((doc) => ({ ...doc.data(), id: doc.id })))
+    return users;
 };
 
 const getUserSuggestionsCached = createCache(getUserSuggestions, 300);

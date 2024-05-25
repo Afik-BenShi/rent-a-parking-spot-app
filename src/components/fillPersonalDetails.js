@@ -156,16 +156,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                     />
 
                     <Input
-                        label="Location"
-                        labelStyle={styles.inputLabel}
-                        leftIcon={<MoreIcon name="location-outline" size={18} />}
-                        placeholder=" Enter your location"
-                        onChangeText={(text) => sendDataToParent("city", text)}
-                        inputStyle={styles.inputControl}
-                        inputContainerStyle={{ borderBottomWidth: 0 }}
-                    />
-
-                    <Input
                         label="Daily Price rate"
                         labelStyle={styles.inputLabel}
                         leftIcon={<Entypo color="#000" name="price-tag" size={16} />}
