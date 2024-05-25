@@ -8,9 +8,7 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
