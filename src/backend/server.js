@@ -173,6 +173,12 @@ app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
   }
 });
 
+app.delete('/myProducts/:productId', async (req, res) => {
+  const { productId } = req.params;
+  const { token } = req.body;
+  const { status, response } = await products.deleteProduct(productId, token.user_id);
+  res.status(status).send(response);
+})
 
 app.get('/users/suggestion', async (req, res) => {
   const query = req.query;

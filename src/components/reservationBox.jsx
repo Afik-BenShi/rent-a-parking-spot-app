@@ -9,6 +9,7 @@ import "../pages/productDetailsPage.types";
 import { getUser } from "../auth/auth";
 import axios from "axios";
 import config from "../backend/config";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
 /**
@@ -66,6 +67,7 @@ export default function ReservationBox({
         const dialogPromise = openDialog();
         const action = await dialogPromise;
         if (action !== "delete") {
+            setIsLoading(false);
             return;
         }
         const user = getUser();
@@ -102,56 +104,23 @@ export default function ReservationBox({
                 {editMode && (
                     <>
                     {!!message && <Text style={styles.message}>{message}</Text>}
-                    <Button color="secondary" onPress={handleDelete} disabled={isLoading}>
+                    <Button buttonStyle={styles.deleteButton} onPress={handleDelete} disabled={isLoading}>
                         Delete {"\u00A0"}
                         <Icon
-                            name="x-circle"
+                            name="trash"
                             type="feather"
                             color={COLORS.white}
+                            size={16}
                         />
                     </Button>
                     </>
                 )}
                 <ConfirmationDialog
                     dialogState={{ openDialog, closeDialog, DialogComponent }}
+                    title="Are you sure you want to delete this reservation?"
                 />
             </View>
         </Card>
-    );
-}
-
-function ConfirmationDialog({ dialogState }) {
-    const { DialogComponent, closeDialog } = dialogState;
-    return (
-        <DialogComponent overlayStyle={{ position: "relative" }}>
-            <View
-                style={{
-                    position: "absolute",
-                    top: 6,
-                    right: 6,
-                }}
-            >
-                <Pressable onPress={() => closeDialog()}>
-                    <Icon name="close" />
-                </Pressable>
-            </View>
-            <View style={{ alignSelf: "center" }}>
-                <Dialog.Title title="Are you sure you want to delete this reservation?" />
-            </View>
-            <Dialog.Actions>
-                <View style={styles.dialogActions}>
-                    <Button type="outline" onPress={() => closeDialog("close")}>
-                        No, go back
-                    </Button>
-                    <Button
-                        color="secondary"
-                        onPress={() => closeDialog("delete")}
-                    >
-                        Yes, Delete
-                    </Button>
-                </View>
-            </Dialog.Actions>
-        </DialogComponent>
     );
 }
 
@@ -241,10 +210,14 @@ function SubmitConfirmationDialog({ dialogState }) {
             </View>
             <Dialog.Actions>
                 <View style={styles.dialogActions}>
-                    <Button type="outline" onPress={() => closeDialog("close")}>
+                    <Button 
+                    buttonStyle={{borderRadius:6}}
+                    type="outline" onPress={() => closeDialog("close")}
+                    >
                         No, go back
                     </Button>
                     <Button
+                        buttonStyle={{borderRadius:6}}
                         color="primary"
                         onPress={() => closeDialog("submit")}
                     >
@@ -256,7 +229,7 @@ function SubmitConfirmationDialog({ dialogState }) {
     );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     availabilityCard: {
         borderRadius: 8,
         marginVertical: 0,
@@ -282,5 +255,10 @@ const styles = StyleSheet.create({
     message:{
         fontSize: 16,
         fontWeight: "600",
+    },
+    deleteButton: {
+        alignSelf:"center",
+        borderRadius:6,
+        backgroundColor: COLORS.red,
     }
 });

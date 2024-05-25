@@ -57,7 +57,7 @@ const deleteOrder = async (orderId, userId) => {
         return {status: 200, response};
 
     } catch (error) {
-        console.log('[updateOrder]', error);
+        console.log('[deleteOrder]', error);
         return {status:500, response: "Server error"}
     }
 }
