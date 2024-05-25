@@ -6,38 +6,83 @@ import { OwnerDetailsBar } from "./ownerDetails";
 import { COLORS } from "../../assets/theme";
 import useDialog from "../customStates/useDialog";
 import "../pages/productDetailsPage.types";
+import { getUser } from "../auth/auth";
+import axios from "axios";
+import config from "../backend/config";
+const SERVER = `http://${config.serverIp}:${config.port}`;
 
 /**
  * @type {React.FC}
  * @param {{
  *      reservation:ProductReservation, editMode?:boolean,
- *      onDelete?: (rsv:ProductReservation) => any,
+ *      index:number
+ *      onDelete?: (rsv:ProductReservation, index: number) => any,
  *      onChange?: (rsv:ProductReservation) => any,
  * }} props
  */
 export default function ReservationBox({
     reservation,
+    index,
     editMode = false,
-    onDelete,
+    onDelete = () => {},
     onChange = () => {},
 }) {
     const [rsv, setRsv] = useState(reservation);
+    const [isLoading, setIsLoading] = useState(false);
     const { openDialog, closeDialog, DialogComponent } = useDialog();
+    const [message, setMessage] = useState('');
 
-    const handleDateChange = (startDate, endDate) => {
-        setRsv((oldRsv) =>
-            Object.assign(oldRsv, { scheduling: { startDate, endDate } })
-        );
-        onChange(rsv);
+    const handleDateChange = async (startDate, endDate) => {
+        setIsLoading(true);
+        const user = getUser();
+        const token = user?.getIdToken();
+        const payload = {
+            ownerId: user?.uid,
+            startDate:startDate,
+            endDate: endDate, 
+            productId: rsv.id, 
+            renterId: rsv.reservingUser.id,
+        }
+        try {
+            const response = await axios.put(SERVER + '/orders/update/' + rsv.id, payload, {headers:{Authorization :await token}});
+            if (response.status === 200) { 
+                setMessage("Reservation updated successfully");
+                setRsv((oldRsv) =>
+                    Object.assign(oldRsv, { scheduling: { startDate, endDate } })
+                );
+                onChange(rsv);
+            } else {
+                setMessage(`${response.data}`);
+            }
+        } catch (error) {
+            console.error('update', error);
+            setMessage("we had an error updating the reservation. Please try again");
+        }
+        setIsLoading(false);
     };
-
+    
     const handleDelete = async () => {
+        setIsLoading(true);
         const dialogPromise = openDialog();
         const action = await dialogPromise;
-        if (action === "delete" && onDelete) {
-            onDelete(rsv);
+        if (action !== "delete") {
+            return;
         }
-        console.log(action);
+        const user = getUser();
+        const token = user?.getIdToken();
+        try {
+            const response = await axios.delete(SERVER + '/orders/' + rsv.id, {headers:{Authorization: await token}});
+            if (response.status === 200) { 
+                setMessage("Reservation removed successfully");
+                onDelete(rsv, index);
+            } else {
+                setMessage(`${response.data}`);
+            }
+        } catch (error) {
+            console.error('delete', error);
+            setMessage("we had an error removing the reservation. Please try again");
+        }
+        setIsLoading(false);
     };
 
     console.log(rsv.reservingUser);
@@ -46,14 +91,18 @@ export default function ReservationBox({
             <View style={styles.availabilityInner}>
                 <OwnerDetailsBar owner={rsv.reservingUser} />
                 <EditableDateRange
+                    key={`${isLoading}`}
                     editMode={editMode}
+                    disabled={isLoading}
                     dateRange={rsv.scheduling}
                     minDate={new Date()}
                     onRangeChange={handleDateChange}
                     textProps={{ style: styles.datePickerText }}
                 />
                 {editMode && (
-                    <Button color="secondary" onPress={handleDelete}>
+                    <>
+                    {!!message && <Text style={styles.message}>{message}</Text>}
+                    <Button color="secondary" onPress={handleDelete} disabled={isLoading}>
                         Delete {"\u00A0"}
                         <Icon
                             name="x-circle"
@@ -61,6 +110,7 @@ export default function ReservationBox({
                             color={COLORS.white}
                         />
                     </Button>
+                    </>
                 )}
                 <ConfirmationDialog
                     dialogState={{ openDialog, closeDialog, DialogComponent }}
@@ -229,4 +279,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
     },
+    message:{
+        fontSize: 16,
+        fontWeight: "600",
+    }
 });

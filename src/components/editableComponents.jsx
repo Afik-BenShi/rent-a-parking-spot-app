@@ -53,6 +53,7 @@ export function EditableText({
  *  editMode: boolean,
  *  children: string,
  *  onChange: (newText: string) => any,
+ *  sendDataToParent: (value: string) => any,
  *  inputStyle?:  {},
  *  textStyle?: import("react-native").TextStyle,
  *  h1?: boolean,
@@ -67,6 +68,7 @@ export function EditableText({
  * @param {EditableDateRangeProps} props
  */
 export function EditableDateRange({
+    disabled=false,
     editMode,
     dateRange,
     textProps = {},
@@ -97,12 +99,14 @@ export function EditableDateRange({
         <>
             <Text {...textProps}>Start Date</Text>
             <DateTimePickerExample
+                disabled={disabled}
                 minDate={minDate}
                 onDateChange={startChangedHandler}
                 initialDate={dateRange.startDate}
                 />
             <Text {...textProps}>End Date</Text>
             <DateTimePickerExample
+                disabled={disabled}
                 minDate={minDate}
                 onDateChange={endChangedHandler}
                 initialDate={dateRange.endDate}
@@ -118,5 +122,6 @@ export function EditableDateRange({
  *  textProps?: import("react-native-elements").TextProps,
  *  minDate?: Date,
  *  onRangeChange: (newStart:Date, newEnd:Date) => any,
+ *  disabled?:boolean,
  * }} EditableDateRangeProps
  */

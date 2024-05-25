@@ -35,7 +35,6 @@ export default function OwnerProductPage({ route, navigation }) {
     // save the title and description in edit mode
     const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
-    console.log(details);
 
 
 
@@ -90,10 +89,8 @@ export default function OwnerProductPage({ route, navigation }) {
 
 
     const updateProductDetails = () => {
-        console.log("Updating product details");
         
         if (description === details.description && title === details.title) {
-            console.log("No changes to update");
             return;
         }
         getAuth().currentUser?.getIdToken().then(token => 
@@ -103,7 +100,6 @@ export default function OwnerProductPage({ route, navigation }) {
                     description
                 }, { headers: { Authorization: token } })
                 .then(() => {
-                    console.log("Product details updated");
                     setDetails((prevDetails) => ({
                         ...prevDetails,
                         ['title']: title.trim(), 
@@ -119,7 +115,6 @@ export default function OwnerProductPage({ route, navigation }) {
 
     // In order to updates myProducts page
     useEffect(() => {
-        console.log("hi from useEffect[details] in ownerProductPage");
         // details.description is already updated after the edit
         setUpdatedItem({ id: details.id, title:details.title, description: details.description });
     }, [details]);
@@ -133,18 +128,15 @@ export default function OwnerProductPage({ route, navigation }) {
     
 
     const handleTitleChange = (value) => {
-        console.log("newText title from parent: ", value);
         const newText = value.trim()
         setTitle(newText);
     };
 
     const handleDescriptionChange = (value) => {
-        console.log("newText descr from parent: ", value);
         const newText = value.trim()
         setDescription(newText);
     };
     
-
 
     return (
         <View style={styles.pageContainer}>
@@ -180,6 +172,7 @@ export default function OwnerProductPage({ route, navigation }) {
                     editMode={editMode}
                     reservations={rsvs.next}
                     heading="Next reservations"
+                    onRemoveItem={updateReservations}
                 />
                 <ReservationTable
                     editMode={false}
@@ -234,7 +227,6 @@ export function parseItem({ details: item }) {
         OwnerInfo,
         
     } = item;
-    console.log("item",item)
     return Object.assign(mock, {
         id: id ? id : productId,
         title,

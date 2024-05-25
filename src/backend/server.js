@@ -234,6 +234,19 @@ app.post('/orders/add', async (req, res) => {
   res.status(status).send(response);
 });
 
+app.put('/orders/update/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  const { token, ...rsv } = req.body;
+  const { status, response } = await orders.updateOrder(orderId, rsv, token.user_id);
+  res.status(status).send(response);
+});
+app.delete('/orders/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  const { token } = req.body;
+  const { status, response } = await orders.deleteOrder(orderId, token.user_id);
+  res.status(status).send(response);
+});
+
 app.get('/orders/productAvailability', async (req, res) => {
   const { id } = req.query;
   console.log("id - ", id);

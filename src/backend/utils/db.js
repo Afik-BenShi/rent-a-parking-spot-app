@@ -265,8 +265,8 @@ const getUserSuggestions = async (q) => {
 
 const getUserSuggestionsCached = createCache(getUserSuggestions, 300);
 
-const getDocumentById = (collection, docId) => {
-    return db.collection(collection).doc(docId).get();
+const getDocumentRefById = (collection, docId) => {
+    return db.collection(collection).doc(docId);
 }
 
 const upsertDocument = async ({ collection, docId, data }) => {
@@ -373,6 +373,6 @@ module.exports = {
     getOrdersWithOptions,
     getUserSuggestionsCached,
     getProductAvailabilityDb,
-    getDocumentById,
+    getDocumentRefById,
     updateProductInfoDb,
 };
