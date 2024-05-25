@@ -7,10 +7,7 @@ const {
 } = require("firebase-admin/firestore");
 const { v4: uuidv4 } = require("uuid");
 const createCache = require("./cache");
-const { storage } = require("firebase-admin");
-const { getImage } = require('./storage');
-const config = require('../config');
-
+const _ = require("lodash");
 
 /** @type {FirebaseFirestore.Firestore} */
 let db;
@@ -99,27 +96,27 @@ const getProductsDb = async (filters) => {
 
                 const availableProductsPromises = productIds.map((productId) =>
                     getAvailableProductsWithinDateRange(productId, startDate, endDate));
-                
+
                 console.log("availableProductsPromises : ", availableProductsPromises);
 
                 const availableProducts = await Promise.all(availableProductsPromises);
                 // availableProducts is an array of arrays, you might want to flatten it if needed
 
                 const distincts = await distinctProducts(availableProducts.flat());
-                
+
                 //Map distinct products to the required format
                 docs = distincts.map(product => ({
                     ...product,
                     id: product.id // id is productId
                 }));
                 //  return distincts;
-                
+
             } catch (error) {
                 console.error("Error fetching product by dates range:", error);
                 throw error;
             }
         }
-        else{
+        else {
             const result = await docRef.get();
             docs = result.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
         }
@@ -139,7 +136,7 @@ const getProductsDb = async (filters) => {
         }
         return docs;
 
-        
+
     } catch (error) {
         console.error("Error fetching product:", error);
         throw error;
@@ -255,11 +252,23 @@ const enrichWithReferencedId = async (docs, refKey, refCollection) => {
     return await Promise.all(enrichPromises);
 };
 
+
+function getNextString(str) {
+    return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + 1);
+}
+
 const getUserSuggestions = async (q) => {
     const collectionRef = db.collection("users");
-    const byPhoneNum = collectionRef.where("phoneNumber", "==", q);
-    const { docs } = await byPhoneNum.get();
-    const users = docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const resByName = await collectionRef
+        .orderBy('fullName')
+        .startAt(q)
+        .endAt(getNextString(q)).get();
+    const resByPhoneNum = await collectionRef
+        .orderBy('phoneNumber')
+        .startAt(q)
+        .endAt(getNextString(q)).get();
+
+    const users = _.uniq([...resByName.docs, ...resByPhoneNum.docs].map((doc) => ({ ...doc.data(), id: doc.id })))
     return users;
 };
 

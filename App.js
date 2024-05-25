@@ -65,7 +65,6 @@ function MyProStackScreen({ route }) {
       <MyProductsStack.Navigator>
         <MyProductsStack.Screen name="My Products cardList" component={MyProductsPage}
           options={{ title: 'My products' }} initialParams={{ userId }}
-
         />
 
         <MyProductsStack.Screen name="addProduct" component={AddProduct} options={{ headerShown: false }} initialParams={{ userId }} />
@@ -136,7 +135,7 @@ function AuthStackScreen({ route }) {
       }} name="SignUpDetails"
         component={SignUpDetails}
       />
-      <AuthStack.Screen options={{ headerShown:false }} 
+      <AuthStack.Screen options={{ headerShown: false }}
         name="ResetPassword"
         component={ResetPassword}
       />

@@ -50,7 +50,6 @@ const getProducts = async (filters, sort, userId) => {
 
         case 'closest':
             const userDetails = await getById({ collection: "users", id: userId })
-            //TODO: need to validate that this is the the field name
             const { address_lat, address_lng } = userDetails.data
             const userLocation = { lat: address_lat, lng: address_lng }
             orderedProducts = [...results].sort((a, b) => { haversine_distance(a.address, userLocation) - haversine_distance(b.address, userLocation) })

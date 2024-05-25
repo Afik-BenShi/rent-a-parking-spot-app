@@ -16,7 +16,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-// import Geocoder from 'react-native-geocoding';
+import Geocoder from 'react-native-geocoding';
 
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
@@ -25,7 +25,7 @@ import config from '../backend/config'
 import { signOutUser, getUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';
 
-// Geocoder.init("YOUR_GOOGLE_MAPS_API_KEY");
+Geocoder.init("fill_your_key");
 
 export default function Profile({ navigation, route }) {
   const [userId, setUserId] = useState(route.params.userId);
@@ -46,19 +46,19 @@ export default function Profile({ navigation, route }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('before token')
         const token = await getUser()?.getIdToken();
-        console.log('after token', token)
         const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
           headers: { Authorization: token },
           params: { userId }
         });
         const details = response.data;
-        // if (details.latitude && details.longitude) {
-        //   const geocodeResult = await Geocoder.from(details.latitude, details.longitude);
-        //   const formattedAddress = geocodeResult.results[0].formatted_address;
-        //   setAddress(formattedAddress);
-        // }
+        if (details.address_lat && details.address_lng) {
+          const geocodeResult = await Geocoder.from(details.address_lat, details.address_lng);
+          const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
+          console.log('formattedAddress', formattedAddress)
+
+          setAddress(formattedAddress);
+        }
 
         console.log('user details', details);
         setProfileData(details);
@@ -138,7 +138,7 @@ export default function Profile({ navigation, route }) {
                   <Text style={moreStyles.profileName}>{profileData.fullName}</Text>
 
                   {/* //TODO: need to change this */}
-                  <Text style={moreStyles.profileHandle}>{profileData.address}</Text>
+                  <Text style={moreStyles.profileHandle}>{address}</Text>
 
                   <Text style={moreStyles.profileHandle}>{profileData.phoneNumber}</Text>
                 </View>
@@ -242,8 +242,6 @@ export default function Profile({ navigation, route }) {
                             color: '#1faadb'
                           },
                         }}
-                        defaultValue={profileData.address}
-
                       />
                     </View>
 

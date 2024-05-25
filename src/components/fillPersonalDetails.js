@@ -178,16 +178,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                     </View>
 
                     <Input
-                        label="Location"
-                        labelStyle={styles.inputLabel}
-                        leftIcon={<MoreIcon name="location-outline" size={18} />}
-                        placeholder=" Enter your location"
-                        onChangeText={(text) => sendDataToParent("city", text)}
-                        inputStyle={styles.inputControl}
-                        inputContainerStyle={{ borderBottomWidth: 0 }}
-                    />
-
-                    <Input
                         label="Daily Price rate"
                         labelStyle={styles.inputLabel}
                         leftIcon={<Entypo color="#000" name="price-tag" size={16} />}
@@ -231,41 +221,40 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         inputStyle={styles.inputControl}
                         inputContainerStyle={{ borderBottomWidth: 0 }}
                     />
-                    <View style={{flexDirection: 'row',
-                                    justifyContent: 'space-between', 
-                                    alignItems: 'center',
-                                    }}>
-                    <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
-                        <Text style={styles.buttonText}>
-                            {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
-                            Upload image</Text>
-                    </TouchableOpacity>
-
-                                    
-                    {!imgSelected && 
-                    <View> 
-                        <Text style={styles.pickerDatesText}> No Image Chosen</Text>
-                    </View>
-                    }
-
-                {imgSelected && 
-                    <View> 
-                        <Text style={styles.pickerDatesText}> Image Uploaded</Text>
-        
-                        <TouchableOpacity onPress={clearImgSelection}>
-                        <Text style={{ textDecorationLine: 'underline' }}>
-                         &nbsp;
-                         {<MaterialCommunityIcons
-                                color="#242329"
-                                name="image-remove" 
-                                size={20} />}
-                            {'   '}Clear&nbsp; </Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                        <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
+                            <Text style={styles.buttonText}>
+                                {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
+                                Upload image</Text>
                         </TouchableOpacity>
-                    </View>
-                    }           
 
-                    </View>
 
+                        {!imgSelected &&
+                            <View>
+                                <Text style={styles.pickerDatesText}> No Image Chosen</Text>
+                            </View>
+                        }
+
+                        {imgSelected &&
+                            <View>
+                                <Text style={styles.pickerDatesText}> Image Uploaded</Text>
+
+                                <TouchableOpacity onPress={clearImgSelection}>
+                                    <Text style={{ textDecorationLine: 'underline' }}>
+                                        &nbsp;
+                                        {<MaterialCommunityIcons
+                                            color="#242329"
+                                            name="image-remove"
+                                            size={20} />}
+                                        {'   '}Clear&nbsp; </Text>
+                                </TouchableOpacity>
+                            </View>
+                        }
+                    </View>
                 </View>
 
             </ScrollView>
