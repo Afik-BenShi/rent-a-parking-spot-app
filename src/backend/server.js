@@ -252,6 +252,18 @@ app.get('/place/autocomplete/json', async (req, res)=> {
     res.status(500).send({e});
   }
 })
+app.get('/place/details/json', async (req, res)=> {
+  const {key, ...query} = req.query;
+  const paramString = Object.entries(query).map(([key, val]) => `${key}=${val}`).join('&')
+  try {
+    const googleApi = "https://maps.googleapis.com/maps/api/place/details/json";
+    const suggestions = await fetch(googleApi + `?key=${mapsKey}&` + paramString)
+      .then(resp=> resp.json());
+    res.status(200).send(suggestions);
+  }catch(e){
+    res.status(500).send({e});
+  }
+})
 
 
 app.listen(port, () => {

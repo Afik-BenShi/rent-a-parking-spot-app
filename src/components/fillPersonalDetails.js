@@ -149,7 +149,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             disableScroll={true}
                             placeholder="Enter your location"
                             minLength={3} // minimum length of text to search
-                            fetchDetails={!!userToken}
+                            fetchDetails={true}
                             returnKeyType={'default'}
                             onPress={(data, details = null) => {
                                 console.log('GooglePlacesAutocomplete address:', details.geometry.location)
