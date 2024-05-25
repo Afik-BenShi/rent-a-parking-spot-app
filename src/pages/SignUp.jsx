@@ -29,6 +29,10 @@ export function SignUpAuth({ navigation, route }) {
     const password = useValidatedText("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [userToken, setToken] = useState('');
+    useEffect(()=> {(async () => {
+        setToken(await getUser().getIdToken());
+    })()});
     password.defineCustomValidation(
         useCallback((password, reject) => {
             if (password.length < 8) {
@@ -260,8 +264,14 @@ export function SignUpDetails({ navigation }) {
                         }}
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
+                        requestUrl={{
+                            url: `http://${config.serverIp}:${config.port}`,
+                            useOnPlatform: 'all',
+                            headers: {Authorization: userToken},
+
+                        }}
                         query={{
-                            key: "fill_your_key",
+                            key: "",
                             language: 'en',
                         }}
                         styles={{

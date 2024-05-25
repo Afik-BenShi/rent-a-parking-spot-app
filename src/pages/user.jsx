@@ -34,6 +34,10 @@ export default function Profile({ navigation, route }) {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [lastProfileData, setLastProfileData] = useState(null);
   const [isSignOutLoading, setSignOutLoading] = useState(false);
+  const [userToken, setToken] = useState('');
+  useEffect(()=> {(async () => {
+    setToken(await getUser().getIdToken());
+  })()});
 
   const handleDataChange = (field, value) => {
     setProfileData((prevDetails) => ({
@@ -231,6 +235,12 @@ export default function Profile({ navigation, route }) {
                         }}
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
+                        requestUrl={{
+                          url: `http://${config.serverIp}:${config.port}`,
+                          useOnPlatform: 'all',
+                          headers: {Authorization: userToken},
+
+                        }}
                         query={{
                           key: "fill_your_key",
                           language: 'en',
