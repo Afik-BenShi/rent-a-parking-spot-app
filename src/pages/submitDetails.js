@@ -11,21 +11,22 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
-import ExpandableImage from '../components/ExpandableImage';
+import ExpandableImage from "../components/ExpandableImage";
 
 import { getUser } from '../auth/auth';
-import config from '../backend/config';
+import config from '../backend/config'
 import { RefreshContext } from '../context/context';
 import { uploadImage, convertToBytes } from '../utils/imageStorage';
 
-const defaultImage = require('../../assets/parking-details-images/placeholder.png');
+const defaultImage = require("../../assets/parking-details-images/placeholder.png");
+
 
 export default function SubmitDetails({ navigation, route }) {
   const { refresh, setRefresh } = useContext(RefreshContext);
   const { detailsList, user } = route.params;
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(user);
-  console.log('userId in submitDetails: ', userId);
+  console.log("userId in submitDetails: ", userId);
 
   const onGoBackPress = () => {
     navigation.goBack();
@@ -38,15 +39,16 @@ export default function SubmitDetails({ navigation, route }) {
     { key: '3', value: 'Home Improvement' },
   ];
 
-  const categoryName = data.find((item) => item.key === detailsList.category)
-    ? data.find((item) => item.key === detailsList.category).value
-    : '';
+  const categoryName = data.find((item) => item.key === detailsList.category) ?
+    data.find((item) => item.key === detailsList.category).value : "";
 
+  // --------------------------------------------------------
   // Function to handle the Finish button click
   const onClickFinish = async () => {
     console.log('Product details submitted: ', detailsList);
 
     // Send the details to the backend
+    // Send a POST request to your server
     let token;
     try {
       token = await getUser()?.getIdToken();
@@ -58,28 +60,48 @@ export default function SubmitDetails({ navigation, route }) {
     let imageUrl;
     try {
       const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
-      imageUrl = await uploadImage(storagePath, detailsList.imageUri);
+      // Assuming detailsList.imageUri contains the local path to the image
+      imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
       console.log('Firebase Storage Image URL:', imageUrl);
+  
+      //const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
 
       try {
         const imageBlob = await convertToBytes(imageUrl);
         console.log('Image blob created:', imageBlob);
 
+        // post product to the db:
         const urlFromFirebase = imageUrl;
         await postNewProduct(urlFromFirebase, detailsList);
-
-        setTimeout(() => setRefresh(true), 2);
+        
+        // Navigate to the My Products page
+        // Use CONTEXT - to remove the Non-seriazable warning
+        //setRefresh(true);
+        
+        //setTimeout(() => setRefresh(true), 2);
         setRefresh(true);
-        setTimeout(() => setRefresh(false), 3);
-        navigation.navigate('My Products cardList');
+        //setTimeout(() => setRefresh(false), 3);
+        //setLoading(false);
+        navigation.navigate("My Products cardList");
+
       } catch (err) {
         console.error('Error while converting image to blob:', JSON.stringify(err));
       }
+
+      // imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
+      //   method: 'POST',
+      //   headers: {
+      //     Authorization: token
+      //   },
+      //   body: formData
+      // });
+
     } catch (err) {
       console.error('Error while uploading an image:', JSON.stringify(err));
       return;
     }
   };
+  
 
   const postNewProduct = async (urlFromFirebase, detailsList) => {
     let token;
@@ -101,7 +123,7 @@ export default function SubmitDetails({ navigation, route }) {
       fromDate: new Date(detailsList.fromDate),
       untilDate: new Date(detailsList.untilDate),
       address: detailsList.address,
-      imageUrl: urlFromFirebase,
+      imageUrl: urlFromFirebase,   // url to firebase storage
     };
 
     console.log('newProduct', newProduct);
@@ -122,6 +144,8 @@ export default function SubmitDetails({ navigation, route }) {
         console.error('Error while posting new product:', JSON.stringify(error));
       });
   };
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -207,11 +231,11 @@ export default function SubmitDetails({ navigation, route }) {
         />
       </View>
 
-      {/* {loading && (
+      {loading && (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
-      )} */}
+      )}
     </View>
   );
 }
