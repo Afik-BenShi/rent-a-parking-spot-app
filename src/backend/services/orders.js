@@ -1,5 +1,5 @@
 const { Timestamp } = require('firebase-admin/firestore');
-const { getOrdersWithOptions, upsertDocument, getProductAvailabilityDb} = require("../utils/db");
+const { getOrdersWithOptions, upsertDocument, getProductAvailabilityDb, getDocumentRefById} = require("../utils/db");
 
 const getOrders = async (userId, options) => {
     const response = await getOrdersWithOptions(userId, options);
@@ -43,4 +43,45 @@ const getProductAvailability = async (id) => {
 
 };
 
-module.exports = {getOrders, addNewOrder, getProductAvailability};
+const deleteOrder = async (orderId, userId) => {
+    try{
+        const oldOrderRef = getDocumentRefById('orders', orderId);
+        const oldOrder = (await oldOrderRef.get()).data();
+        if (!oldOrder){
+            return {status:404, response: "order does not exist"}
+        }
+        if (oldOrder.ownerId !== userId){
+            return {status: 403, response: 'you are not the owner of this product'};
+        }
+        const response = await oldOrderRef.delete();
+        return {status: 200, response};
+
+    } catch (error) {
+        console.log('[deleteOrder]', error);
+        return {status:500, response: "Server error"}
+    }
+}
+const updateOrder = async (orderId, rsv, userId) => {
+    try{
+        const oldOrderRef = getDocumentRefById('orders', orderId);
+        const oldOrder = (await oldOrderRef.get()).data();
+        if (!oldOrder){
+            return {status:404, response: "order does not exist"}
+        }
+        if (oldOrder.ownerId !== userId){
+            return {status: 403, response: 'you are not the owner of this product'};
+        }
+        const newRsv = Object.assign(oldOrder, {
+                startDate: Timestamp.fromDate(new Date(rsv.startDate)),
+                endDate: Timestamp.fromDate(new Date(rsv.endDate)),
+        });
+        const response = await oldOrderRef.update(newRsv);
+        return {status:200, response};
+
+    } catch (error) {
+        console.log('[updateOrder]', error);
+        return {status:500, response: "Server error"}
+    }
+}
+
+module.exports = {getOrders, addNewOrder, getProductAvailability, updateOrder, deleteOrder};

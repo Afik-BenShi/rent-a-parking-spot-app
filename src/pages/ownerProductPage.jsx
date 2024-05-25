@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { TouchableOpacity, ScrollView, StyleSheet, View } from "react-native";
-import { Card, Text } from "@rneui/themed";
+import { TouchableOpacity, ScrollView, StyleSheet, View, Pressable } from "react-native";
+import { Button, Card, Text } from "@rneui/themed";
 
 import config from "../backend/config";
 
@@ -16,16 +16,18 @@ import { timeStampToDate } from "../utils/dateTime";
 import { getAuth } from "firebase/auth";
 
 import { RefreshContext } from '../context/context';
+import { Icon } from "react-native-elements";
+import useDialog from "../customStates/useDialog";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
+import { getUser } from "../auth/auth";
+import { styles as moreStyles } from "./signUpAndLogin.styles";
 
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
 export default function OwnerProductPage({ route, navigation }) {
-    /** @type {ProductDetails} */
-    //const details = parseItem(route.params);
 
     const { updatedItem, setUpdatedItem } = useContext(RefreshContext);
-
 
     const [details, setDetails] = useState(parseItem(route.params));  // Parsing 
     const [editMode, setEditMode] = useState(false);
@@ -35,9 +37,10 @@ export default function OwnerProductPage({ route, navigation }) {
     // save the title and description in edit mode
     const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
-    console.log(details);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isDelLoad, setDelLoad] = useState(false);
 
-
+    const { openDialog, closeDialog, DialogComponent } = useDialog();
 
     const editClickHandler = () => {
         if (editMode) {
@@ -70,8 +73,9 @@ export default function OwnerProductPage({ route, navigation }) {
     const updateReservations = () => {
         getAuth().currentUser?.getIdToken().then(token => 
         axios
-            .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`, {headers:{Authorization:token}})
-            .then(({ data }) => {
+            .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`, 
+                {headers:{Authorization:token}}
+            ).then(({ data }) => {
                 const rsvTemplate = { next: [], past: [] };
                 const newRsvs = data.reduce(responseParser, rsvTemplate);
                 setRsvs(newRsvs);
@@ -86,14 +90,34 @@ export default function OwnerProductPage({ route, navigation }) {
 
     const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
  
-   
-
+    const handleDeleteProduct = async () => {
+        setDelLoad(true);
+        const dialogPromise = openDialog();
+        const action = await dialogPromise;
+        if (action !== "delete") {
+            setDelLoad(false);
+            return;
+        }
+        const user = getUser();
+        const token = user?.getIdToken();
+        try {
+            const response = await axios.delete(SERVER + '/myProducts/' + details.id, {
+                headers:{Authorization:await token}
+            });
+            if (response.status === 200){
+                navigation.navigate('My Products cardList');
+            } else {
+                setErrorMessage(response.data);
+            }
+        } catch (error) {
+            setErrorMessage("There was a problem deleting this product please try again");
+        }
+        setDelLoad(false);
+    }
 
     const updateProductDetails = () => {
-        console.log("Updating product details");
         
         if (description === details.description && title === details.title) {
-            console.log("No changes to update");
             return;
         }
         getAuth().currentUser?.getIdToken().then(token => 
@@ -103,7 +127,6 @@ export default function OwnerProductPage({ route, navigation }) {
                     description
                 }, { headers: { Authorization: token } })
                 .then(() => {
-                    console.log("Product details updated");
                     setDetails((prevDetails) => ({
                         ...prevDetails,
                         ['title']: title.trim(), 
@@ -119,7 +142,6 @@ export default function OwnerProductPage({ route, navigation }) {
 
     // In order to updates myProducts page
     useEffect(() => {
-        console.log("hi from useEffect[details] in ownerProductPage");
         // details.description is already updated after the edit
         setUpdatedItem({ id: details.id, title:details.title, description: details.description });
     }, [details]);
@@ -133,18 +155,15 @@ export default function OwnerProductPage({ route, navigation }) {
     
 
     const handleTitleChange = (value) => {
-        console.log("newText title from parent: ", value);
         const newText = value.trim()
         setTitle(newText);
     };
 
     const handleDescriptionChange = (value) => {
-        console.log("newText descr from parent: ", value);
         const newText = value.trim()
         setDescription(newText);
     };
     
-
 
     return (
         <View style={styles.pageContainer}>
@@ -180,11 +199,26 @@ export default function OwnerProductPage({ route, navigation }) {
                     editMode={editMode}
                     reservations={rsvs.next}
                     heading="Next reservations"
+                    onRemoveItem={updateReservations}
                 />
                 <ReservationTable
                     editMode={false}
                     reservations={rsvs.past}
                     heading="Previous reservations"
+                />
+                {editMode && <Button
+                    buttonStyle={styles.deleteButton}
+                    onPress={handleDeleteProduct}
+                    loading={isDelLoad}
+                    disabled={isDelLoad}
+                    disabledStyle={styles.deleteButton}
+                >
+                    Delete Product <Icon type="feather" name="trash" color="#FFF" size={16}/>
+                    </Button>}
+                {errorMessage && (<Text style={moreStyles.failText}>{errorMessage}</Text>)}
+                <ConfirmationDialog 
+                    dialogState={{ openDialog, closeDialog, DialogComponent }}
+                    title="Are you sure you want to delete this product?"
                 />
             </ScrollView>
         </View>
@@ -208,6 +242,12 @@ const styles = StyleSheet.create({
         marginBottom: 7,
         fontSize: 16,
     },
+    deleteButton: {
+        width:150,
+        alignSelf:"center",
+        borderRadius:6,
+        backgroundColor: COLORS.red,
+    }
 });
 
 // TODO use consistent data instead of parsing
@@ -234,7 +274,7 @@ export function parseItem({ details: item }) {
         OwnerInfo,
         
     } = item;
-    console.log("item",item)
+    console.log('parse',{item});
     return Object.assign(mock, {
         id: id ? id : productId,
         title,
@@ -309,108 +349,3 @@ const mock = {
     },
 };
 
-// /** @type {Record<string, ProductReservation[]>} */
-// const mockReservations = {
-//     next: [
-//         {
-//             id: "1",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2026-08-12T15:45:00Z"),
-//                 endDate: new Date("2026-09-05T12:00:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972522708541",
-//             },
-//         },
-//         {
-//             id: "2",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2027-11-08T08:30:00Z"),
-//                 endDate: new Date("2027-11-25T18:20:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//         {
-//             id: "3",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2025-03-25T10:15:00Z"),
-//                 endDate: new Date("2025-04-10T20:30:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//     ],
-//     prev: [
-//         {
-//             id: "4",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2022-05-10T08:00:00Z"),
-//                 endDate: new Date("2022-06-01T16:20:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//         {
-//             id: "5",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2023-08-15T12:30:00Z"),
-//                 endDate: new Date("2023-09-02T18:45:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//         {
-//             id: "6",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2021-11-20T14:45:00Z"),
-//                 endDate: new Date("2021-12-05T22:10:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//         {
-//             id: "7",
-//             title: "Little Black Dress",
-//             scheduling: {
-//                 startDate: new Date("2023-9-06T14:45:00Z"),
-//                 endDate: new Date("2023-9-06T22:12:00Z"),
-//             },
-//             productId: "1",
-//             reservingUser: {
-//                 id: "1",
-//                 name: "Sasha Baron Cohen",
-//                 phoneNumber: "972555555555",
-//             },
-//         },
-//     ],
-// };

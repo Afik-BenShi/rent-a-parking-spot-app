@@ -18,6 +18,7 @@ const DateTimePickerExample = ({
     onDateChange,
     initialDate = new Date(),
     valueToDisplay = null,
+    disabled = false,
 }) => {
     if (Platform.OS === "ios") {
         return (
@@ -26,12 +27,12 @@ const DateTimePickerExample = ({
     } else {
         return (
             <AndroidDateTimePicker
-                {...{ minDate, onDateChange, initialDate, valueToDisplay }}
+                {...{ minDate, onDateChange, initialDate, valueToDisplay, disabled}}
             />
         );
     }
 };
-const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisplay }) => {
+const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisplay, disabled = false }) => {
     const [date, setDate] = useState(initialDate);
 
     const onChange = (event, selectedDate) => {
@@ -73,14 +74,14 @@ const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisp
                             {formattedDate}
                         </Text>
                     </View>
-                    <View style={styles.pickerAction}>
+                    {!disabled &&<View style={styles.pickerAction}>
                         <Text style={styles.pickerActionText}>Change</Text>
                         <FeatherIcon
                             color="#4C6CFD"
                             name="chevron-down"
                             size={18}
                         />
-                    </View>
+                    </View>}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

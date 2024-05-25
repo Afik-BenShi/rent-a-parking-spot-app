@@ -1,7 +1,7 @@
 
 const dayjs = require("dayjs");
 
-const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb, updateProductInfoDb } = require("../utils/db")
+const { runQuery, getById, getMyProductsDb, getProductsDb, addMyProductDb, updateProductInfoDb, getDocumentRefById } = require("../utils/db")
 const {
     getFirestore,
     Timestamp,
@@ -81,5 +81,22 @@ const updateProductInfo = async (productId, newProductData) => {
     const result = await updateProductInfoDb(productId, newProductData);
     return result;
 }
+const deleteProduct = async (productId, userId) => {
+    try{
+        const oldProductRef = getDocumentRefById('products', productId);
+        const oldProduct = (await oldProductRef.get()).data();
+        if (!oldProduct){
+            return {status:404, response: "product does not exist"}
+        }
+        if (oldProduct.ownerId !== userId){
+            return {status: 403, response: 'you are not the owner of this product'};
+        }
+        const response = await oldProductRef.delete();
+        return {status: 200, response};
 
-module.exports = { getProducts, getMyProducts, getProducts, addMyProduct, updateProductInfo }
+    } catch (error) {
+        console.log('[deleteProduct]', error);
+        return {status:500, response: "Server error"}
+    }
+}
+module.exports = { getProducts, getMyProducts, addMyProduct, updateProductInfo, deleteProduct}

@@ -9,6 +9,7 @@ import ReservationBox from "./reservationBox";
  * reservations: ProductReservation[],
  * heading:string,
  * initialExpanded?:boolean,
+ * onRemoveItem?: (toDel: ProductReservation, index:number) => any,
  * }} props
  */
 export default function ReservationTable({
@@ -16,9 +17,9 @@ export default function ReservationTable({
     reservations,
     heading,
     initialExpanded = false,
+    onRemoveItem = () => {}
 }) {
     const [isExpanded, toggleExpand] = useState(initialExpanded);
-
     return (
         <>
             <TouchableOpacity
@@ -32,29 +33,19 @@ export default function ReservationTable({
                 />
             </TouchableOpacity>
             <Card.Divider />
-            {isExpanded ? (
+            {isExpanded && (
                 <>
-                    {reservations.map((rsv) => (
+                    {reservations.map((rsv, index) => (
                         <ReservationBox
                             editMode={editMode}
-                            onChange={(newRsv) => {
-                                alert(
-                                    "changed \n" + JSON.stringify(newRsv, null, 2)
-                                );
-                            }}
-                            onDelete={(delRsv) => {
-                                alert(
-                                    "deleted \n" + JSON.stringify(delRsv, null, 2)
-                                );
-                            }}
+                            onDelete={onRemoveItem}
+                            index={index}
                             key={rsv.id}
                             reservation={rsv}
                         />
                     ))}
                     <Card.Divider />
                 </>
-            ) : (
-                <></>
             )}
         </>
     );

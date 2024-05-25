@@ -173,6 +173,12 @@ app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
   }
 });
 
+app.delete('/myProducts/:productId', async (req, res) => {
+  const { productId } = req.params;
+  const { token } = req.body;
+  const { status, response } = await products.deleteProduct(productId, token.user_id);
+  res.status(status).send(response);
+})
 
 app.get('/users/suggestion', async (req, res) => {
   const query = req.query;
@@ -218,6 +224,19 @@ app.get('/orders/renter/:userId', async (req, res) => {
 
 app.post('/orders/add', async (req, res) => {
   const { status, response } = await orders.addNewOrder(req.body);
+  res.status(status).send(response);
+});
+
+app.put('/orders/update/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  const { token, ...rsv } = req.body;
+  const { status, response } = await orders.updateOrder(orderId, rsv, token.user_id);
+  res.status(status).send(response);
+});
+app.delete('/orders/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  const { token } = req.body;
+  const { status, response } = await orders.deleteOrder(orderId, token.user_id);
   res.status(status).send(response);
 });
 

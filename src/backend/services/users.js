@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { upsertDocument, getUserSuggestionsCached, getDocumentById } = require("../utils/db");
+const { upsertDocument, getUserSuggestionsCached, getDocumentRefById } = require("../utils/db");
 
 const upsertPersonalDetails = async (data) => {
     const relevantData = _.pick(data, ['fullName', 'phoneNumber', 'address_lat', "address_lng", "address", 'imageUrl']);
@@ -25,7 +25,7 @@ const getUserExists = async (userId) => {
     if (!userId) {
         return { status: 400, response: "no user id provided" };
     }
-    const user = await getDocumentById('users', userId)
+    const user = await getDocumentRefById('users', userId).get();
     return { status: 200, response: user.exists };
 }
 

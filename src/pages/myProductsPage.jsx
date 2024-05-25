@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import {
     StyleSheet,
@@ -7,13 +7,13 @@ import {
     View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { NavigationContainer } from '@react-navigation/native';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import config from '../backend/config';
 import { getUser } from '../auth/auth';
 import NoProductsYet from './noProductsYetPage';
 import { RefreshContext } from '../context/context';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export function MyProductsPage({ navigation, route }) {
@@ -47,10 +47,10 @@ export function MyProductsPage({ navigation, route }) {
         }
     };
 
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
         fetchProducts();
         setRefresh(false);
-    }, [refresh]);
+    }, [refresh]));
 
     useEffect(() => {
         console.log("get the update of editable text in my products page");
