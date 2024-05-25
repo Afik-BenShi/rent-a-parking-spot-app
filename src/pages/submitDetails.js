@@ -1,16 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   StyleSheet,
   View,
   SafeAreaView,
   ScrollView,
   Text,
-  TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { COLORS } from '../../assets/theme';
 import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
@@ -103,7 +101,7 @@ const onClickFinish = async ({ navigation, detailsList, userId, refresh, setRefr
 export default function SubmitDetails({ navigation, route }) {
   const { refresh, setRefresh } = useContext(RefreshContext);
   const { detailsList, user } = route.params;
-
+  const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(user);
   console.log("userId in submitDetails: ", userId);
 
@@ -121,104 +119,174 @@ export default function SubmitDetails({ navigation, route }) {
   const categoryName = data.find((item) => item.key === detailsList.category) ?
     data.find((item) => item.key === detailsList.category).value : "";
 
+  // --------------------------------------------------------
+  // Function to handle the Finish button click
+  const onClickFinish = async () => {
+    console.log('Product details submitted: ', detailsList);
+
+    // Send the details to the backend
+    // Send a POST request to your server
+    let token;
+    try {
+      token = await getUser()?.getIdToken();
+    } catch (error) {
+      console.error('Error getting user token:', error);
+      return;
+    }
+
+    let imageUrl;
+    try {
+      const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+      // Assuming detailsList.imageUri contains the local path to the image
+      imageUrl = await uploadImage(storagePath, detailsList.imageUri);
+      console.log('Firebase Storage Image URL:', imageUrl);
+
+      //const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+
+      try {
+        const imageBlob = await convertToBytes(imageUrl);
+        console.log('Image blob created:', imageBlob);
+
+        // post product to the db:
+        const urlFromFirebase = imageUrl;
+        await postNewProduct(urlFromFirebase, detailsList);
+
+        // Navigate to the My Products page
+        // Use CONTEXT - to remove the Non-seriazable warning
+        //setRefresh(true);
+
+        //setTimeout(() => setRefresh(true), 2);
+        setRefresh(true);
+        //setTimeout(() => setRefresh(false), 3);
+        //setLoading(false);
+        navigation.navigate("My Products cardList");
+
+      } catch (err) {
+        console.error('Error while converting image to blob:', JSON.stringify(err));
+      }
+
+      // imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
+      //   method: 'POST',
+      //   headers: {
+      //     Authorization: token
+      //   },
+      //   body: formData
+      // });
+
+    } catch (err) {
+      console.error('Error while uploading an image:', JSON.stringify(err));
+      return;
+    }
+  };
+
+
+  const postNewProduct = async (urlFromFirebase, detailsList) => {
+    let token;
+    try {
+      token = await getUser()?.getIdToken();
+    } catch (error) {
+      console.error('Error getting user token:', error);
+      return;
+    }
+
+    console.log('url from firebase in post new product :', urlFromFirebase);
+
+    const newProduct = {
+      title: detailsList.productName,
+      pricePerDay: detailsList.price,
+      ownerId: userId,
+      description: detailsList.productDescription,
+      mainCategoryId: detailsList.category,
+      fromDate: new Date(detailsList.fromDate),
+      untilDate: new Date(detailsList.untilDate),
+      address: detailsList.address,
+      imageUrl: urlFromFirebase,   // url to firebase storage
+    };
+
+    console.log('newProduct', newProduct);
+
+    fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+      body: JSON.stringify(newProduct),
+    })
+      .then((response) => {
+        console.log('success to post new product');
+        console.log('Response from server:', response.ok);
+      })
+      .catch((error) => {
+        console.error('Error while posting new product:', JSON.stringify(error));
+      });
+  };
+
+
+
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <View style={styles.headerAction}>
-            </View>
+            <View style={styles.headerAction}></View>
             <Text style={styles.title}>Your product</Text>
-            <View
-              style={[styles.headerAction, { alignItems: 'flex-end' }]} />
+            <View style={[styles.headerAction, { alignItems: 'flex-end' }]} />
           </View>
 
-          <ScrollView
-            contentContainerStyle={styles.receipt}
-            showsVerticalScrollIndicator={false}>
-
+          <ScrollView contentContainerStyle={styles.receipt} showsVerticalScrollIndicator={false}>
             <View style={styles.receiptLogo}>
-              {<Icon color={COLORS.lightWhite} name="account-details" size={32} />}
+              <Icon color={COLORS.lightWhite} name="account-details" size={32} />
             </View>
 
-
-
-            {/*******/}
             <View style={styles.divider}>
-              <View style={styles.dividerInset} /></View>
+              <View style={styles.dividerInset} />
+            </View>
 
             <View style={styles.details}>
               <Text style={styles.detailsTitle}>Product details</Text>
 
-              {/*<View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Owner full name</Text>
-
-                                    <Text style={styles.detailsValue}>{detailsList.ownerName}</Text>
-                                </View>
-                                */}
-
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Product name</Text>
-
                 <Text style={styles.detailsValue}>{detailsList.productName}</Text>
               </View>
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Location</Text>
-
                 <Text style={styles.detailsValue}>{detailsList.city}</Text>
               </View>
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Category</Text>
-
-                <View>
-                  <Text style={styles.detailsValue}>{categoryName}</Text>
-                </View>
-
+                <Text style={styles.detailsValue}>{categoryName}</Text>
               </View>
-
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Daily Price</Text>
-
-                <Text style={styles.detailsValue}>{detailsList.price}
-                  <Icon name="currency-ils" size={14} color="#000" /> / day</Text>
+                <Text style={styles.detailsValue}>
+                  {detailsList.price}
+                  <Icon name="currency-ils" size={14} color="#000" /> / day
+                </Text>
               </View>
-
-              {/*
-                                <View style={styles.detailsRow}>
-                                    <Text style={styles.detailsField}>Phone Number</Text>
-
-                                    <Text style={styles.detailsValue}>{detailsList.phoneNumber}</Text>
-                                </View>
-                              */}
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailsField}>Days of availability</Text>
-
                 <Text style={styles.detailsValue}>
                   {detailsList.from} - {detailsList.until}
                 </Text>
               </View>
 
-              <View >
-                <Text style={styles.detailsField}>
-                  {'\n'}Description: </Text>
-
-                <Text style={styles.descriptionValue}>
-                  {'\n'}{detailsList.productDescription}
-                </Text>
+              <View>
+                <Text style={styles.detailsField}>{'\n'}Description: </Text>
+                <Text style={styles.descriptionValue}>{'\n'}{detailsList.productDescription}</Text>
               </View>
 
               <View>
                 <Text style={styles.detailsField}>Image</Text>
                 <ExpandableImage source={productImage} initialHeight={250} />
               </View>
-
             </View>
           </ScrollView>
-
         </View>
       </SafeAreaView>
 
@@ -233,14 +301,18 @@ export default function SubmitDetails({ navigation, route }) {
           nextText="Finish"
           backText="Back"
           navigation={navigation}
-          //onNextPress={()  => {navigation.navigate("My Products cardList")}}
-          onNextPress={() => onClickFinish({ navigation, detailsList, userId, refresh, setRefresh })}
-
+          onNextPress={() => {
+            onClickFinish();
+          }}
           paddingBottom={0}
         />
       </View>
 
-
+      {loading && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 }
@@ -274,7 +346,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
   },
-  /** Header */
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -299,7 +370,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
   },
-  /** Receipt */
   receipt: {
     alignItems: 'center',
     paddingTop: 16,
@@ -331,7 +401,6 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     flexDirection: 'row',
   },
-  /** Divider */
   divider: {
     overflow: 'hidden',
     width: '100%',
@@ -344,7 +413,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     marginTop: -2,
   },
-  /** Details */
   details: {
     width: '100%',
     flexDirection: 'column',
@@ -381,7 +449,6 @@ const styles = StyleSheet.create({
     flexBasis: 0,
     textAlign: 'right',
   },
-  /** Button */
   btn: {
     flexDirection: 'row',
     alignItems: 'center',

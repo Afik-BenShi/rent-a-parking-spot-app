@@ -101,7 +101,7 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
               OrderStartDate: order.startDate,
               OrderEndDate: order.endDate,
               OwnerInfo: order.enriched_ownerId,
-            }))}
+            }))}   // image url is already in 'order.enriched_productId'
             title=""
             onItemPressed={(details) => {
                 navigation.navigate('ExtendedProduct', {

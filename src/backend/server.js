@@ -10,6 +10,8 @@ const orders = require("./services/orders");
 
 const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
+const multer = require('multer'); // Multer for handling file uploads
+
 
 db.init();
 storage.init()
@@ -53,6 +55,9 @@ app.use(async (req, res, next) => {
   }
 });
 //---------------------------------------------------------
+// Multer setup for file uploads
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage });
 
 
 app.get('/products', async (req, res) => {
@@ -85,14 +90,9 @@ app.get('/myProducts', async (req, res) => {
 });
 
 app.post('/myProducts/add', async (req, res) => {
-  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, city, imageName } = req.body
-
-  const loweredCity = city.replace(/\b\w/g, function (char) { return char.toLowerCase(); });
-  const words = city.split(' ');
-  const capitalizedWords = words.map(word => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  });
-  const parsedCity = capitalizedWords.join(' ');
+  const { title, ownerId, description, mainCategoryId, fromDate, untilDate, pricePerDay, address, imageUrl, imageName } = req.body
+  console.log("From server");
+  console.log(imageUrl);
 
   const newProductData = {
     title,
@@ -102,8 +102,8 @@ app.post('/myProducts/add', async (req, res) => {
     startDate: Timestamp.fromDate(new Date(fromDate)),
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
-    city: parsedCity,
-    imageName
+    address,
+    urlToimage: imageUrl.toString(),
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -112,27 +112,52 @@ app.post('/myProducts/add', async (req, res) => {
   res.send(result);
 });
 
-app.post('/myProducts/img', async (req, res) => {
-  const { image, title, token } = req.body;
-  const imageName = `${token.user_Id}-${title}-${Date.now()}`
-  console.log(imageName)
+// ----------------previous implementation: -------------
+
+// app.post('/myProducts/img', async (req, res) => {
+  
+//   const { image, title, token } = req.body;
+//   const imageName = `${token.user_Id}-${title}-${Date.now()}`
+//   console.log(imageName)
+//   let uri;
+//   try {
+//     uri = await storage.uploadImage({
+//       name: imageName, imageFile: image
+//     });
+//   }
+//   catch (err) {
+//     console.log("error in myProducts/img", JSON.stringify(err));
+//     res.status(500).send({ error: err });
+//   }
+//   res.json({ data: { imageName, uri } });
+// });
+
+
+app.post('/myProducts/img', upload.single('image'), async (req, res) => {
+  const { title } = req.body;
+  const image = req.file;
+  const token = req.headers.authorization;
+  const imageName = `${token.user_Id}-${title}-${Date.now()}`;
+  console.log("image name from server fetch : ", imageName);
   let uri;
   try {
     uri = await storage.uploadImage({
-      name: imageName, imageFile: image
+      name: imageName,
+      imageFile: image.buffer
     });
   }
   catch (err) {
     console.log("error in myProducts/img", JSON.stringify(err));
-    res.status(500).send({error:err});
+    res.status(500).send({ error: err });
   }
-  res.json({ data: {imageName, uri} });
+  res.json({ data: { imageName, uri } });
 });
 
 app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
     const { title, description } = req.body;
+
     console.log("productId", productId);
     console.log("title", title);
     console.log("description", description);
@@ -159,6 +184,12 @@ app.get('/users/hasPrivateInfo', async (req, res) => {
   console.log(user_id);
   const { status, response } = await users.getUserExists(user_id);
   res.status(status).send(response);
+});
+
+app.get('/users/personalDetails', async (req, res) => {
+  const { userId } = req.query;
+  const userDetails = await db.getById({ collection: "users", id: userId })
+  res.json(userDetails.data)
 });
 
 app.get('/products/:id', (req, res) => { });
