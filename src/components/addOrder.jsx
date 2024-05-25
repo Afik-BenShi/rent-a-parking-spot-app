@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { NewReservationBox } from "./reservationBox";
-import InputWithSuggestions from "./inputWithSuggestions";
+import UserLookupByPhone from "./UserLookupByPhone";
 import config from "../backend/config";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Icon, Text } from "@rneui/themed";
@@ -11,7 +11,7 @@ const SERVER = `http://${config.serverIp}:${config.port}`;
 export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
     const now = new Date();
     const [isExpanded, toggleExpand] = useState(false);
-    const [user, setUser] = useState(false);
+    const [user, setUser] = useState('');
     const [reservation, setReservation] = useState({
         productId,
         ownerId: userId,
@@ -28,7 +28,6 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
 
     const userSuggestions = async (query) => {
         const token = getAuth().currentUser?.getIdToken()
-        console.log("suggestion");
         const values = await axios
         .get(SERVER + `/users/suggestion?q=${encodeURI(query)}`
             ,{ headers: { Authorization: await token } })
@@ -41,8 +40,8 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
         }));
     };
     const onUserChosen = ({value:_user}) => {
-        console.log(_user)
-        setUser(true);
+        console.log('choice', _user)
+        setUser(_user.id);
         setReservation((oldRsv) =>
             Object.assign(oldRsv, {
                 reservingUser: {
@@ -66,6 +65,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
         }
         const response = await axios.post(SERVER + '/orders/add', payload, { headers: { Authorization: await token } });
         if (response.status === 200){
+            setUser('');
             onSuccess(response.data);
             return true;
         }
@@ -87,9 +87,9 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
             <Card.Divider />
             {isExpanded && (
                 <>
-                    <InputWithSuggestions
+                    <UserLookupByPhone
                         onChooseSuggestion={onUserChosen}
-                        placeholder="Please insert renter's name"
+                        placeholder="Please insert renter's phone number"
                         suggestionsSupplier={userSuggestions}
                     />
                     {!!user && (
@@ -97,6 +97,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
                             editMode={true}
                             reservation={reservation}
                             onSubmit={onSubmitReservation}
+                            key={user}
                         />
                     )}
                 </>
