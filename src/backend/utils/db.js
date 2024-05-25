@@ -259,7 +259,6 @@ function getNextString(str) {
 
 const getUserSuggestions = async (q) => {
     const collectionRef = db.collection("users");
-
     const resByName = await collectionRef
         .orderBy('fullName')
         .startAt(q)

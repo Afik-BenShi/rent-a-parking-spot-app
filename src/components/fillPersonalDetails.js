@@ -17,6 +17,8 @@ import useValidatedText, {
     validateRequiredFields,
 } from "../customStates/useTextValidation";
 import { Icon } from "react-native-elements";
+import config from "../backend/config";
+import { getUser } from "../auth/auth";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
@@ -24,12 +26,12 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false);
     // const [showGoogleAutocomplete, setShowGoogleAutocomplete] = useState(true);
     const [imgSelected, setImgSelected] = useState(false);
-
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [startDateHasChanged, setStartDateHasChanged] = useState(false)
     const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
-
+    
     const [valid, setValid] = useState(false);
+    const [userToken, setToken] = useState('');
 
     const onStartDateChange = (selectedDate) => {
         // handle case that user selects start date after end date
@@ -101,6 +103,10 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         })();
     }, [imagePermissionsGranted]);
 
+    useEffect(()=> {(async () => {
+        setToken(await getUser().getIdToken());
+    })()})
+
 
     const clearImgSelection = () => {
         setImgSelected(false);
@@ -151,8 +157,14 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             }}
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
+                            requestUrl={{
+                                url: `http://${config.serverIp}:${config.port}`,
+                                useOnPlatform: 'all',
+                                headers: {Authorization: userToken},
+
+                            }}
                             query={{
-                                key: "fill_your_key",
+                                key:"",
                                 language: 'en',
                             }}
                             styles={{

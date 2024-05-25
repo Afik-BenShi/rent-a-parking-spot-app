@@ -7,6 +7,7 @@ const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
+const {mapsKey} = require('./.env/mapsKey.json');
 
 const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
@@ -17,7 +18,7 @@ db.init();
 storage.init()
 
 const app = express();
-app.use(express.json());
+app.use(express.json({limit:'50mb'}));
 
 //---------------------------------------------------------
 // Middleware to log incoming requests
@@ -239,6 +240,30 @@ app.get('/orders/productAvailability', async (req, res) => {
   const result = await orders.getProductAvailability(id);
   res.send(result);
 });
+
+app.get('/place/autocomplete/json', async (req, res)=> {
+  const {input, language} = req.query;
+  try {
+    const googleApi = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    const suggestions = await fetch(googleApi + `?input=${input}&key=${mapsKey}&language=${language}`)
+      .then(resp=> resp.json());
+    res.status(200).send(suggestions);
+  }catch(e){
+    res.status(500).send({e});
+  }
+})
+app.get('/place/details/json', async (req, res)=> {
+  const {key, ...query} = req.query;
+  const paramString = Object.entries(query).map(([key, val]) => `${key}=${val}`).join('&')
+  try {
+    const googleApi = "https://maps.googleapis.com/maps/api/place/details/json";
+    const suggestions = await fetch(googleApi + `?key=${mapsKey}&` + paramString)
+      .then(resp=> resp.json());
+    res.status(200).send(suggestions);
+  }catch(e){
+    res.status(500).send({e});
+  }
+})
 
 
 app.listen(port, () => {
