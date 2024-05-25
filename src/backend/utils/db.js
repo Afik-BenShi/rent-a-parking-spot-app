@@ -257,14 +257,10 @@ const enrichWithReferencedId = async (docs, refKey, refCollection) => {
 
 const getUserSuggestions = async (q) => {
     const collectionRef = db.collection("users");
-    const byName = collectionRef.where("fullName", "==", q);
     const byPhoneNum = collectionRef.where("phoneNumber", "==", q);
-    const promises = [byName, byPhoneNum].map(async (query) => {
-        const { docs } = await query.get();
-        return docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    });
-    const users = await Promise.all(promises);
-    return users.flat();
+    const { docs } = await byPhoneNum.get();
+    const users = docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    return users;
 };
 
 const getUserSuggestionsCached = createCache(getUserSuggestions, 300);
