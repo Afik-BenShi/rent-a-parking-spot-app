@@ -103,7 +103,7 @@ app.post('/myProducts/add', async (req, res) => {
     endDate: Timestamp.fromDate(new Date(untilDate)),
     pricePerDay,
     address,
-    urlToimage: imageUrl,
+    urlToimage: imageUrl.toString(),
   }
 
   console.log("newProductData after timestamp", newProductData);
@@ -156,11 +156,13 @@ app.post('/myProducts/img', upload.single('image'), async (req, res) => {
 app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
-    const { description } = req.body;
+    const { title, description } = req.body;
+
     console.log("productId", productId);
+    console.log("title", title);
     console.log("description", description);
 
-    const newProductData = { description };
+    const newProductData = { title, description };
 
     const result = await products.updateProductInfo(productId, newProductData);
     res.send(result);

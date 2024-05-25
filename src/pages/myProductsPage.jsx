@@ -57,14 +57,16 @@ export function MyProductsPage({ navigation, route }) {
         console.log("updatedItem: ", updatedItem);
         // get the updated description from the context  (cant edit title - issue with img name)
         const idUpdated = updatedItem.id;
+        const newTitle = updatedItem.title;
         const newDescription = updatedItem.description;
         // find the item from myItems that has the same id as the updated item and update it
         const selectedItem = myItems.find(item => item.id === idUpdated);
         if (selectedItem) {
+            selectedItem.title = newTitle;
             selectedItem.description = newDescription;
         }
         // update the state with the updated selected item
-        const newItems = myItems.map(item => item.id === idUpdated ? { ...item, description: newDescription } : item);
+        const newItems = myItems.map(item => item.id === idUpdated ? { ...item, title:newTitle, description: newDescription } : item);
         // update the state with the new array
         setMyItems(newItems);
     }, [updatedItem]);

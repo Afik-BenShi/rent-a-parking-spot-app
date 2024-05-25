@@ -33,6 +33,7 @@ export default function OwnerProductPage({ route, navigation }) {
     const [userId, setUserId] = useState(route.params.userId);
 
     // save the title and description in edit mode
+    const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
     console.log(details);
 
@@ -91,19 +92,21 @@ export default function OwnerProductPage({ route, navigation }) {
     const updateProductDetails = () => {
         console.log("Updating product details");
         
-        if (description === details.description) {
+        if (description === details.description && title === details.title) {
             console.log("No changes to update");
             return;
         }
         getAuth().currentUser?.getIdToken().then(token => 
             axios
                 .put(SERVER + `/myProducts/updateProductInfo/${details.id}`, {
+                    title,
                     description
                 }, { headers: { Authorization: token } })
                 .then(() => {
                     console.log("Product details updated");
                     setDetails((prevDetails) => ({
                         ...prevDetails,
+                        ['title']: title.trim(), 
                         ['description']: description.trim(),
                     }));
 
@@ -118,23 +121,22 @@ export default function OwnerProductPage({ route, navigation }) {
     useEffect(() => {
         console.log("hi from useEffect[details] in ownerProductPage");
         // details.description is already updated after the edit
-        setUpdatedItem({ id: details.id, description: details.description });
+        setUpdatedItem({ id: details.id, title:details.title, description: details.description });
     }, [details]);
 
     // This tells React to call our effect when `title`, `description`, or `editMode` changes
     useEffect(() => {
-        if (!editMode) {
+        if (!editMode && (title !== details.title || description !== details.description)) {
             updateProductDetails();
         }
-    }, [description, editMode]); 
+    }, [title, description, editMode]); 
     
 
-    // Function to handle input change and update details state
-    // const handleTitleChange = (value) => {
-    //     console.log("newText title from parent: ", value);
-    //     const newText = value.trim()
-    //     setTitle(newText);
-    // };
+    const handleTitleChange = (value) => {
+        console.log("newText title from parent: ", value);
+        const newText = value.trim()
+        setTitle(newText);
+    };
 
     const handleDescriptionChange = (value) => {
         console.log("newText descr from parent: ", value);
@@ -147,7 +149,7 @@ export default function OwnerProductPage({ route, navigation }) {
     return (
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
-                {/* <EditableText
+                 <EditableText
                     h3
                     editMode={editMode}
                     textStyle={styles.text}
@@ -155,10 +157,10 @@ export default function OwnerProductPage({ route, navigation }) {
                     sendDataToParent={handleTitleChange}
                 >
                     {details.title}
-                </EditableText> */}
-                <Text h3 style={styles.text}>
+                </EditableText> 
+                {/* <Text h3 style={styles.text}>
                     {details.title}
-                </Text>
+                </Text> */}
                 <Card.Divider />
                 <EditableText
                     textStyle={styles.description}
