@@ -46,11 +46,11 @@ const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisp
     const showDatepicker = () => {
         DateTimePickerAndroid.open({
             testID: "dateTimePicker",
-            value: valueToDisplay?? date,
+            value: valueToDisplay ?? date,
             mode: "date",
             minimumDate: minDate,
             onChange,
-            
+
         });
     };
 
@@ -88,7 +88,7 @@ const AndroidDateTimePicker = ({ minDate, onDateChange, initialDate, valueToDisp
     );
 };
 
-function IosDateTimePicker({ minDate, onDateChange, initialDate, valueToDisplay }) {
+function IosDateTimePicker({ minDate, onDateChange, initialDate, valueToDisplay, validDates }) {
     const [date, setDate] = useState(initialDate);
 
     const onChange = (event, selectedDate) => {
@@ -105,10 +105,11 @@ function IosDateTimePicker({ minDate, onDateChange, initialDate, valueToDisplay 
             <DateTimePicker
                 testID="dateTimePicker"
                 display="calendar"
-                value={valueToDisplay?? date}
+                value={valueToDisplay ?? date}
                 mode="date"
                 minimumDate={minDate}
                 onChange={onChange}
+                {...(validDates && { includeDates: validDates })}
             />
         </SafeAreaView>
     );

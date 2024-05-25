@@ -20,7 +20,6 @@ import { uploadImage, convertToBytes } from '../utils/imageStorage';
 
 const defaultImage = require("../../assets/parking-details-images/placeholder.png");
 
-
 export default function SubmitDetails({ navigation, route }) {
   const { refresh, setRefresh } = useContext(RefreshContext);
   const { detailsList, user } = route.params;
@@ -61,9 +60,9 @@ export default function SubmitDetails({ navigation, route }) {
     try {
       const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
       // Assuming detailsList.imageUri contains the local path to the image
-      imageUrl = await uploadImage(storagePath, detailsList.imageUri); 
+      imageUrl = await uploadImage(storagePath, detailsList.imageUri);
       console.log('Firebase Storage Image URL:', imageUrl);
-  
+
       //const path = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
 
       try {
@@ -73,11 +72,11 @@ export default function SubmitDetails({ navigation, route }) {
         // post product to the db:
         const urlFromFirebase = imageUrl;
         await postNewProduct(urlFromFirebase, detailsList);
-        
+
         // Navigate to the My Products page
         // Use CONTEXT - to remove the Non-seriazable warning
         //setRefresh(true);
-        
+
         //setTimeout(() => setRefresh(true), 2);
         setRefresh(true);
         //setTimeout(() => setRefresh(false), 3);
@@ -101,7 +100,7 @@ export default function SubmitDetails({ navigation, route }) {
       return;
     }
   };
-  
+
 
   const postNewProduct = async (urlFromFirebase, detailsList) => {
     let token;
