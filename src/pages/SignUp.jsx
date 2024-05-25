@@ -158,7 +158,11 @@ export function SignUpDetails({ navigation }) {
     const [isLoading, setIsLoading] = useState(false);
     const [signUpError, setSignUpError] = useState("");
     const [addressKey, setAddressKey] = useState(0);
-
+    const [userToken, setToken] = useState('');
+    useEffect(()=> {(async () => {
+        setToken(await getUser().getIdToken());
+    })()});
+    
     const clearForm = () => {
         fullName.setText("");
         phoneNumber.setText("");
@@ -260,8 +264,14 @@ export function SignUpDetails({ navigation }) {
                         }}
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
+                        requestUrl={{
+                            url: `http://${config.serverIp}:${config.port}`,
+                            useOnPlatform: 'all',
+                            headers: {Authorization: userToken},
+
+                        }}
                         query={{
-                            key: "fill_your_key",
+                            key: "",
                             language: 'en',
                         }}
                         styles={{

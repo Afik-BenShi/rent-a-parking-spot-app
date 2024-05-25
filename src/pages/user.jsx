@@ -16,7 +16,6 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import AnotherIcon from 'react-native-vector-icons/FontAwesome5';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import Geocoder from 'react-native-geocoding';
 
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
@@ -25,7 +24,6 @@ import config from '../backend/config'
 import { signOutUser, getUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';
 
-Geocoder.init("fill_your_key");
 
 export default function Profile({ navigation, route }) {
   const [userId, setUserId] = useState(route.params.userId);
@@ -34,6 +32,10 @@ export default function Profile({ navigation, route }) {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [lastProfileData, setLastProfileData] = useState(null);
   const [isSignOutLoading, setSignOutLoading] = useState(false);
+  const [userToken, setToken] = useState('');
+  useEffect(()=> {(async () => {
+    setToken(await getUser().getIdToken());
+  })()});
 
   const handleDataChange = (field, value) => {
     setProfileData((prevDetails) => ({
@@ -43,32 +45,37 @@ export default function Profile({ navigation, route }) {
     console.log("profileDetails: ", profileData);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getUser()?.getIdToken();
-        const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
-          headers: { Authorization: token },
-          params: { userId }
-        });
-        const details = response.data;
-        if (details.address_lat && details.address_lng) {
-          const geocodeResult = await Geocoder.from(details.address_lat, details.address_lng);
-          const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
-          console.log('formattedAddress', formattedAddress)
+  const fetchData = async () => {
+    try {
+      const token = await getUser()?.getIdToken();
+      const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
+        headers: { Authorization: token },
+        params: { userId }
+      });
+      const details = response.data;
+      if (details.address.lat && details.address.lng) {
+        const geocodeResult = await axios.get(`http://${config.serverIp}:${config.port}/location/geocode`, {
+          headers:{
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          params:{latlng : `${details.address.lat},${details.address.lng}`},
+        }).then(({data}) => data);
+        const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
+        console.log('formattedAddress', formattedAddress)
 
-          setAddress(formattedAddress);
-        }
-
-        console.log('user details', details);
-        setProfileData(details);
-        console.log('profile data after set', profileData)
-        setLastProfileData(details);
-      } catch (error) {
-        console.error('Error fetching user details:', error);
+        setAddress(formattedAddress);
       }
-    };
 
+      console.log('user details', details);
+      setProfileData(details);
+      console.log('profile data after set', profileData)
+      setLastProfileData(details);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, [userId]);
 
@@ -101,6 +108,7 @@ export default function Profile({ navigation, route }) {
       headers: { Authorization: token },
     })
     setShowEditProfile(false);
+    fetchData();
   };
 
   const handleCancel = () => {
@@ -226,11 +234,16 @@ export default function Profile({ navigation, route }) {
                         returnKeyType={'default'}
                         onPress={(data, details = null) => {
                           console.log('GooglePlacesAutocomplete address:', details.geometry.location)
-                          handleDataChange("address_lat", details.geometry.location.lat)
-                          handleDataChange("address_lng", details.geometry.location.lng)
+                          handleDataChange("address", details.geometry.location)
                         }}
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
+                        requestUrl={{
+                          url: `http://${config.serverIp}:${config.port}`,
+                          useOnPlatform: 'all',
+                          headers: {Authorization: userToken},
+
+                        }}
                         query={{
                           key: "fill_your_key",
                           language: 'en',
