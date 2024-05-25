@@ -152,7 +152,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
                             query={{
-                                key: "fill_your_key",
+                                key: "AIzaSyBLQACLuFBRwMMP19Y0dhAjs9cMfYFFyx4",
                                 language: 'en',
                             }}
                             styles={{
@@ -242,9 +242,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                                 </TouchableOpacity>
                             </View>
                         }
-
                     </View>
-
                 </View>
 
             </ScrollView>
