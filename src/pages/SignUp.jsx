@@ -261,7 +261,7 @@ export function SignUpDetails({ navigation }) {
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
                         query={{
-                            key: "fill_this_key",
+                            key: "fill_your_key",
                             language: 'en',
                         }}
                         styles={{

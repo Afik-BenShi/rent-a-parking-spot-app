@@ -136,38 +136,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         />
                     </View>
 
-
-                    {/* <GooglePlacesAutocomplete
-                        disableScroll={true}
-                        placeholder="Enter your location"
-                        minLength={3} // minimum length of text to search
-                        fetchDetails={true}
-                        returnKeyType={'default'}
-                        // currentLocation={true}
-                        onPress={(data, details = null) => {
-                            console.log('GooglePlacesAutocomplete address:', details.geometry.location)
-                            sendDataToParent("address", details.geometry.location)
-                        }}
-                        onFail={error => console.log(error)}
-                        onNotFound={() => console.log('no results')}
-                        // listEmptyComponent={() => (
-                        //     <View style={{ flex: 1 }}>
-                        //         <Text>No results were found</Text>
-                        //     </View>
-                        // )}
-                        query={{
-                            key: "fill_your_key",
-                            language: 'en', // language of the results
-                        }}
-                        styles={{
-                            textInputContainer: styles.googleInputContainer,
-                            textInput: styles.googleTextInput,
-                            predefinedPlacesDescription: {
-                                color: '#1faadb'
-                            },
-                        }}
-                    />  */}
-
                     <View style={{ flex: 1, padding: 20 }}>
                         <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
 
@@ -184,7 +152,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
                             query={{
-                                key: "fill_this_key",
+                                key: "AIzaSyAn_Yb93_Ea5YkSYFWWIHyEueOukc_Ynao",
                                 language: 'en',
                             }}
                             styles={{

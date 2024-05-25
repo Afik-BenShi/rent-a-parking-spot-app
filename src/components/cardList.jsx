@@ -39,8 +39,8 @@ export default function CardList({ items, title, onItemPressed = (_) => { }}) {
 
           {items.map(
             (item, index) => {
-              const { id, title, pricePerDay, startDate, endDate, description, ownerId, city, distanceFromMe, imageUrl } = item;
-              const image = imageUrl? { uri: imageUrl } : placeholderImage;
+              const { id, title, pricePerDay, startDate, endDate, description, ownerId, city, distanceFromMe, urlToimage } = item;
+              const image = urlToimage? { uri: urlToimage } : placeholderImage;
               return (
 
                 <View key={index} style={styles.cardContainer}>

@@ -68,15 +68,7 @@ export default function AddProductPage({ navigation, route }) {
 
   // Function to handle input change and update details state
   const handleInputChange = (field, value) => {
-    let parsedValue;
-
-    if (field !== "ImageUri"){
-      parsedValue = field === "price" ? parseInt(value) : value.trim();
-    }
-    else {
-      parsedValue = value;
-    }
-    
+    let parsedValue;    
 
     switch (field) {
       case 'price': {

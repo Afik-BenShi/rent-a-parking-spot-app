@@ -13,6 +13,7 @@ export const RefreshContextProvider = ({ children }) => {
   //const [updatedDescription, setUpdatedDescription] = useState("");
   const [updatedItem, setUpdatedItem] = useState({
     id: "",
+    title: "",
     description: "",
   });
 
