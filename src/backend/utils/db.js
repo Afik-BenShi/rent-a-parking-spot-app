@@ -44,28 +44,6 @@ const getMyProductsDb = async (userId) => {
     }
 };
 
-async function findEmptySlotsForProducts({ productIds, startDate, endDate }) {
-    let productsWithEmptySlots = [];
-
-    for (const productId of productIds) {
-        const slotsRef = collection(db, "products", productId, "slots");
-        const q = query(
-            slotsRef,
-            where("date", ">=", startDate),
-            where("date", "<=", endDate),
-            where("isEmpty", "==", true)
-        );
-
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-            // This product has at least one empty slot in the date range
-            productsWithEmptySlots.push(productId);
-        }
-    }
-    return productsWithEmptySlots;
-}
-
-
 const getProductsDb = async (filters) => {
     let docs;
     try {
@@ -156,24 +134,7 @@ const updateProductInfoDb = async (productId, newProductData) => {
     }
 };
 
-
 const addMyProductDb = async (newProductData) => {
-    async function addSlot(parentDocId, date, userId) {
-        const slotDocRef = doc(
-            db,
-            "parentCollection",
-            parentDocId,
-            "slots",
-            userId
-        );
-
-        await setDoc(slotDocRef, {
-            date: date,
-            userId: userId,
-            isEmpty: true,
-        });
-    }
-
     try {
         const docRef = db.collection("products").doc();
 
@@ -251,7 +212,6 @@ const enrichWithReferencedId = async (docs, refKey, refCollection) => {
     });
     return await Promise.all(enrichPromises);
 };
-
 
 function getNextString(str) {
     return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + 1);

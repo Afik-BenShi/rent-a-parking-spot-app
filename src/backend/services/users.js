@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { upsertDocument, getUserSuggestionsCached, getDocumentRefById } = require("../utils/db");
 
 const upsertPersonalDetails = async (data) => {
-    const relevantData = _.pick(data, ['fullName', 'phoneNumber', 'address_lat', "address_lng", "address", 'imageUrl']);
+    const relevantData = _.pick(data, ['fullName', 'phoneNumber', "address", 'imageUrl']);
     const collection = 'users'
     const resultId = await upsertDocument({ collection, data: relevantData, docId: data.token.user_id });
     return resultId;
