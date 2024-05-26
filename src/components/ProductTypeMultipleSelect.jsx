@@ -28,7 +28,7 @@ const ProductTypeMultipleSelect = ({ selectedCategory, onSelectProductType, titl
       'Beauty & Health': ['Skincare', 'Makeup', 'Haircare', 'Fitness Equipment'],
       'Garden & Outdoor': ['Outdoor Furniture', 'Gardening Tools', 'Grill', 'Hammock'],
       'Electronics': ['TV', 'Game Console', 'Smart Home Devices', 'Sound System'],
-      'Family & Kids': ['Toys', 'Strollers', 'Baby Gear', 'Children's Clothing'],
+      'Family & Kids': ['Toys', 'Strollers', 'Baby Gear', "Children's Clothing"],
       'Photography Gear': ['Camera', 'Lenses', 'Tripod', 'Camera Bag'],
       'Other': ['Miscellaneous Items'],
     };

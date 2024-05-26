@@ -29,7 +29,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [startDateHasChanged, setStartDateHasChanged] = useState(false)
     const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
-    
+
     const [valid, setValid] = useState(false);
     const [userToken, setToken] = useState('');
 
@@ -103,9 +103,11 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         })();
     }, [imagePermissionsGranted]);
 
-    useEffect(()=> {(async () => {
-        setToken(await getUser().getIdToken());
-    })()})
+    useEffect(() => {
+        (async () => {
+            setToken(await getUser().getIdToken());
+        })()
+    })
 
 
     const clearImgSelection = () => {
@@ -160,11 +162,11 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             requestUrl={{
                                 url: `http://${config.serverIp}:${config.port}`,
                                 useOnPlatform: 'all',
-                                headers: {Authorization: userToken},
+                                headers: { Authorization: userToken },
 
                             }}
                             query={{
-                                key:"",
+                                key: "",
                                 language: 'en',
                             }}
                             styles={{

@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import dayjs from "dayjs"
 import { NewReservationBox } from "./reservationBox";
-import UserLookupByPhone from "./UserLookupByPhone";
+import InputWithSuggestions from "./InputWithSuggestions";
+
 import config from "../backend/config";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Icon, Text } from "@rneui/themed";
 import { getAuth } from "firebase/auth";
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
-export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
+export default function AddOrder({ userId, productId, onSuccess = (_) => { } }) {
     const now = new Date();
     const [isExpanded, toggleExpand] = useState(false);
     const [user, setUser] = useState('');
+    const [availableDates, setAvailableDates] = useState(null)
     const [reservation, setReservation] = useState({
         productId,
         ownerId: userId,
@@ -29,8 +32,8 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
     const userSuggestions = async (query) => {
         const token = getAuth().currentUser?.getIdToken()
         const values = await axios
-        .get(SERVER + `/users/suggestion?q=${encodeURI(query)}`
-            ,{ headers: { Authorization: await token } })
+            .get(SERVER + `/users/suggestion?q=${encodeURI(query)}`
+                , { headers: { Authorization: await token } })
             .then(({ data }) => data)
             .catch((_) => []);
 
@@ -39,7 +42,7 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
             value,
         }));
     };
-    const onUserChosen = ({value:_user}) => {
+    const onUserChosen = ({ value: _user }) => {
         console.log('choice', _user)
         setUser(_user.id);
         setReservation((oldRsv) =>
@@ -53,18 +56,63 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
         );
     };
 
+
+    const fetchProductOrders = async () => {
+        try {
+            const token = getAuth().currentUser?.getIdToken()
+            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/getProductEmptyTimeOrder`,
+                {
+                    headers: { Authorization: await token },
+                    params: { productId }
+                });
+            const result = response.data;
+            setAvailableDates(result)
+            console.log("availableDates", result);
+        }
+        catch (err) {
+            console.log(JSON.stringify(err))
+            console.log("error while fetching available dates to order")
+        }
+    };
+
+
+    useEffect(() => {
+        fetchProductOrders();
+    }, []);
+
+
+    const createDateRangeArray = (startDate, endDate) => {
+        const dateRange = [];
+        let currentDate = startDate;
+        while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
+            dateRange.push(currentDate.format('YYYY-MM-DD'));
+            currentDate = currentDate.add(1, 'day');
+        }
+
+        return dateRange;
+    }
+
+    const isValidOrder = (startDate, endDate) => {
+        const orderDateRange = createDateRangeArray(startDate, endDate)
+        return orderDateRange.every(date => availableDates.includes(date))
+    }
+
     /** @param {ProductReservation} rsv */
     const onSubmitReservation = async (rsv) => {
         const token = getAuth().currentUser?.getIdToken();
+        if (!isValidOrder(dayjs(rsv.scheduling.startDate), dayjs(rsv.scheduling.endDate))) {
+            alert("Choose different dates, this product is not valid in this date range")
+            return false;
+        }
         const payload = {
             ownerId: userId,
-            startDate:rsv.scheduling.startDate,
-            endDate: rsv.scheduling.endDate, 
-            productId, 
+            startDate: rsv.scheduling.startDate,
+            endDate: rsv.scheduling.endDate,
+            productId,
             renterId: rsv.reservingUser.id,
         }
         const response = await axios.post(SERVER + '/orders/add', payload, { headers: { Authorization: await token } });
-        if (response.status === 200){
+        if (response.status === 200) {
             setUser('');
             onSuccess(response.data);
             return true;
@@ -87,9 +135,9 @@ export default function AddOrder({ userId, productId, onSuccess= (_)=> {} }) {
             <Card.Divider />
             {isExpanded && (
                 <>
-                    <UserLookupByPhone
+                    <InputWithSuggestions
                         onChooseSuggestion={onUserChosen}
-                        placeholder="Please insert renter's phone number"
+                        placeholder="Please insert renter details (name/phone)"
                         suggestionsSupplier={userSuggestions}
                     />
                     {!!user && (
