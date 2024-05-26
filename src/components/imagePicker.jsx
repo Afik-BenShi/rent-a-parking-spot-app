@@ -8,19 +8,23 @@ import ExpandableImage from "./ExpandableImage";
 /**
  *
  * @param {{
- *  imagePickerProps: expoImage.ImagePickerOptions,
+ *  imagePickerProps?: expoImage.ImagePickerOptions,
  *  disabled?:boolean,
  *  onImagePicked: (image:expoImage.ImagePickerAsset) => any,
- *  onImageRemoved: () => any
+ *  uri?: string,
+ *  showRevert: boolean,
+ *  onRevert?: () => any
  * }} _
  */
 export default function ImagePicker({
     onImagePicked,
-    onImageRemoved,
+    showRevert = false,
+    onRevert = ()=> {},
+    uri = "",
     disabled = false,
-    imagePickerProps: imagePickeroptions,
+    imagePickerProps = {},
 }) {
-    const [image, setImage] = useState("");
+    const [image, setImage] = useState(uri);
     const [isLoading, setIsLoading] = useState(false);
     const imageConfirmation = useDialog();
     const handleImagePick = async () => {
@@ -29,7 +33,7 @@ export default function ImagePicker({
         }
         setIsLoading(true);
         const result = await expoImage.launchImageLibraryAsync({
-            ...imagePickeroptions,
+            ...imagePickerProps,
             selectionLimit: 1,
         });
         if (result.canceled) {
@@ -41,9 +45,6 @@ export default function ImagePicker({
             const action = await imageConfirmation.openDialog();
             if (action === "select") {
                 await onImagePicked(result.assets[0]);
-            }
-            if (action === "delete") {
-                await onImageRemoved();
             }
         } catch (e) {
             console.error(e);
@@ -69,6 +70,15 @@ export default function ImagePicker({
                 disabledTitleStyle={{ color: COLORS.grey }}
                 loadingProps={{ color: "#000" }}
                 onPress={handleImagePick}
+            />
+            <Button
+                title="Revert"
+                disabled={!showRevert}
+                buttonStyle={styles.revertButton}
+                titleStyle={{...styles.buttonLabel, color:COLORS.white}}
+                disabledTitleStyle={{ color: COLORS.grey }}
+                loadingProps={{ color: "#000" }}
+                onPress={onRevert}
             />
             <imageConfirmation.DialogComponent
                 overlayStyle={styles.dialogContainer}
@@ -102,17 +112,6 @@ export default function ImagePicker({
                         >
                             Cancel
                         </Button>
-                        {image && (
-                            <Button
-                                type="outline"
-                                buttonStyle={styles.noButton}
-                                onPress={() =>
-                                    imageConfirmation.closeDialog("delete")
-                                }
-                            >
-                                Delete
-                            </Button>
-                        )}
                         <Button
                             buttonStyle={styles.yesButton}
                             onPress={() =>
@@ -146,6 +145,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.grey,
         gap: 6,
+    },
+    revertButton: {
+        width: 150,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 12,
+        gap: 6,
+        backgroundColor:COLORS.red
     },
     noButton: {
         width: 100,

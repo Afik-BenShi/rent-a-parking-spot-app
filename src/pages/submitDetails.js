@@ -58,7 +58,7 @@ export default function SubmitDetails({ navigation, route }) {
 
     let imageUrl;
     try {
-      const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}`;
+      const storagePath = `images/${userId}-product-${encodeURI(detailsList.productName)}-${Date.now()}`;
       // Assuming detailsList.imageUri contains the local path to the image
       imageUrl = await uploadImage(storagePath, detailsList.imageUri);
       console.log('Firebase Storage Image URL:', imageUrl);
