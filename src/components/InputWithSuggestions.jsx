@@ -5,13 +5,12 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../../assets/theme";
 
 export default function UserLookupByPhone({
-    onValueChange = (_) => {},
+    onValueChange = (_) => { },
     onChooseSuggestion,
     placeholder,
     suggestionsSupplier,
 }) {
     const [value, setValue] = useState("");
-    const regex = /^05[\d]{8}$/;
     const [isValid, setIsValid] = useState(true);
     const [suggestionsOpen, setopenSuggestions] = useState(false);
     const [suggestions, setSuggestions] = useState([{ label: "loading..." }]);
@@ -21,7 +20,7 @@ export default function UserLookupByPhone({
         onValueChange(text);
         setopenSuggestions(true);
         setSuggestions([{ label: "waiting for input..." }]);
-        if (regex.test(text)) {
+        if (text.length >= 3) {
             setIsValid(true);
             setSuggestions([{ label: "loading..." }]);
             debouncedPart(text);
@@ -50,7 +49,7 @@ export default function UserLookupByPhone({
         <View style={styles.container}>
             <Input
                 value={value}
-                errorMessage={!isValid? "Invalid phone number" : undefined}
+                errorMessage={!isValid ? "Invalid renter details" : undefined}
                 onChangeText={inputChangeHandler}
                 label={placeholder}
             />

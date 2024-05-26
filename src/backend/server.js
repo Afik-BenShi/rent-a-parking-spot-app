@@ -7,7 +7,7 @@ const products = require("./services/products")
 const location = require('./services/location');
 const users = require("./services/users")
 const orders = require("./services/orders");
-const {mapsKey} = require('./.env/mapsKey.json');
+const { mapsKey } = require('./.env/mapsKey.json');
 
 const { firestore, auth } = require("firebase-admin");
 const Timestamp = firestore.Timestamp;
@@ -18,7 +18,7 @@ db.init();
 storage.init()
 
 const app = express();
-app.use(express.json({limit:'50mb'}));
+app.use(express.json({ limit: '50mb' }));
 
 //---------------------------------------------------------
 // Middleware to log incoming requests
@@ -116,7 +116,7 @@ app.post('/myProducts/add', async (req, res) => {
 // ----------------previous implementation: -------------
 
 // app.post('/myProducts/img', async (req, res) => {
-  
+
 //   const { image, title, token } = req.body;
 //   const imageName = `${token.user_Id}-${title}-${Date.now()}`
 //   console.log(imageName)
@@ -243,40 +243,48 @@ app.get('/orders/productAvailability', async (req, res) => {
   res.send(result);
 });
 
-app.get('/place/autocomplete/json', async (req, res)=> {
-  const {input, language} = req.query;
+app.get('/orders/getProductEmptyTimeOrder', async (req, res) => {
+  const { productId: id } = req.query;
+  console.log("id - ", id);
+  const result = await orders.getProductEmptyTimeOrder(id);
+  res.send(result)
+});
+
+
+app.get('/place/autocomplete/json', async (req, res) => {
+  const { input, language } = req.query;
   try {
     const googleApi = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
     const suggestions = await fetch(googleApi + `?input=${input}&key=${mapsKey}&language=${language}`)
-      .then(resp=> resp.json());
+      .then(resp => resp.json());
     res.status(200).send(suggestions);
-  }catch(e){
-    res.status(500).send({e});
+  } catch (e) {
+    res.status(500).send({ e });
   }
 })
-app.get('/place/details/json', async (req, res)=> {
-  const {key, ...query} = req.query;
+app.get('/place/details/json', async (req, res) => {
+  const { key, ...query } = req.query;
   const paramString = Object.entries(query).map(([key, val]) => `${key}=${val}`).join('&')
   try {
     const googleApi = "https://maps.googleapis.com/maps/api/place/details/json";
     const suggestions = await fetch(googleApi + `?key=${mapsKey}&` + paramString)
-      .then(resp=> resp.json());
+      .then(resp => resp.json());
     res.status(200).send(suggestions);
-  }catch(e){
-    res.status(500).send({e});
+  } catch (e) {
+    res.status(500).send({ e });
   }
 })
 
 app.get('/location/geocode', async (req, res) => {
-  const {key, ...query} = req.query;
+  const { key, ...query } = req.query;
   const paramString = Object.entries(query).map(([key, val]) => `${key}=${val}`).join('&')
   try {
     const googleApi = "https://maps.google.com/maps/api/geocode/json";
     const suggestions = await fetch(googleApi + `?key=${mapsKey}&` + paramString)
-      .then(resp=> resp.json());
+      .then(resp => resp.json());
     res.status(200).send(suggestions);
-  } catch(e) {
-    res.status(500).send({e});
+  } catch (e) {
+    res.status(500).send({ e });
   }
 })
 
