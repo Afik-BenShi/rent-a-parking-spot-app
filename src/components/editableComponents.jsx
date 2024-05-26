@@ -136,13 +136,14 @@ export function EditableDateRange({
 export function EditableImage({
     editMode,
     source,
+    isChanged=false,
     initialHeight = 200,
     onImageChanged,
     onImageRevert,
     imagePickerProps,
 }) {
     const [image, setImage] = useState(source);
-    const [isChanged, setChanged] = useState(false);
+    const [_isChanged, setChanged] = useState(isChanged);
     const imageChangedHandler = (newImage) => {
         setImage(newImage);
         setChanged(true);
@@ -158,7 +159,7 @@ export function EditableImage({
             <ExpandableImage source={image} initialHeight={initialHeight} />
             {editMode && (
                 <ImagePicker
-                    showRevert={isChanged}
+                    showRevert={_isChanged}
                     uri={image.uri}
                     {...imagePickerProps}
                     onImagePicked={imageChangedHandler}
@@ -173,6 +174,7 @@ export function EditableImage({
  * @typedef {{
 *  editMode: boolean,
 *  source,
+*  isChanged?:boolean
 *  initialHeight?: import("react-native").DimensionValue,
 *  onImageChanged: (image: import('expo-image-picker').ImagePickerAsset) => any,
 *  onImageRevert: (oldImage) => any,

@@ -157,13 +157,9 @@ app.post('/myProducts/img', upload.single('image'), async (req, res) => {
 app.put('/myProducts/updateProductInfo/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
-    const { title, description } = req.body;
+    const { title, description, urlToimage } = req.body;
 
-    console.log("productId", productId);
-    console.log("title", title);
-    console.log("description", description);
-
-    const newProductData = { title, description };
+    const newProductData = { title, description, urlToimage };
 
     const result = await products.updateProductInfo(productId, newProductData);
     res.send(result);

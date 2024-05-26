@@ -19,6 +19,7 @@
  *      phoneNumber: string,
  *  },
  *  image?: string,
+ *  imageToSave?: string,
  *  availability: {
  *      startDate: Date,
  *      endDate: Date,

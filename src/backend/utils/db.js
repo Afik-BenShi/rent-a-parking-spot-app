@@ -144,12 +144,11 @@ const getProductsDb = async (filters) => {
 };
 
 const updateProductInfoDb = async (productId, newProductData) => {
-    const { title, description } = newProductData;
+    const { title, description, urlToimage } = newProductData;
     try {
         const docRef = db.collection("products").doc(productId);
-        // Update only specific fields (title and description)
-        await docRef.update({ title, description });
-        return { id: docRef.id, title, description };
+        await docRef.update({ title, description, urlToimage });
+        return { id: docRef.id, title, description, urlToimage };
     } catch (error) {
         console.error("Error updating product:", error);
         throw error;

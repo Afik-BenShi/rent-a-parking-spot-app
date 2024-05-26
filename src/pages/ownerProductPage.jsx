@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { TouchableOpacity, ScrollView, StyleSheet, View, Pressable } from "react-native";
+import {
+    TouchableOpacity,
+    ScrollView,
+    StyleSheet,
+    View,
+    Pressable,
+    ActivityIndicator,
+} from "react-native";
 import { Button, Card, Text } from "@rneui/themed";
 
 import config from "../backend/config";
 
 import { COLORS } from "../../assets/theme";
-import ExpandableImage from "../components/ExpandableImage";
 import ReservationTable from "../components/ReservationsTable";
 import { EditableImage, EditableText } from "../components/editableComponents";
 import AddOrder from "../components/addOrder";
@@ -15,21 +21,20 @@ import "./productDetailsPage.types";
 import { timeStampToDate } from "../utils/dateTime";
 import { getAuth } from "firebase/auth";
 
-import { RefreshContext } from '../context/context';
+import { RefreshContext } from "../context/context";
 import { Icon } from "react-native-elements";
 import useDialog from "../customStates/useDialog";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import { getUser } from "../auth/auth";
 import { styles as moreStyles } from "./signUpAndLogin.styles";
-
+import { uploadImage } from "../utils/imageStorage";
 
 const SERVER = `http://${config.serverIp}:${config.port}`;
 
 export default function OwnerProductPage({ route, navigation }) {
-
     const { updatedItem, setUpdatedItem } = useContext(RefreshContext);
 
-    const [details, setDetails] = useState(parseItem(route.params));  // Parsing 
+    const [details, setDetails] = useState(parseItem(route.params)); // Parsing
     const [editMode, setEditMode] = useState(false);
     const [rsvs, setRsvs] = useState({ past: [], next: [] });
     const [userId, setUserId] = useState(route.params.userId);
@@ -37,14 +42,22 @@ export default function OwnerProductPage({ route, navigation }) {
     // save the title and description in edit mode
     const [title, setTitle] = useState(details.title);
     const [description, setDescription] = useState(details.description);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isDelLoad, setDelLoad] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isLoading, setLoading] = useState(false);
 
     const { openDialog, closeDialog, DialogComponent } = useDialog();
+    const [imageToSave, setImageToSave] = useState("");
+    const productImage = details.image
+        ? { uri: details.image }
+        : // @ts-ignore
+          require("../../assets/parking-details-images/placeholder.png");
 
-    const editClickHandler = () => {
+    const editClickHandler = async () => {
+        if (isLoading) {
+            return;
+        }
         if (editMode) {
-            updateProductDetails();
+            await updateProductDetails();
         }
         setEditMode((edit) => !edit);
     };
@@ -61,114 +74,147 @@ export default function OwnerProductPage({ route, navigation }) {
                     style={styles.editButton}
                     onPress={editClickHandler}
                 >
-                    <Text style={{ color: COLORS.btnBlue, fontSize: 16 }}>
-                        {editMode ? "Done" : "Edit"}
-                    </Text>
+                    {isLoading ? (
+                        <ActivityIndicator
+                            color={COLORS.btnBlue}
+                            size="small"
+                        />
+                    ) : (
+                        <Text style={{ color: COLORS.btnBlue, fontSize: 16 }}>
+                            {editMode ? "Done" : "Edit"}
+                        </Text>
+                    )}
                 </TouchableOpacity>
             ),
         });
     }, [editMode, navigation]);
 
-
     const updateReservations = () => {
-        getAuth().currentUser?.getIdToken().then(token => 
-        axios
-            .get(SERVER + `/orders/owner/${userId}?time=all&productId=${details.id}`, 
-                {headers:{Authorization:token}}
-            ).then(({ data }) => {
-                const rsvTemplate = { next: [], past: [] };
-                const newRsvs = data.reduce(responseParser, rsvTemplate);
-                setRsvs(newRsvs);
-            }));
-    }
+        getAuth()
+            .currentUser?.getIdToken()
+            .then((token) =>
+                axios
+                    .get(
+                        SERVER +
+                            `/orders/owner/${userId}?time=all&productId=${details.id}`,
+                        { headers: { Authorization: token } }
+                    )
+                    .then(({ data }) => {
+                        const rsvTemplate = { next: [], past: [] };
+                        const newRsvs = data.reduce(
+                            responseParser,
+                            rsvTemplate
+                        );
+                        setRsvs(newRsvs);
+                    })
+            );
+    };
     useEffect(updateReservations, [userId]);
 
-    const productImage = details.image
-        ? { uri: details.image }
-        : // @ts-ignore
-          require("../../assets/parking-details-images/placeholder.png");
-
     const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
- 
+
     const handleDeleteProduct = async () => {
-        setDelLoad(true);
+        setLoading(true);
         const dialogPromise = openDialog();
         const action = await dialogPromise;
         if (action !== "delete") {
-            setDelLoad(false);
+            setLoading(false);
             return;
         }
         const user = getUser();
         const token = user?.getIdToken();
         try {
-            const response = await axios.delete(SERVER + '/myProducts/' + details.id, {
-                headers:{Authorization:await token}
-            });
-            if (response.status === 200){
-                navigation.navigate('My Products cardList');
+            const response = await axios.delete(
+                SERVER + "/myProducts/" + details.id,
+                {
+                    headers: { Authorization: await token },
+                }
+            );
+            if (response.status === 200) {
+                navigation.navigate("My Products cardList");
             } else {
                 setErrorMessage(response.data);
             }
         } catch (error) {
-            setErrorMessage("There was a problem deleting this product please try again");
+            setErrorMessage(
+                "There was a problem deleting this product please try again"
+            );
         }
-        setDelLoad(false);
-    }
-
-    const updateProductDetails = () => {
-        
-        if (description === details.description && title === details.title) {
-            return;
-        }
-        getAuth().currentUser?.getIdToken().then(token => 
-            axios
-                .put(SERVER + `/myProducts/updateProductInfo/${details.id}`, {
-                    title,
-                    description
-                }, { headers: { Authorization: token } })
-                .then(() => {
-                    setDetails((prevDetails) => ({
-                        ...prevDetails,
-                        ['title']: title.trim(), 
-                        ['description']: description.trim(),
-                    }));
-
-                })
-                .catch((error) => {
-                    console.error("Failed to update product details", error);
-                }));
+        setLoading(false);
     };
 
+    const updateProductDetails = async () => {
+        if (description === details.description && title === details.title && !imageToSave) {
+            return;
+        }
+        setLoading(true);
+        let urlToimage = details.image ?? "";
+        if (imageToSave) {
+            const storagePath = `images/${userId}-product-${encodeURI(
+                title || details.title
+            )}-${Date.now()}`;
+            urlToimage = await uploadImage(storagePath, imageToSave);
+        }
+        const token = await getAuth().currentUser?.getIdToken();
+        try {
+            await axios.put(
+                SERVER + `/myProducts/updateProductInfo/${details.id}`,
+                {
+                    title,
+                    description,
+                    urlToimage,
+                },
+                { headers: { Authorization: token } }
+            );
+            setLoading(false);
+            setDetails((prevDetails) => ({
+                ...prevDetails,
+                ["title"]: title.trim(),
+                ["description"]: description.trim(),
+                ["image"]: urlToimage,
+            }));
+        } catch (error) {
+            console.error("Failed to update product details", error);
+            setLoading(false);
+        }
+    };
 
     // In order to updates myProducts page
     useEffect(() => {
         // details.description is already updated after the edit
-        setUpdatedItem({ id: details.id, title:details.title, description: details.description });
+        setUpdatedItem({
+            id: details.id,
+            title: details.title,
+            description: details.description,
+            image: details.image,
+        });
     }, [details]);
 
     // This tells React to call our effect when `title`, `description`, or `editMode` changes
     useEffect(() => {
-        if (!editMode && (title !== details.title || description !== details.description)) {
+        if (!editMode && (title !== details.title || description !== details.description || imageToSave)) {
             updateProductDetails();
         }
-    }, [title, description, editMode]); 
-    
+    }, [title, description, editMode, imageToSave]);
 
     const handleTitleChange = (value) => {
-        const newText = value.trim()
+        const newText = value.trim();
         setTitle(newText);
     };
 
     const handleDescriptionChange = (value) => {
-        const newText = value.trim()
+        const newText = value.trim();
         setDescription(newText);
     };
-    
 
+    const handleImageChange = (newImage) => {
+        const {uri} = newImage;
+        setImageToSave(uri);
+    }
     return (
         <View style={styles.pageContainer}>
             <ScrollView contentContainerStyle={styles.scrollable}>
-                 <EditableText
+                <EditableText
                     h3
                     editMode={editMode}
                     textStyle={styles.text}
@@ -176,7 +222,7 @@ export default function OwnerProductPage({ route, navigation }) {
                     sendDataToParent={handleTitleChange}
                 >
                     {details.title}
-                </EditableText> 
+                </EditableText>
                 {/* <Text h3 style={styles.text}>
                     {details.title}
                 </Text> */}
@@ -189,12 +235,13 @@ export default function OwnerProductPage({ route, navigation }) {
                 >
                     {details.description}
                 </EditableText>
-                <EditableImage 
+                <EditableImage
+                    isChanged={!!imageToSave}
                     editMode={editMode}
-                    source={productImage} 
+                    source={productImage}
                     initialHeight={200}
-                    onImageChanged={(newImage)=> alert(newImage.uri)}
-                    onImageRevert={(oldImage)=> alert(oldImage.uri)}
+                    onImageChanged={handleImageChange}
+                    onImageRevert={() => setImageToSave("")}
                 />
                 <AddOrder
                     userId={userId}
@@ -212,17 +259,27 @@ export default function OwnerProductPage({ route, navigation }) {
                     reservations={rsvs.past}
                     heading="Previous reservations"
                 />
-                {editMode && <Button
-                    buttonStyle={styles.deleteButton}
-                    onPress={handleDeleteProduct}
-                    loading={isDelLoad}
-                    disabled={isDelLoad}
-                    disabledStyle={styles.deleteButton}
-                >
-                    Delete Product <Icon type="feather" name="trash" color="#FFF" size={16}/>
-                    </Button>}
-                {errorMessage && (<Text style={moreStyles.failText}>{errorMessage}</Text>)}
-                <ConfirmationDialog 
+                {editMode && (
+                    <Button
+                        buttonStyle={styles.deleteButton}
+                        onPress={handleDeleteProduct}
+                        loading={isLoading}
+                        disabled={isLoading}
+                        disabledStyle={styles.deleteButton}
+                    >
+                        Delete Product{" "}
+                        <Icon
+                            type="feather"
+                            name="trash"
+                            color="#FFF"
+                            size={16}
+                        />
+                    </Button>
+                )}
+                {errorMessage && (
+                    <Text style={moreStyles.failText}>{errorMessage}</Text>
+                )}
+                <ConfirmationDialog
                     dialogState={{ openDialog, closeDialog, DialogComponent }}
                     title="Are you sure you want to delete this product?"
                 />
@@ -249,11 +306,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     deleteButton: {
-        width:150,
-        alignSelf:"center",
-        borderRadius:6,
+        width: 150,
+        alignSelf: "center",
+        borderRadius: 6,
         backgroundColor: COLORS.red,
-    }
+    },
 });
 
 // TODO use consistent data instead of parsing
@@ -278,9 +335,7 @@ export function parseItem({ details: item }) {
         OrderEndDate,
         mainCategoryId,
         OwnerInfo,
-        
     } = item;
-    console.log('parse',{item});
     return Object.assign(mock, {
         id: id ? id : productId,
         title,
@@ -288,24 +343,30 @@ export function parseItem({ details: item }) {
         city,
         mainCategoryId,
         availability: {
-            startDate: timeStampToDate(startDate?? startDay),
+            startDate: timeStampToDate(startDate ?? startDay),
             endDate: timeStampToDate(endDate ?? endDay),
         },
         image: urlToimage,
         price: Object.assign(mock.price, { amount: pricePerDay }),
-        owner: Object.assign(mock.owner, { id: ownerId, 
-                                            name: OwnerInfo ? OwnerInfo.fullName : mock.owner.name,
-                                            phoneNumber: OwnerInfo ? OwnerInfo.phoneNumber : mock.owner.phoneNumber}),
-        orderDates: Object.assign(mock.orderDates, 
-            { startDate: timeStampToDate(OrderStartDate?? startDate),   // in case of missing data, use the start date
-                endDate: timeStampToDate(OrderEndDate?? endDate) }),
+        owner: Object.assign(mock.owner, {
+            id: ownerId,
+            name: OwnerInfo ? OwnerInfo.fullName : mock.owner.name,
+            phoneNumber: OwnerInfo
+                ? OwnerInfo.phoneNumber
+                : mock.owner.phoneNumber,
+        }),
+        orderDates: Object.assign(mock.orderDates, {
+            startDate: timeStampToDate(OrderStartDate ?? startDate), // in case of missing data, use the start date
+            endDate: timeStampToDate(OrderEndDate ?? endDate),
+        }),
     });
 }
 
 const responseParser = (prev, rsv) => {
     const startDate = timeStampToDate(rsv.startDate);
     const endDate = timeStampToDate(rsv.endDate);
-    const time = endDate.valueOf() + 12 * 60 * 60 * 1000 <= Date.now() ? "past" : "next";
+    const time =
+        endDate.valueOf() + 12 * 60 * 60 * 1000 <= Date.now() ? "past" : "next";
     const newRsv = {
         id: rsv.id,
         ownerId: rsv.ownerId,
@@ -354,4 +415,3 @@ const mock = {
         endDate: new Date("2024-02-17T18:00"),
     },
 };
-
