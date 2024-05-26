@@ -8,7 +8,7 @@ import config from "../backend/config";
 import { COLORS } from "../../assets/theme";
 import ExpandableImage from "../components/ExpandableImage";
 import ReservationTable from "../components/ReservationsTable";
-import { EditableText } from "../components/editableComponents";
+import { EditableImage, EditableText } from "../components/editableComponents";
 import AddOrder from "../components/addOrder";
 
 import "./productDetailsPage.types";
@@ -189,7 +189,13 @@ export default function OwnerProductPage({ route, navigation }) {
                 >
                     {details.description}
                 </EditableText>
-                <ExpandableImage source={productImage} initialHeight={200} />
+                <EditableImage 
+                    editMode={editMode}
+                    source={productImage} 
+                    initialHeight={200}
+                    onImageChanged={(newImage)=> alert(newImage.uri)}
+                    onImageRevert={(oldImage)=> alert(oldImage.uri)}
+                />
                 <AddOrder
                     userId={userId}
                     productId={details.id}

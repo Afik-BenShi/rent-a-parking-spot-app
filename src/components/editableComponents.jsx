@@ -4,6 +4,8 @@ import { Text, Input } from "@rneui/themed";
 import { dateRangeFormat } from "../utils/dateTime";
 import DateTimePickerExample from "./DatePick";
 import { debounce } from "../utils/utils";
+import ExpandableImage from "./ExpandableImage";
+import ImagePicker from "./imagePicker";
 
 /**
  * @type {React.FC}
@@ -68,7 +70,7 @@ export function EditableText({
  * @param {EditableDateRangeProps} props
  */
 export function EditableDateRange({
-    disabled=false,
+    disabled = false,
     editMode,
     dateRange,
     textProps = {},
@@ -103,7 +105,7 @@ export function EditableDateRange({
                 minDate={minDate}
                 onDateChange={startChangedHandler}
                 initialDate={dateRange.startDate}
-                />
+            />
             <Text {...textProps}>End Date</Text>
             <DateTimePickerExample
                 disabled={disabled}
@@ -125,3 +127,55 @@ export function EditableDateRange({
  *  disabled?:boolean,
  * }} EditableDateRangeProps
  */
+
+
+/**
+ * @type {React.FC}
+ * @param {EditableImageProps} _ 
+ */
+export function EditableImage({
+    editMode,
+    source,
+    initialHeight = 200,
+    onImageChanged,
+    onImageRevert,
+    imagePickerProps,
+}) {
+    const [image, setImage] = useState(source);
+    const [isChanged, setChanged] = useState(false);
+    const imageChangedHandler = (newImage) => {
+        setImage(newImage);
+        setChanged(true);
+        onImageChanged(newImage);
+    }
+    const imageRevertHandler = () => {
+        setImage(source);
+        setChanged(false);
+        onImageRevert(source);
+    }
+    return (
+        <>
+            <ExpandableImage source={image} initialHeight={initialHeight} />
+            {editMode && (
+                <ImagePicker
+                    showRevert={isChanged}
+                    uri={image.uri}
+                    {...imagePickerProps}
+                    onImagePicked={imageChangedHandler}
+                    onRevert={imageRevertHandler}
+                />
+            )}
+        </>
+    );
+}
+
+/**
+ * @typedef {{
+*  editMode: boolean,
+*  source,
+*  initialHeight?: import("react-native").DimensionValue,
+*  onImageChanged: (image: import('expo-image-picker').ImagePickerAsset) => any,
+*  onImageRevert: (oldImage) => any,
+*  imagePickerProps?: Parameters<ImagePicker>[0],
+* }} EditableImageProps
+*/
