@@ -4,7 +4,7 @@ import { Input } from '@rneui/themed';
 import MoreIcon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as ImagePicker from 'expo-image-picker';
+import ImagePicker from "./imagePicker";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
@@ -23,11 +23,9 @@ import { getUser } from "../auth/auth";
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date())
-    const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false);
     // const [showGoogleAutocomplete, setShowGoogleAutocomplete] = useState(true);
     const [imgSelected, setImgSelected] = useState(false);
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
-    const [startDateHasChanged, setStartDateHasChanged] = useState(false)
     const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
 
     const [valid, setValid] = useState(false);
@@ -69,17 +67,10 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         sendEndDateToParent(selectedDate);
     };
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        console.log('result', result)
-        if (!result.cancelled) {
+    const pickImage = async (image) => {
+        if (image) {
             setImgSelected(true);
-            sendDataToParent("imageUri", result.assets[0].uri)
+            sendDataToParent("imageUri", image.uri)
         }
         else {
             setImgSelected(false);
@@ -87,25 +78,25 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         }
     };
 
+    // useEffect(() => {
+    //     (async () => {
+    //         const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //         const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+    //         console.log('libraryStatus', libraryStatus)
+    //         console.log('cameraStatus', cameraStatus)
+
+    //         if (libraryStatus.status !== 'granted' || cameraStatus.status !== 'granted') {
+    //             alert('Sorry, we need camera roll and media permissions to make this work!');
+    //         }
+    //         else {
+    //             setImagePermissionsGranted(true)
+    //         }
+    //     })();
+    // }, [imagePermissionsGranted]);
+
     useEffect(() => {
         (async () => {
-            const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-            console.log('libraryStatus', libraryStatus)
-            console.log('cameraStatus', cameraStatus)
-
-            if (libraryStatus.status !== 'granted' || cameraStatus.status !== 'granted') {
-                alert('Sorry, we need camera roll and media permissions to make this work!');
-            }
-            else {
-                setImagePermissionsGranted(true)
-            }
-        })();
-    }, [imagePermissionsGranted]);
-
-    useEffect(() => {
-        (async () => {
-            setToken(await getUser().getIdToken());
+            setToken(await getUser()?.getIdToken());
         })()
     })
 
@@ -223,7 +214,12 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         inputStyle={styles.inputControl}
                         inputContainerStyle={{ borderBottomWidth: 0 }}
                     />
-                    <View style={{
+                    <ImagePicker
+                            showRevert={imgSelected}
+                            onImagePicked={pickImage}
+                            onRevert={clearImgSelection}
+                        />
+                    {/* <View style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -256,7 +252,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                                 </TouchableOpacity>
                             </View>
                         }
-                    </View>
+                    </View> */}
                 </View>
 
             </ScrollView>
