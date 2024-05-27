@@ -205,8 +205,12 @@ export function SignUpDetails({ navigation }) {
     const detailsSignUpHandler = async () => {
         setIsLoading(true);
         const token = getUser()?.getIdToken();
-        const isValid =
-            validateRequiredFields(fullName, phoneNumber, addressNotes, address)
+        const isValid = validateRequiredFields(fullName, phoneNumber, addressNotes)
+        if (!address) {
+            setSignUpError('Please insert your location');
+            setIsLoading(false);
+            return;
+        }
         if (!isValid) {
             setIsLoading(false);
             return;
@@ -279,6 +283,7 @@ export function SignUpDetails({ navigation }) {
                     <Text style={{ ...styles.inputLabel, marginLeft: 0 }}>Location</Text>
 
                     <GooglePlacesAutocomplete
+                        key={addressKey}
                         disableScroll={true}
                         placeholder="Enter your location"
                         minLength={3} // minimum length of text to search

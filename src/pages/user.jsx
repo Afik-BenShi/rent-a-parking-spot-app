@@ -73,6 +73,7 @@ export default function Profile({ navigation, route }) {
       setLastProfileData(details);
     } catch (error) {
       console.error('Error fetching user details:', error);
+      doLogOut();
     }
   };
   useEffect(() => {
