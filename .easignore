@@ -1,0 +1,12 @@
+.git
+backend/
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env/
+
+.gitignore
