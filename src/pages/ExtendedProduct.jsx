@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { Text as RneText } from '@rneui/themed';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 //import Swiper from 'react-native-swiper';
@@ -37,7 +38,6 @@ export default function ExtendedProduct({ route, navigation }) {
 
     const details = parseItem(route.params);
 
-
     const productImage = details.image
         ? { uri: details.image }
         // @ts-ignore
@@ -56,8 +56,8 @@ export default function ExtendedProduct({ route, navigation }) {
         orderDates,
         mainCategoryId,
         image,
+        fromHome,
         } = details;
-        console.log({address});
 
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
@@ -172,7 +172,7 @@ export default function ExtendedProduct({ route, navigation }) {
 
         </View>
 
-        <View style={styles.picker}>
+        {!fromHome && <View style={styles.picker}>
           
           <Text style={{marginLeft: 8, fontWeight: '500', fontSize: 13, lineHeight: 18, color: '#000',}}>
             Order Dates:</Text>
@@ -185,9 +185,14 @@ export default function ExtendedProduct({ route, navigation }) {
 
             <Text style={styles.pickerDatesText}>   {startDay}   -   {endDay}</Text>
           </TouchableOpacity> 
-        </View>
+        </View>}
 
     
+        {fromHome &&<View style={styles.stats}>
+         <Text style={{...styles.statsItemText, fontSize: 16}}>
+          Contact the owner to rent this item
+          </Text>
+        </View>}
         <View style={styles.stats}>
           <View style={styles.statsItem}>
             <FontAwesome color="#7B7C7E" name="user" size={15} />
@@ -221,6 +226,27 @@ export default function ExtendedProduct({ route, navigation }) {
                 movable
                 />
         </View>
+        {fromHome &&<><View style={styles.stats}>
+         <Text style={{...styles.statsItemText, fontSize: 20}}>
+          Contact the owner to rent this item
+          </Text>
+        </View>
+         <View style={styles.stats}>
+         <View style={styles.statsItem}>
+           <FontAwesome color="#7B7C7E" name="user" size={20} />
+           <Text style={styles.statsItemText}>
+           owner : {owner.name.length > 20 ? `${owner.name.substring(0, 20)}...` : owner.name}
+            </Text>
+         </View>
+         
+         <View style={styles.statsItem}>
+           <ContactButtons
+                   phoneNumber={owner.phoneNumber}
+                   color={COLORS.similarToBlack}
+               />
+         </View>
+       </View>
+       </>}
       </ScrollView> )}
 
       {value == 1 && 
@@ -250,9 +276,6 @@ export default function ExtendedProduct({ route, navigation }) {
         
         </View>
       )}
-
-
-      
 
     </View> 
   );
@@ -484,6 +507,7 @@ const styles = StyleSheet.create({
   about: {
     marginHorizontal: 20,
     marginTop: 8,
+    marginBottom:24,
   },
   aboutTitle: {
     fontWeight: '700',

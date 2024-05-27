@@ -38,25 +38,16 @@ export default function AddProductPage({ navigation, route }) {
   const handleStartDateChange = (startDate) => {
 
     const start = startDate ? startDate.toLocaleDateString('en-GB') : 'Not selected';
-    console.log(start);
-
-    // // handle case that user selects start date after end date
-    // if (details.untilDate && startDate > details.untilDate) {
-    //     alert("Start date must be before end date");
-
-    //     return;
-    // }
 
     setDetails((prevDetails) => ({
       ...prevDetails,
       ["from"]: start,
       ["fromDate"]: startDate.toISOString(),  // convert the Date object to a string - to remove the warning
-    }));                                        // after that need to convert it back to Date object
+    }));                                      // after that need to convert it back to Date object
   };
 
   const handleEndDateChange = (endDate) => {
     const end = endDate ? endDate.toLocaleDateString('en-GB') : 'Not selected';
-    console.log(end);
 
     setDetails((prevDetails) => ({
       ...prevDetails,
@@ -102,7 +93,6 @@ export default function AddProductPage({ navigation, route }) {
   }
 
   // Function to handle 'next' button press
-  // TODO: Add input validation
   const handlePressNext = async (event) => {
     console.log("Submitted Details (before submit):", details);
     if (!isValidInput()) {

@@ -16,7 +16,6 @@ import { timeStampToDate } from "../utils/dateTime";
  */
 export default function ProductDetailsPage({ route, navigation }) {
     const details = parseItem(route.params);
-    console.log(details)
     const productImage = details.image
         ? { uri: details.image }
         // @ts-ignore

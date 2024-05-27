@@ -49,7 +49,7 @@ function HomeStackScreen({ route }) {
         options={{ headerShown: false }} // to remove Stack header
       />
 
-      <HomeStack.Screen name="productDetails" component={ProductDetailsPage} />
+      <HomeStack.Screen name="productDetails" component={ExtendedProduct} />
 
     </HomeStack.Navigator>
   );

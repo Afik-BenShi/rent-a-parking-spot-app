@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { ScrollView, View, Text, SafeAreaView } from 'react-native';
 import { Input } from '@rneui/themed';
-import MoreIcon from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from "./imagePicker";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import styles from './addProduct.style'
@@ -13,17 +10,12 @@ import { COLORS } from "../../assets/theme";
 
 import DateTimePickerExample from "./DatePick";
 import SingleSelectedDropDown from "./SingleSelectListDropDown";
-import useValidatedText, {
-    validateRequiredFields,
-} from "../customStates/useTextValidation";
-import { Icon } from "react-native-elements";
 import {serverPath} from '../../backend.config.json';
 import { getUser } from "../auth/auth";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date())
-    // const [showGoogleAutocomplete, setShowGoogleAutocomplete] = useState(true);
+    const [endDate, setEndDate] = useState(new Date());
     const [imgSelected, setImgSelected] = useState(false);
     const [endDateHasChanged, setEndDateHasChanged] = useState(false)
     const [valueInInvalidInput, setValueInInvalidInput] = useState(null);
@@ -61,9 +53,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         setEndDate(selectedDate);
         setEndDateHasChanged(true);
         const end = endDate ? endDate.toLocaleString() : 'Not selected';
-        console.log(end);
 
-        //validateTimes(startDate, selectedDate);
         sendEndDateToParent(selectedDate);
     };
 
@@ -74,25 +64,8 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
         }
         else {
             setImgSelected(false);
-            console.log('Image not selected (cancelled)');
         }
     };
-
-    // useEffect(() => {
-    //     (async () => {
-    //         const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //         const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-    //         console.log('libraryStatus', libraryStatus)
-    //         console.log('cameraStatus', cameraStatus)
-
-    //         if (libraryStatus.status !== 'granted' || cameraStatus.status !== 'granted') {
-    //             alert('Sorry, we need camera roll and media permissions to make this work!');
-    //         }
-    //         else {
-    //             setImagePermissionsGranted(true)
-    //         }
-    //     })();
-    // }, [imagePermissionsGranted]);
 
     useEffect(() => {
         (async () => {
@@ -141,12 +114,11 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                         <GooglePlacesAutocomplete
                             disableScroll={true}
                             placeholder="Enter your location"
-                            minLength={3} // minimum length of text to search
+                            minLength={3} 
                             fetchDetails={true}
                             returnKeyType={'default'}
                             onPress={(data, details = null) => {
-                                console.log('GooglePlacesAutocomplete address:', details.geometry.location)
-                                sendDataToParent("address", details.geometry.location)
+                                sendDataToParent("address", details?.geometry?.location)
                             }}
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
@@ -204,11 +176,8 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                     <Text> </Text>
 
                     <Input
-                        //multiline
-                        //numberOfLines={4}
                         label="Description"
                         labelStyle={styles.inputLabel}
-                        //leftIcon={<AnotherIcon name="coins" size={18} />}
                         placeholder=" Enter product description"
                         onChangeText={(text) => sendDataToParent("productDescription", text)}
                         inputStyle={styles.inputControl}
@@ -219,40 +188,6 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onImagePicked={pickImage}
                             onRevert={clearImgSelection}
                         />
-                    {/* <View style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}>
-                        <TouchableOpacity style={styles.uploadImgButton} onPress={pickImage}>
-                            <Text style={styles.buttonText}>
-                                {<MaterialIcons color={COLORS.similarToBlack} name="file-upload" size={15} />}
-                                Upload image</Text>
-                        </TouchableOpacity>
-
-
-                        {!imgSelected &&
-                            <View>
-                                <Text style={styles.pickerDatesText}> No Image Chosen</Text>
-                            </View>
-                        }
-
-                        {imgSelected &&
-                            <View>
-                                <Text style={styles.pickerDatesText}> Image Uploaded</Text>
-
-                                <TouchableOpacity onPress={clearImgSelection}>
-                                    <Text style={{ textDecorationLine: 'underline' }}>
-                                        &nbsp;
-                                        {<MaterialCommunityIcons
-                                            color="#242329"
-                                            name="image-remove"
-                                            size={20} />}
-                                        {'   '}Clear&nbsp; </Text>
-                                </TouchableOpacity>
-                            </View>
-                        }
-                    </View> */}
                 </View>
 
             </ScrollView>
