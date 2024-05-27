@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { Text as RneText } from '@rneui/themed';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 //import Swiper from 'react-native-swiper';
@@ -31,15 +32,11 @@ import { getAuth } from 'firebase/auth';
 const sections = [
   { name: 'Information' },
   { name: 'Availability' },
-  // { name: 'Reviews' }
 ];
 
 export default function ExtendedProduct({ route, navigation }) {
 
     const details = parseItem(route.params);
-
-    //console.log("details in extended");
-    //console.log(details)
 
     const productImage = details.image
         ? { uri: details.image }
@@ -55,12 +52,12 @@ export default function ExtendedProduct({ route, navigation }) {
         city, 
         price,
         location,
+        address,
         orderDates,
         mainCategoryId,
         image,
+        fromHome,
         } = details;
-
-    //const { rate, reviews } = { rate: 4, reviews: 18 };   // TODO: CHANGE TO ACTUAL VALUES
 
     const { startDay, startYear, endDay, endYear } = dateRangeFormat(
         orderDates.startDate,
@@ -76,10 +73,8 @@ export default function ExtendedProduct({ route, navigation }) {
             const response = await axios.get(serverPath + `/orders/productAvailability`, { 
               headers: { Authorization: token },
               params: { id } });
-            console.log(response.data);
             
             const result = disabledDatesForProduct(response.data.response);
-            console.log("dis ---", result);
             setDisabledDates(result);
         }
         catch (err) {
@@ -90,12 +85,9 @@ export default function ExtendedProduct({ route, navigation }) {
 
     useEffect(() => {
       fetchAvailabilityByProductId();
-      console.log("fetch ");
-      
     }, []);
 
   
-    console.log();
     return (
     <View style={{ flex: 1, backgroundColor: '#F9F9F9' }}>
       <View style={styles.actions}>
@@ -113,19 +105,6 @@ export default function ExtendedProduct({ route, navigation }) {
               </View>
             </TouchableOpacity>
 
-            
-
-            {/* <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}>
-              <View style={styles.action}>
-                <FeatherIcon
-                  color="#242329"
-                  name="heart"
-                  size={18} />
-              </View>
-            </TouchableOpacity> */}
           </View>
 
           <View style={styles.tabs}>
@@ -161,30 +140,6 @@ export default function ExtendedProduct({ route, navigation }) {
       (<ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
         <ExpandableImage source={productImage} initialHeight={200} />
         <View style={styles.photos}>
-            {/* <Image
-            alt="description"
-            source={productImage} // Specify the source of your image
-            style={styles.photosImg}
-            /> */}
-            
-            
-          {/* <Swiper
-            renderPagination={(index, total) => (
-              <View style={styles.photosPagination}>
-                <Text style={styles.photosPaginationText}>
-                  {index + 1} / {total}
-                </Text>
-              </View>
-            )}>
-            {IMAGES.map((src, index) => (
-              <View key={src} style={{ flex: 1 }}>
-                <Image
-                  alt=""
-                  source={{ uri: src }}
-                  style={styles.photosImg} />
-              </View>
-            ))}
-          </Swiper> */}
         </View>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>{title}</Text>
@@ -215,31 +170,9 @@ export default function ExtendedProduct({ route, navigation }) {
             </View>
           </View>
 
-          {/* <View style={styles.headerRow}>
-            <View style={styles.headerStars}>
-                {[...Array(rate)].map((_, index) => (
-                <FontAwesome
-                    key={index}
-                    color="#f26463"
-                    name="star"
-                    solid={true}
-                    size={14}
-                />
-                ))}
-                {[...Array(5 - rate)].map((_, index) => (
-                <FontAwesome
-                    key={index + rate}
-                    color="#f26463"
-                    name="star"
-                    size={14}
-                />
-                ))}
-                <Text style={styles.headerStarsText}>{reviews} reviews</Text>
-            </View>
-          </View> */}
         </View>
 
-        <View style={styles.picker}>
+        {!fromHome && <View style={styles.picker}>
           
           <Text style={{marginLeft: 8, fontWeight: '500', fontSize: 13, lineHeight: 18, color: '#000',}}>
             Order Dates:</Text>
@@ -252,9 +185,14 @@ export default function ExtendedProduct({ route, navigation }) {
 
             <Text style={styles.pickerDatesText}>   {startDay}   -   {endDay}</Text>
           </TouchableOpacity> 
-        </View>
+        </View>}
 
     
+        {fromHome &&<View style={styles.stats}>
+         <Text style={{...styles.statsItemText, fontSize: 16}}>
+          Contact the owner to rent this item
+          </Text>
+        </View>}
         <View style={styles.stats}>
           <View style={styles.statsItem}>
             <FontAwesome color="#7B7C7E" name="user" size={15} />
@@ -288,6 +226,27 @@ export default function ExtendedProduct({ route, navigation }) {
                 movable
                 />
         </View>
+        {fromHome &&<><View style={styles.stats}>
+         <Text style={{...styles.statsItemText, fontSize: 20}}>
+          Contact the owner to rent this item
+          </Text>
+        </View>
+         <View style={styles.stats}>
+         <View style={styles.statsItem}>
+           <FontAwesome color="#7B7C7E" name="user" size={20} />
+           <Text style={styles.statsItemText}>
+           owner : {owner.name.length > 20 ? `${owner.name.substring(0, 20)}...` : owner.name}
+            </Text>
+         </View>
+         
+         <View style={styles.statsItem}>
+           <ContactButtons
+                   phoneNumber={owner.phoneNumber}
+                   color={COLORS.similarToBlack}
+               />
+         </View>
+       </View>
+       </>}
       </ScrollView> )}
 
       {value == 1 && 
@@ -305,19 +264,6 @@ export default function ExtendedProduct({ route, navigation }) {
               />
         </View> 
         
-        {/* <View style={styles.about}>
-          <Pressable style={styles.blackText} onPress={() => {
-            
-          }}>
-            
-            <Text style={{ textDecorationLine: 'underline', fontSize:14}}> Add a New rental{'  '}
-            <EvilIcons name="arrow-right" size={20} color="#000" />
-            </Text>
-            
-           
-          </Pressable>
-          
-        </View> */}
         </View>
       )}
 
@@ -326,23 +272,10 @@ export default function ExtendedProduct({ route, navigation }) {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>{title}</Text>
         </View>
-
-        {/* <View style={styles.about}>
-              <Text style={{margin:15, fontWeight: '500', fontSize: 15, lineHeight: 18, color: '#000',}}>
-                See availability on other days</Text>
-              <CalendarComponent
-                disabledDates={disabledDates}
-                minDate={availability.startDate}
-                maxDate={availability.endDate}
-              />
-        </View>  */}
         
         
         </View>
       )}
-
-
-      
 
     </View> 
   );
@@ -418,16 +351,13 @@ const styles = StyleSheet.create({
     alignContent: 'space-between',
   },
   tabsItemWrapper: {
-    //marginRight: 28,
   },
   tabsItem: {
     flexDirection: 'row',
     alignContent: 'space-between',
-    //alignItems: 'center',
-    //justifyContent: 'center',
     paddingTop: 10,
     paddingBottom: 4,
-    marginHorizontal:19,  // Change this if want to change the space between tabs
+    marginHorizontal:19,
   },
   tabsItemText: {
     fontWeight: '600',
@@ -445,17 +375,8 @@ const styles = StyleSheet.create({
   /** Photos */
   photos: {
     paddingVertical: 12,
-        gap: 6,
-        overflow: "scroll",
-
-    // paddingTop: 6,
-    // paddingHorizontal: 20,
-    // marginTop: 12,
-    // position: 'relative',
-    // height: 240,
-    // overflow: 'hidden',
-    // borderRadius: 12,
-    
+    gap: 6,
+    overflow: "scroll",
   },
   photosPagination: {
     position: 'absolute',
@@ -480,9 +401,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     width: '100%',
-    //height: 240,
     borderRadius: 12,
-    objectFit: 'cover', // Add this line
+    objectFit: 'cover',
   },
   /** Header */
   header: {
@@ -587,6 +507,7 @@ const styles = StyleSheet.create({
   about: {
     marginHorizontal: 20,
     marginTop: 8,
+    marginBottom:24,
   },
   aboutTitle: {
     fontWeight: '700',

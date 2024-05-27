@@ -53,8 +53,6 @@ export default function GoogleMaps({
                 <Marker
                     draggable={false}
                     coordinate={location}
-                    title={location.address}
-                    description={description}
                 />
             </MapView>
             <TouchableOpacity

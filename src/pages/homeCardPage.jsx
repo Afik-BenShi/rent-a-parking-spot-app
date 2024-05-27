@@ -559,7 +559,7 @@ export default function HomeCardPage({ navigation, route }) {
             (<CardList
               items={rentalItems}
               title=""
-              onItemPressed={(details) => navigation.navigate("productDetails", { details })}
+              onItemPressed={(details) => navigation.navigate("productDetails", { details, fromHome:true })}
             />)}
 
           {noContent && <OopsNoProducts />}

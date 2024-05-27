@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as expoImage from "expo-image-picker";
 import { Button, Dialog, Icon } from "@rneui/themed";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -27,8 +27,26 @@ export default function ImagePicker({
     const [image, setImage] = useState(uri);
     const [isLoading, setIsLoading] = useState(false);
     const imageConfirmation = useDialog();
+    const [imagePermissionsGranted, setImagePermissionsGranted] = useState(false)
+    
+    useEffect(() => {
+        (async () => {
+            const libraryStatus = await expoImage.requestMediaLibraryPermissionsAsync();
+            const cameraStatus = await expoImage.requestCameraPermissionsAsync();
+            console.log('libraryStatus', libraryStatus)
+            console.log('cameraStatus', cameraStatus)
+
+            if (libraryStatus.status !== 'granted' || cameraStatus.status !== 'granted') {
+                alert('Sorry, we need camera roll and media permissions to make this work!');
+            }
+            else {
+                setImagePermissionsGranted(true)
+            }
+        })();
+    }, [imagePermissionsGranted]);
+
     const handleImagePick = async () => {
-        if (disabled) {
+        if (disabled || !imagePermissionsGranted) {
             return;
         }
         setIsLoading(true);
@@ -45,12 +63,19 @@ export default function ImagePicker({
             const action = await imageConfirmation.openDialog();
             if (action === "select") {
                 await onImagePicked(result.assets[0]);
+            } else {
+                setImage('');
             }
         } catch (e) {
             console.error(e);
+            setImage('');
         }
         setIsLoading(false);
     };
+    const handleImageRevert = () => {
+        setImage('');
+        onRevert()
+    }
     return (
         <View style={styles.container}>
             <Button
@@ -78,7 +103,7 @@ export default function ImagePicker({
                 titleStyle={{...styles.buttonLabel, color:COLORS.white}}
                 disabledTitleStyle={{ color: COLORS.grey }}
                 loadingProps={{ color: "#000" }}
-                onPress={onRevert}
+                onPress={handleImageRevert}
             />
             <imageConfirmation.DialogComponent
                 overlayStyle={styles.dialogContainer}

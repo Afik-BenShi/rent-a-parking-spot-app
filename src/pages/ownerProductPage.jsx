@@ -5,7 +5,6 @@ import {
     ScrollView,
     StyleSheet,
     View,
-    Pressable,
     ActivityIndicator,
 } from "react-native";
 import { Button, Card, Text } from "@rneui/themed";
@@ -109,8 +108,6 @@ export default function OwnerProductPage({ route, navigation }) {
             );
     };
     useEffect(updateReservations, [userId]);
-
-    const contactMessage = `Hi I'm texting you about the ${details.title} you offered on RentalWize, Is it still available?`;
 
     const handleDeleteProduct = async () => {
         setLoading(true);
@@ -222,9 +219,6 @@ export default function OwnerProductPage({ route, navigation }) {
                 >
                     {details.title}
                 </EditableText>
-                {/* <Text h3 style={styles.text}>
-                    {details.title}
-                </Text> */}
                 <Card.Divider />
                 <EditableText
                     textStyle={styles.description}
@@ -312,9 +306,8 @@ const styles = StyleSheet.create({
     },
 });
 
-// TODO use consistent data instead of parsing
 /** @returns {ProductDetails} */
-export function parseItem({ details: item }) {
+export function parseItem({ details: item, fromHome=false}) {
     const {
         productId,
         id,
@@ -326,20 +319,21 @@ export function parseItem({ details: item }) {
         endDay,
         description,
         ownerId,
+        address,
         city,
-        distanceFromMe,
-        imageUrl,
         urlToimage,
         OrderStartDate,
         OrderEndDate,
         mainCategoryId,
-        OwnerInfo,
     } = item;
+    const OwnerInfo = item.OwnerInfo?? item.enriched_ownerId;
     return Object.assign(mock, {
         id: id ? id : productId,
         title,
         description,
         city,
+        fromHome,
+        location:{latitude: address?.lat, longitude: address?.lng},
         mainCategoryId,
         availability: {
             startDate: timeStampToDate(startDate ?? startDay),
