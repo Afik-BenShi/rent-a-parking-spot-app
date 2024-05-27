@@ -16,7 +16,7 @@ import { TooltipIcon } from "../components/TooltipIcon";
 import { styles } from "./signUpAndLogin.styles";
 import { debounce } from "../utils/utils";
 import axios from "axios";
-import config from "../backend/config";
+import {serverPath} from '../../backend.config.json';
 import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
@@ -188,7 +188,7 @@ export function SignUpDetails({ navigation }) {
         try {
             const result = await axios
                 .post(
-                    `http:/${config.serverIp}:${config.port}/users/upsert`,
+                    serverPath + `/users/upsert`,
                     {
                         fullName: fullName.text,
                         phoneNumber: phoneNumber.text,
@@ -265,7 +265,7 @@ export function SignUpDetails({ navigation }) {
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
                         requestUrl={{
-                            url: `http://${config.serverIp}:${config.port}`,
+                            url: serverPath,
                             useOnPlatform: 'all',
                             headers: {Authorization: userToken},
 

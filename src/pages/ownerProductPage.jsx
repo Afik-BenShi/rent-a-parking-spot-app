@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Button, Card, Text } from "@rneui/themed";
 
-import config from "../backend/config";
+import {serverPath} from '../../backend.config.json';
 
 import { COLORS } from "../../assets/theme";
 import ReservationTable from "../components/ReservationsTable";
@@ -29,7 +29,6 @@ import { getUser } from "../auth/auth";
 import { styles as moreStyles } from "./signUpAndLogin.styles";
 import { uploadImage } from "../utils/imageStorage";
 
-const SERVER = `http://${config.serverIp}:${config.port}`;
 
 export default function OwnerProductPage({ route, navigation }) {
     const { updatedItem, setUpdatedItem } = useContext(RefreshContext);
@@ -95,7 +94,7 @@ export default function OwnerProductPage({ route, navigation }) {
             .then((token) =>
                 axios
                     .get(
-                        SERVER +
+                        serverPath +
                             `/orders/owner/${userId}?time=all&productId=${details.id}`,
                         { headers: { Authorization: token } }
                     )
@@ -125,7 +124,7 @@ export default function OwnerProductPage({ route, navigation }) {
         const token = user?.getIdToken();
         try {
             const response = await axios.delete(
-                SERVER + "/myProducts/" + details.id,
+                serverPath + "/myProducts/" + details.id,
                 {
                     headers: { Authorization: await token },
                 }
@@ -158,7 +157,7 @@ export default function OwnerProductPage({ route, navigation }) {
         const token = await getAuth().currentUser?.getIdToken();
         try {
             await axios.put(
-                SERVER + `/myProducts/updateProductInfo/${details.id}`,
+                serverPath + `/myProducts/updateProductInfo/${details.id}`,
                 {
                     title,
                     description,

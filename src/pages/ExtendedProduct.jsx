@@ -21,7 +21,8 @@ import { dateRangeFormat } from "../utils/dateTime";
 import ExpandableImage from "../components/ExpandableImage";
 import { ContactButtons } from "../components/contactButtons";
 import GoogleMaps from "../components/GoogleMaps";
-import config from '../backend/config';
+import {serverPath} from '../../backend.config.json';
+import config from '../config';
 import { disabledDatesForProduct } from "../utils/dateTime";
 
 import CalendarComponent from '../components/calendar';
@@ -72,7 +73,7 @@ export default function ExtendedProduct({ route, navigation }) {
     const fetchAvailabilityByProductId = async () => {
         try {
             const token = await getAuth().currentUser?.getIdToken()
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/productAvailability`, { 
+            const response = await axios.get(serverPath + `/orders/productAvailability`, { 
               headers: { Authorization: token },
               params: { id } });
             console.log(response.data);

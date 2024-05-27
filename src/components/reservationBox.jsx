@@ -8,9 +8,8 @@ import useDialog from "../customStates/useDialog";
 import "../pages/productDetailsPage.types";
 import { getUser } from "../auth/auth";
 import axios from "axios";
-import config from "../backend/config";
+import {serverPath} from '../../backend.config.json';
 import { ConfirmationDialog } from "./ConfirmationDialog";
-const SERVER = `http://${config.serverIp}:${config.port}`;
 
 /**
  * @type {React.FC}
@@ -45,7 +44,7 @@ export default function ReservationBox({
             renterId: rsv.reservingUser.id,
         }
         try {
-            const response = await axios.put(SERVER + '/orders/update/' + rsv.id, payload, {headers:{Authorization :await token}});
+            const response = await axios.put(serverPath + '/orders/update/' + rsv.id, payload, {headers:{Authorization :await token}});
             if (response.status === 200) { 
                 setMessage("Reservation updated successfully");
                 setRsv((oldRsv) =>
@@ -73,7 +72,7 @@ export default function ReservationBox({
         const user = getUser();
         const token = user?.getIdToken();
         try {
-            const response = await axios.delete(SERVER + '/orders/' + rsv.id, {headers:{Authorization: await token}});
+            const response = await axios.delete(serverPath + '/orders/' + rsv.id, {headers:{Authorization: await token}});
             if (response.status === 200) { 
                 setMessage("Reservation removed successfully");
                 onDelete(rsv, index);

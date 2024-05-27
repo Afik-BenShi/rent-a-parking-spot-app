@@ -11,7 +11,7 @@ import { Header } from 'react-native-elements';
 
 import { COLORS } from '../../assets/theme';
 import CardListForMyOrders from '../components/cardListForMyOrders';
-import config from '../backend/config';
+import {serverPath} from '../../backend.config.json';
 import NoOrdersYet from './noOrdersYetPage';
 import { getAuth } from 'firebase/auth';
 
@@ -26,7 +26,7 @@ export default function MyOrderAsRenterPage({ navigation, route }) {
     const fetchMyOrderAsRenter = async () => {
         try {
             const token = getAuth().currentUser?.getIdToken()
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/renter/${userId}?time=all`,
+            const response = await axios.get(serverPath + `/orders/renter/${userId}?time=all`,
               {headers: { Authorization: await token },}
             );
             const items = response.data;

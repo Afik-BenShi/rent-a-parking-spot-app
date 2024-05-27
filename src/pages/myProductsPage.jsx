@@ -9,7 +9,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
-import config from '../backend/config';
+import {serverPath} from '../../backend.config.json';
 import { getUser } from '../auth/auth';
 import NoProductsYet from './noProductsYetPage';
 import { RefreshContext } from '../context/context';
@@ -28,7 +28,7 @@ export function MyProductsPage({ navigation, route }) {
     const fetchProducts = async () => {
         const token = await getUser()?.getIdToken();
         try {
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/myProducts`, {
+            const response = await axios.get(serverPath +`/myProducts`, {
                 headers: {Authorization: token},
                 params: { userId } });
             const items = response.data;

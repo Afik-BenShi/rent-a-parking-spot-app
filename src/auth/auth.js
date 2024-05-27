@@ -10,7 +10,7 @@ import {
     AuthErrorCodes,
 } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-import config from "../backend/config";
+import { serverPath } from "../../backend.config.json";
 import axios from "axios";
 
 function connectToFirebaseAuth() {
@@ -75,7 +75,7 @@ function getUser() {
 
 async function branchOnInfoExistance({user, doIfExists=()=>{}, doIfNotExists=()=>{}}) {
     const token = await user.getIdToken();
-    const isUserInfoExists = await axios.get(`http://${config.serverIp}:${config.port}/users/hasPrivateInfo`, {
+    const isUserInfoExists = await axios.get(serverPath + `/users/hasPrivateInfo`, {
         headers: { Authorization: await token},
     }).then(({data}) => data);
     if (isUserInfoExists){

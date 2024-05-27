@@ -26,7 +26,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { COLORS } from '../../assets/theme';
 import CardList from '../components/cardList';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import config from '../backend/config'
+import {serverPath} from '../../backend.config.json';
 import OopsNoProducts from '../components/oopsNoProducts';
 import { Header } from '@rneui/themed';
 import { getAuth } from 'firebase/auth';
@@ -95,7 +95,7 @@ export default function HomeCardPage({ navigation, route }) {
       console.log('fetchProducts in homeCard')
       console.log('fetchProducts filters', filters)
       const token = getAuth().currentUser?.getIdToken()
-      const response = await axios.get(`http://${config.serverIp}:${config.port}/products`, {
+      const response = await axios.get(serverPath + `/products`, {
         headers: { Authorization: await token },
         params: { filters, sort: selectedSort, userId }
       });
