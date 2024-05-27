@@ -1,10 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 
 // pages
 import AddProduct from './src/pages/MyAddProduct'
-import ProductDetailsPage from './src/pages/productDetailsPage';
 import SubmitPersonalDetails from './src/pages/submitDetails';
 import OwnerProductPage from './src/pages/ownerProductPage';
 import { MyProductsPage } from './src/pages/myProductsPage';
@@ -23,7 +22,7 @@ import { SignUpAuth, SignUpDetails } from "./src/pages/SignUp";
 import { Text, Icon } from '@rneui/themed';
 import LoadingPage from './src/pages/LoadingPage';
 
-import { RefreshContext, RefreshContextProvider } from './src/context/context';
+import { RefreshContextProvider } from './src/context/context';
 import { ResetPassword } from './src/pages/ResetPassword';
 
 
@@ -33,13 +32,11 @@ function HomeStackScreen({ route }) {
   const { userId } = route.params;
   return (
     <HomeStack.Navigator
-    //screenOptions={{ headerShown: false }}
     >
       <HomeStack.Screen name="category" component={ChooseCategoryPage} options={{ headerShown: false }} />
       <HomeStack.Screen name="HomeCard"
         component={homeCardPage}
         options={{ headerShown: false }} initialParams={{ userId }}
-      //options={{title: 'Home page', headerStyle: { backgroundColor: COLORS.btnBlue }}}
 
       />
 
@@ -49,7 +46,7 @@ function HomeStackScreen({ route }) {
         options={{ headerShown: false }} // to remove Stack header
       />
 
-      <HomeStack.Screen name="productDetails" component={ExtendedProduct} />
+      <HomeStack.Screen name="productDetails" options={{headerBackVisible:false}} component={ExtendedProduct} />
 
     </HomeStack.Navigator>
   );

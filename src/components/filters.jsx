@@ -1,7 +1,7 @@
 // Filter.jsx
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, Pressable, View, TouchableOpacity, TextInput } from 'react-native';
-import { Header, Input, ButtonGroup, Text } from '@rneui/themed';
+import { StyleSheet, SafeAreaView, ScrollView, KeyboardAvoidingView, View, TouchableOpacity, TextInput } from 'react-native';
+import { Header, Text } from '@rneui/themed';
 import { FontAwesome } from '@expo/vector-icons';
 import Divider from './divider';
 import DatePicker from './DatePick';
@@ -9,21 +9,15 @@ import styles2 from './addProduct.style'
 import { COLORS } from '../../assets/theme';
 import Feather from 'react-native-vector-icons/Feather';
 import SingleSelectListDropDown from './SingleSelectListDropDown';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { set } from 'lodash';
 
 const CIRCLE_SIZE = 18;
 const CIRCLE_RING_SIZE = 2;
 
 const Filter = ({ navigation, route }) => {
   
-  const { onReturn, filters, locationsList, items } = route.params;
-  console.log('onReturn', onReturn)
-  console.log('locationsList', locationsList);
-  console.log('filters', filters);
+  const { onReturn, filters, locationsList } = route.params;
 
   const [startDate, setStartDate] = useState(filters.startDate != "" ? filters.startDate : ""); // State for start date
   const [endDate, setEndDate] = useState(filters.endDate != "" ? filters.endDate : "");  // State for end date
@@ -35,13 +29,10 @@ const Filter = ({ navigation, route }) => {
   const [openPicker, setOpenPicker] = useState(false);
   const [invalidInputMsg, setInvalidInputMsg] = useState(false);
   
-  const [value, setValue] = useState(parseInt(selectedCategory));
   const [finalStartDate, setFinalStartDate] = useState(filters.startDate != "" ? filters.startDate : ""); // State for final start date
   const [finalEndDate, setFinalEndDate] = useState(filters.endDate != "" ? filters.endDate : "");  // State for final end date
 
 
-  console.log('startDateF', finalStartDate);
-  console.log('endDateF', finalEndDate);
 
   const updateDateFilter = () => {
     if (finalStartDate && finalEndDate && finalStartDate <= finalEndDate) {
@@ -63,8 +54,6 @@ const Filter = ({ navigation, route }) => {
   
   function isValidDates () {
     if (startDate && endDate){
-      console.log("start "+ startDate);
-      console.log("end "+ endDate);
 
       return startDate <= endDate;
     }
@@ -76,8 +65,6 @@ const Filter = ({ navigation, route }) => {
 
   function isValidInputOnSearchPress () {
     if (finalStartDate && finalEndDate){
-      console.log("final start "+ finalStartDate);
-      console.log("final end "+ finalEndDate);
 
       return finalStartDate <= finalEndDate;
     }
@@ -111,93 +98,12 @@ const Filter = ({ navigation, route }) => {
 
         centerComponent={{ text: 'Filters', style: { color: COLORS.cartTitle, fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
             
-        rightComponent={ {}
-          // <View style={styles.backBtn}>
-          // <View style={styles.square} />
-          //   <TouchableOpacity style={styles.buttonContainer} 
-          //   onPress={() => navigation.navigate('filters', { locationsList, items , onReturn: (data) => { console.log('return filter'); setFiltersWithUpdatedData(data) } , filters })}>
-          //         <MaterialCommunityIcons name="filter" color={COLORS.black} size={24} style={styles.headerComponent}/>
-                  
-          //       </TouchableOpacity>
-          //   </View>
-        }
+        rightComponent={{}}
         backgroundColor={'white'}
-        //borderRadius={12}
         containerStyle={styles.headerContainer}
         />
 
         <ScrollView style={{ paddingBottom:140}}>
-        
-        
-      
-
-          {/* <Header style={styles.actionWrapper}
-            leftComponent={
-              <TouchableOpacity
-              onPress={navigation.goBack}
-              style={{ marginRight: 'auto', marginTop:-30}}>
-              <View style={styles.action}>
-                <FeatherIcon
-                  color="#242329"
-                  name="chevron-left"
-                  size={20} />
-              </View>
-            </TouchableOpacity>
-              
-            }
-            //centerComponent={{ text: 'Refine your search', style: { color: '#fff', fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
-            centerComponent={{ text: 'Filters', style: { color: COLORS.cartTitle, fontSize: 21, fontWeight: 'bold', marginTop: -20 } }}
-            
-            backgroundColor={'white'}
-            borderRadius={12}
-            containerStyle={styles.headerContainer}
-        
-          /> */}
-
-          {/* <Divider /> */}
-
-          {/* Single-Select List for Categories (All Categories) */}
-          {/*
-          <SingleSelectListDropDown
-            //data={categories}
-            selectedData={selectedCategory}
-            onSelectCategory={(selected) => setSelectedCategory(selected)}
-            title="Choose from all Categories"
-          />
-        */}
-        {/* <View style={styles.about}>
-            <Text style={styles.aboutTitle}>Category </Text> 
-
-        <View style={styles.sheetBody}>
-          {items.map(({ key, label }, index) => {
-            const isActive = value === index;
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  setValue(index);
-                  setSelectedCategory(items[index].key);
-                }}>
-                <View style={styles.radio}>
-
-                  <Text style={styles.radioLabel}>{label}</Text>
-
-                  <View style={styles.radioCircle}>
-                    <View
-                      style={[
-                        styles.radioCircleInset,
-                        isActive && { backgroundColor: '#ff6a55' },
-                      ]} />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-          
-        </View>
-        </View>
-        <Divider />  */}
-          
 
           {/* Location Input */}
           <View style={styles.about}>
@@ -219,46 +125,11 @@ const Filter = ({ navigation, route }) => {
             }}
               placeholderText={city ? city : "Select a location"}
             />
-        
-            
-            
-            {/* {<Input
-              placeholder= {"Use my current location"}
-              defaultValue= {city}
-              leftIcon={{ type: 'font-awesome', name: 'map-marker', color: '#86939e' }}
-              
-              onChangeText={(newText) => {
-                if (newText == "") {
-                  if (filters.city != ""){
-                    setCity("");
-                  }
-                  else {
-                    setCity(filters.city);
-                  }
-                }
-                else {
-                  setCity(newText);  // Update the city in the state
-                }
-              }}
-            />} */}
           </View>
           <Divider /> 
 
           <View style={styles.about}>
             <Text style={styles.aboutTitle}>Max price</Text>
-            
-            {/*
-
-            <Input
-                    label="Location"
-                    labelStyle={styles.inputLabel}
-                    leftIcon={<MoreIcon name="location-outline" size={18} />}
-                    placeholder=" Enter your location"
-                    onChangeText={(text) => sendDataToParent("city", text)}
-                    inputStyle={styles.inputControl}
-                    inputContainerStyle={{ borderBottomWidth: 0 }} 
-                />
-            */}
 
             <View style={styles.searchSectionWrapper}>
                 <View style={styles.searchBarNew}>
@@ -283,45 +154,16 @@ const Filter = ({ navigation, route }) => {
                         }
                       }
                       else {
-                        console.log('newMaxPrice', newText)
                         // Update the maxPrice in the state
                         setMaxPrice(newText);
                       }
                     }}
                     
-                    //value={searchTerm}
                     />
                 </View>
                 </View>
             
-            {/* <Input
-              inputContainerStyle={{ borderBottomWidth: 0 }} 
-              inputStyle={styles.inputControl}  // -
-              placeholder={"Enter desired max price"}
-              defaultValue={maxPrice??""} 
-              leftIcon={<Entypo color="#000" name="price-tag" size={18} />}
-              keyboardType="numeric"
-              onChangeText={(newText) => {
-                if (newText == "") {
-                  // Update the maxPrice in the state
-                  if (filters.maxPrice != ""){
-                    setMaxPrice(null);
-                  }
-                  else {
-                    setMaxPrice(filters.maxPrice);
-                  }
-                }
-                else {
-                  console.log('newMaxPrice', newText)
-                  // Update the maxPrice in the state
-                  setMaxPrice(newText);
-                }
-              }}
-            /> */}
-            
           </View>
-          {/* <View style={styles.divider}>  
-          <View style={styles.dividerInset} /></View> */}
           <Divider /> 
               <View style={styles.about}>
                 <Text style={styles.aboutTitle}> Dates : {SelectionText()}</Text>
@@ -411,25 +253,6 @@ const Filter = ({ navigation, route }) => {
 
 
                 </View>)}
-
-          {/* Date Picker for Start Date */}
-          {/* <Text style={styles.dateTitle}> Start Date: {dateFilter && startDate.toLocaleDateString()} </Text>
-          <DatePicker
-            label="Start Date"
-            value={startDate}
-            onDateChange={(date) => setStartDate(date)}
-            minDate={new Date()}
-          />
-          <Divider /> */}
-
-          {/* Date Picker for End Date */}
-          {/* <Text style={styles.dateTitle}>Finish Date: {dateFilter && endDate.toLocaleDateString()}</Text>
-          <DatePicker
-            label="End Date"
-            value={endDate}
-            onDateChange={(date) => setEndDate(date)}
-            minDate={startDate}
-          /> */}
           <Divider /> 
 
           
@@ -720,23 +543,6 @@ const styles = StyleSheet.create({
         height: 1,
       },
   },
-  // header
-  // headerContainer: {
-  //   backgroundColor: '#fff',
-  //   justifyContent: 'flex-start',
-  //   height: 80,
-  //   marginTop: 0,
-  //   borderWidth: 1,
-  //   borderColor: COLORS.lightgrey,
-  //   elevation: 1, // Android shadow
-  //   shadowColor: '#000', // iOS shadow
-  //   shadowOpacity: 0.1, // iOS shadow
-  //   shadowRadius: 1, // iOS shadow
-  //   shadowOffset: {
-  //     width: 0,
-  //     height: 1,
-  //   },
-  // },
   searchSectionWrapper:{
     flexDirection: 'row',
     marginVertival:20,
