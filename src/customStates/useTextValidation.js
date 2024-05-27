@@ -69,13 +69,13 @@ export default function useValidatedText(
  * @returns {boolean} is valid?
  */
 export function validateRequiredFields(...fields){
-    return fields.every(async (field)=> {
+    return fields.reduce((allValid, field)=> {
         if (!field.text){
             field.validate();
             return false;
         }
-        return field.isValid
-    });
+        return allValid && field.isValid
+    }, true);
 }
 
 /**

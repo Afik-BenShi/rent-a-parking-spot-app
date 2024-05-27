@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Card, Input, Text, Icon, Button } from "@rneui/themed";
+import { Card, Input, Text, Icon, Button, CheckBox } from "@rneui/themed";
 import {
     View,
     SafeAreaView,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
+    Pressable,
+    Linking,
 } from "react-native";
 import useValidatedText, {
     validateRequiredFields,
@@ -46,6 +48,7 @@ export function SignUpAuth({ navigation, route }) {
             }
         }, [])
     );
+    const [isAcceptPrivacy, setAcceptPrivacy] = useState(false);
 
     const clearForm = async () => {
         email.setText("");
@@ -59,6 +62,11 @@ export function SignUpAuth({ navigation, route }) {
 
     const authSignUpHandler = async () => {
         const isValid = validateRequiredFields(email, password);
+        if (!isAcceptPrivacy){
+            setErrorMessage("You must acccept our policies to use the app");
+            return;
+        }
+        console.log(isValid)
         if (!isValid) {
             setErrorMessage("");
             return;
@@ -123,6 +131,24 @@ export function SignUpAuth({ navigation, route }) {
                     disabled={isLoading}
                     secureTextEntry={true}
                 />
+                <View style={{gap:-100, alignSelf:'center'}}>
+                <CheckBox 
+                title="I accept the terms and conditions and the privacy policy"
+                checked={isAcceptPrivacy}
+                onPress={()=> setAcceptPrivacy(v => !v)}
+                wrapperStyle={{marginBottom:0, paddingBottom:0}}
+                containerStyle={{marginBottom:0, paddingBottom:0}}
+                textStyle={styles.text}
+                />
+                <View style={{flexDirection:"row", gap:6, alignSelf:'center'}}>
+                    <Pressable onPress={()=> Linking.openURL('https://afiks2.wixstudio.io/rentalwize/terms')}>
+                        <Text style={styles.link}>Terms and Conditions</Text>
+                    </Pressable>
+                    <Pressable onPress={()=> Linking.openURL('https://afiks2.wixstudio.io/rentalwize/privacy')}>
+                        <Text style={styles.link}>Privacy Policy</Text>
+                    </Pressable>
+                </View>
+                </View>
                 {errorMessage ? (
                     <Text style={styles.failText}>{errorMessage}</Text>
                 ) : (

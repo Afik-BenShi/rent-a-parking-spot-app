@@ -38,6 +38,12 @@ export const styles = StyleSheet.create({
         fontWeight: "900",
         color: COLORS.black,
     },
+    text: {
+        ...moreStyles.profileHandle,
+        fontSize: 15,
+        fontWeight: "500",
+        color: COLORS.black,
+    },
     tooltip: {
         width: 160,
         height: "auto",
