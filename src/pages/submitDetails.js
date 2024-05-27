@@ -14,7 +14,7 @@ import NextBackBtn from '../components/nextAndBackBtn';
 import ExpandableImage from "../components/ExpandableImage";
 
 import { getUser } from '../auth/auth';
-import config from '../backend/config'
+import {serverPath} from '../../backend.config.json';
 import { RefreshContext } from '../context/context';
 import { uploadImage, convertToBytes } from '../utils/imageStorage';
 
@@ -87,13 +87,6 @@ export default function SubmitDetails({ navigation, route }) {
         console.error('Error while converting image to blob:', JSON.stringify(err));
       }
 
-      // imgRes = await fetch(`http://${config.serverIp}:${config.port}/myProducts/img`, {
-      //   method: 'POST',
-      //   headers: {
-      //     Authorization: token
-      //   },
-      //   body: formData
-      // });
 
     } catch (err) {
       console.error('Error while uploading an image:', JSON.stringify(err));
@@ -127,7 +120,7 @@ export default function SubmitDetails({ navigation, route }) {
 
     console.log('newProduct', newProduct);
 
-    fetch(`http://${config.serverIp}:${config.port}/myProducts/add`, {
+    fetch(serverPath + `/myProducts/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

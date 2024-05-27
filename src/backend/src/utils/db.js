@@ -12,7 +12,7 @@ const _ = require("lodash");
 /** @type {FirebaseFirestore.Firestore} */
 let db;
 const init = () => {
-    const serviceAccount = require("../../../rental-wize-firebase-adminsdk.json");
+    const serviceAccount = require("../.env/rental-wize-firebase-adminsdk.json");
 
     initializeApp({
         credential: cert(serviceAccount),
@@ -254,8 +254,8 @@ const closeConnection = async () => {
 
 
 /**
- * @param {string} productId 
- * @param {Timestamp} startDate 
+ * @param {string} productId
+ * @param {Timestamp} startDate
  * @param {Timestamp} endDate */
 const getAvailableProductsWithinDateRange = async (productId, startDate, endDate) => {
     try {
@@ -302,7 +302,7 @@ const getAvailableProductsWithinDateRange = async (productId, startDate, endDate
 
 
 /**
- * @param {Array} items 
+ * @param {Array} items
  */
 const distinctProducts = async (items) => {
     // Create a map to store unique items based on some identifier (e.g., productId)
@@ -315,7 +315,7 @@ const distinctProducts = async (items) => {
 };
 
 /**
- * @param {string} product id 
+ * @param {string} product id
  */
 const getProductAvailabilityDb = async (id) => {
     try {

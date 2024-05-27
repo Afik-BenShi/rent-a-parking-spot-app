@@ -4,12 +4,11 @@ import dayjs from "dayjs"
 import { NewReservationBox } from "./reservationBox";
 import InputWithSuggestions from "./InputWithSuggestions";
 
-import config from "../backend/config";
+import {serverPath} from "../../backend.config.json";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Card, Icon, Text } from "@rneui/themed";
 import { getAuth } from "firebase/auth";
 
-const SERVER = `http://${config.serverIp}:${config.port}`;
 export default function AddOrder({ userId, productId, onSuccess = (_) => { } }) {
     const now = new Date();
     const [isExpanded, toggleExpand] = useState(false);
@@ -32,7 +31,7 @@ export default function AddOrder({ userId, productId, onSuccess = (_) => { } }) 
     const userSuggestions = async (query) => {
         const token = getAuth().currentUser?.getIdToken()
         const values = await axios
-            .get(SERVER + `/users/suggestion?q=${encodeURI(query)}`
+            .get(serverPath + `/users/suggestion?q=${encodeURI(query)}`
                 , { headers: { Authorization: await token } })
             .then(({ data }) => data)
             .catch((_) => []);
@@ -60,7 +59,7 @@ export default function AddOrder({ userId, productId, onSuccess = (_) => { } }) 
     const fetchProductOrders = async () => {
         try {
             const token = getAuth().currentUser?.getIdToken()
-            const response = await axios.get(`http://${config.serverIp}:${config.port}/orders/getProductEmptyTimeOrder`,
+            const response = await axios.get(serverPath + `/orders/getProductEmptyTimeOrder`,
                 {
                     headers: { Authorization: await token },
                     params: { productId }
@@ -111,7 +110,7 @@ export default function AddOrder({ userId, productId, onSuccess = (_) => { } }) 
             productId,
             renterId: rsv.reservingUser.id,
         }
-        const response = await axios.post(SERVER + '/orders/add', payload, { headers: { Authorization: await token } });
+        const response = await axios.post(serverPath + '/orders/add', payload, { headers: { Authorization: await token } });
         if (response.status === 200) {
             setUser('');
             onSuccess(response.data);

@@ -20,7 +20,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { COLORS } from '../../assets/theme';
 import styles from '../components/addProduct.style';
 import { Input } from '@rneui/themed';
-import config from '../backend/config'
+import {serverPath} from '../../backend.config.json';
 import { signOutUser, getUser } from '../auth/auth';
 import { getAuth } from 'firebase/auth';
 
@@ -48,13 +48,13 @@ export default function Profile({ navigation, route }) {
   const fetchData = async () => {
     try {
       const token = await getUser()?.getIdToken();
-      const response = await axios.get(`http://${config.serverIp}:${config.port}/users/personalDetails`, {
+      const response = await axios.get(serverPath + `/users/personalDetails`, {
         headers: { Authorization: token },
         params: { userId }
       });
       const details = response.data;
       if (details.address.lat && details.address.lng) {
-        const geocodeResult = await axios.get(`http://${config.serverIp}:${config.port}/location/geocode`, {
+        const geocodeResult = await axios.get(serverPath + `/location/geocode`, {
           headers:{
             'Content-Type': 'application/json',
             Authorization: token,
@@ -103,7 +103,7 @@ export default function Profile({ navigation, route }) {
     const token = await getAuth().currentUser.getIdToken();
     await axios({
       method: 'post',
-      url: `http://${config.serverIp}:${config.port}/users/upsert`,
+      url: serverPath + `/users/upsert`,
       data: { ...profileData, id: userId },
       headers: { Authorization: token },
     })
@@ -239,7 +239,7 @@ export default function Profile({ navigation, route }) {
                         onFail={error => console.log(error)}
                         onNotFound={() => console.log('no results')}
                         requestUrl={{
-                          url: `http://${config.serverIp}:${config.port}`,
+                          url: serverPath,
                           useOnPlatform: 'all',
                           headers: {Authorization: userToken},
 

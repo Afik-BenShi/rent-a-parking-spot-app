@@ -17,7 +17,7 @@ import useValidatedText, {
     validateRequiredFields,
 } from "../customStates/useTextValidation";
 import { Icon } from "react-native-elements";
-import config from "../backend/config";
+import {serverPath} from '../../backend.config.json';
 import { getUser } from "../auth/auth";
 
 const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndDateToParent, sendCatToParent }) => {
@@ -160,7 +160,7 @@ const FillPersonalDetails = ({ sendDataToParent, sendStartDateToParent, sendEndD
                             onFail={error => console.log(error)}
                             onNotFound={() => console.log('no results')}
                             requestUrl={{
-                                url: `http://${config.serverIp}:${config.port}`,
+                                url: serverPath,
                                 useOnPlatform: 'all',
                                 headers: { Authorization: userToken },
 

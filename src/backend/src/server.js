@@ -19,6 +19,7 @@ storage.init()
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
+app.set('trust proxy', true);
 
 //---------------------------------------------------------
 // Middleware to log incoming requests
