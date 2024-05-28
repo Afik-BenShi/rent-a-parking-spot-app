@@ -2,6 +2,9 @@
   "expo": {
     "name": "RentalWize",
     "slug": "rentalwize",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +31,7 @@
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
       ],
+      "config":{"googleMaps":{"apiKey": ENTER API KEY BEFORE BUILD}},
       "package": "com.rentalwize.rentaparkingspotapp"
     },
     "web": {
@@ -46,7 +50,6 @@
         "projectId": "ddce85cb-321e-4d35-b635-9e5d8ea61d05"
       }
     },
-    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/ddce85cb-321e-4d35-b635-9e5d8ea61d05"
     }

@@ -14,7 +14,7 @@
     "@google-cloud/spanner": "^7.3.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/datetimepicker": "8.0.1",
-    "@react-native-picker/picker": "^2.7.6",
+    "@react-native-picker/picker": "2.7.5",
     "@react-navigation/bottom-tabs": "^6.5.12",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
@@ -40,7 +40,6 @@
     "react-native-elements": "^3.4.3",
     "react-native-google-places-autocomplete": "^2.5.6",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
-    "react-native-maps": "^1.14.0",
     "react-native-multiple-select": "^0.5.12",
     "react-native-picker-select": "^9.1.3",
     "react-native-raw-bottom-sheet": "^2.2.0",
@@ -49,7 +48,8 @@
     "react-native-vector-icons": "^10.1.0",
     "react-native-virtualized-view": "^1.0.0",
     "uuid": "^9.0.1",
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest": "^1.8.0",
+    "react-native-maps": "1.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"
