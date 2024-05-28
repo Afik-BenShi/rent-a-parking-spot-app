@@ -1,7 +1,10 @@
 {
   "expo": {
-    "name": "rent-a-parking-spot-app",
-    "slug": "rent-a-parking-spot-app",
+    "name": "RentalWize",
+    "slug": "rentalwize",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +12,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FAFAFC"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +24,15 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+      ],
+      "config":{"googleMaps":{"apiKey": ENTER API KEY BEFORE BUILD}},
+      "package": "com.rentalwize.rentaparkingspotapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,6 +44,14 @@
           "photosPermission": "Rental-Wize needs access to your photos for uploading photos of your products and a picture for your account."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ddce85cb-321e-4d35-b635-9e5d8ea61d05"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ddce85cb-321e-4d35-b635-9e5d8ea61d05"
+    }
   }
 }

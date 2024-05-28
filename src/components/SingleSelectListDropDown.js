@@ -6,24 +6,6 @@ export default function SingleSelectListDropDown({ dataToShow, onSelectCategory,
     
     const [selected, setSelected] = useState("");
     
-    // let data = [
-    //     {key:'1', value:'Outdoor equipment'},
-    //     {key:'2', value:'Entertainment & Events'},
-    //     {key:'3', value:'Home Improvement'},
-    // ];
-    
-    // let formattedData = [];
-    // data = dataToShow ? dataToShow : data;
-    // if (!dataToShow) {
-    //     formattedData = data;
-    // }
-    // else{
-    //     formattedData = dataToShow.map((value, index) => ({
-    //         key: index.toString(), // Use the index as the key
-    //         value: value // Use the item itself as the label
-    //     }));
-    // }
-
     // Default data in case dataToShow is not provided
     const defaultData = [
         { key: '1', value: 'Outdoor equipment' },

@@ -5,13 +5,10 @@ import {
   ScrollView,
   SafeAreaView,
   Text,
-  Image,
   TouchableOpacity,
 } from 'react-native';
-import { Text as RneText } from '@rneui/themed';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-//import Swiper from 'react-native-swiper';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

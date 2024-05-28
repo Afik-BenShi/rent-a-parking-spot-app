@@ -7,7 +7,7 @@ import {
     Platform,
 } from "react-native";
 import { Text } from "@rneui/themed";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { COLORS } from "../../assets/theme";
 
 /**
@@ -49,6 +49,7 @@ export default function GoogleMaps({
                 rotateEnabled={movable}
                 pitchEnabled={movable}
                 scrollEnabled={movable}
+                provider={PROVIDER_GOOGLE}
             >
                 <Marker
                     draggable={false}
