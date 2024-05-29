@@ -4,7 +4,6 @@ import {
     View,
     SafeAreaView,
     ScrollView,
-    TouchableOpacity,
     StyleSheet,
     Pressable,
     Linking,
@@ -16,7 +15,6 @@ import { COLORS } from "../../assets/theme";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { TooltipIcon } from "../components/TooltipIcon";
 import { styles } from "./signUpAndLogin.styles";
-import { debounce } from "../utils/utils";
 import axios from "axios";
 import {serverPath} from '../../backend.config.json';
 import { AuthErrorCodes, getUser, signUpWithEmail } from "../auth/auth";

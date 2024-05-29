@@ -13,6 +13,10 @@
  *      longitude: number,
  *      address: string,
  *  },
+ *  address: {
+ *      lat: number,
+ *      lng: number,
+ *  },
  *  owner: {
  *      id: string,
  *      name: string,

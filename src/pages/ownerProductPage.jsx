@@ -333,6 +333,7 @@ export function parseItem({ details: item, fromHome=false}) {
         description,
         city,
         fromHome,
+        address,
         location:{latitude: address?.lat, longitude: address?.lng},
         mainCategoryId,
         availability: {

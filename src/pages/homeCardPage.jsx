@@ -344,16 +344,6 @@ export default function HomeCardPage({ navigation, route }) {
               </Text>
             </View>
           }
-          rightComponent={
-            <View style={styles.backBtn}>
-              <TouchableOpacity style={styles.buttonContainer}
-                onPress={() => sheet.current.open()}
-              >
-                <Feather name="more-horizontal" color={COLORS.black} size={24} style={styles.headerComponent} />
-
-              </TouchableOpacity>
-            </View>
-          }
           containerStyle={styles.headerContainer}
         />
       </View>

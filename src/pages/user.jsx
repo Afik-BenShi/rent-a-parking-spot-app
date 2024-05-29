@@ -207,9 +207,9 @@ export default function Profile({ navigation, route }) {
                         style={moreStyles.profileAvatar_editMode}
                         resizeMode="cover"
                       />
-                      <TouchableOpacity style={moreStyles.cameraIcon} onPress={() => { }/* handle change img */}>
+                      {/* <TouchableOpacity style={moreStyles.cameraIcon} onPress={() => { }}>
                         <MoreIcon name="camera" size={24} color={COLORS.btnBlue} style={moreStyles.cameraIcon} />
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
                     </View>
 
 
