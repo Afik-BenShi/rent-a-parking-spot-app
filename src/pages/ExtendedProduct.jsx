@@ -45,14 +45,12 @@ export default function ExtendedProduct({ route, navigation }) {
         title, 
         description, 
         owner,   // object - {id, name, phone}
-        availability,
-        city, 
+        availability, 
         price,
         location,
         address,
         orderDates,
         mainCategoryId,
-        image,
         fromHome,
         } = details;
 
@@ -78,10 +76,29 @@ export default function ExtendedProduct({ route, navigation }) {
             console.log(JSON.stringify(err))
         }
     };
-
-
+    const [addressLabel, setAddress] = useState("");
+    const fetchLocationLabel = async () => {
+      try{
+        const token = getAuth().currentUser?.getIdToken();
+        if (address.lat && address.lng) {
+          const geocodeResult = await axios.get(serverPath + `/location/geocode`, {
+            headers:{
+              'Content-Type': 'application/json',
+              Authorization: await token,
+            },
+            params:{latlng : `${address.lat},${address.lng}`},
+          }).then(({data}) => data);
+          const formattedAddress = geocodeResult.results[0].formatted_address.split(', ').slice(0, -1).join(', ')
+  
+          setAddress(formattedAddress);
+        }
+      } catch (e) {
+          setAddress("we had a problem fetching address");
+      }
+    }
     useEffect(() => {
       fetchAvailabilityByProductId();
+      fetchLocationLabel();
     }, []);
 
   
@@ -148,7 +165,7 @@ export default function ExtendedProduct({ route, navigation }) {
                 name="map-pin"
                 size={14} />
 
-              <Text style={styles.headerLocationText}>{city}</Text>
+              <Text style={styles.headerLocationText}>{addressLabel}</Text>
             </View>
             
             <Text style={styles.cardPrice}>
@@ -173,7 +190,7 @@ export default function ExtendedProduct({ route, navigation }) {
           
           <Text style={{marginLeft: 8, fontWeight: '500', fontSize: 13, lineHeight: 18, color: '#000',}}>
             Order Dates:</Text>
-          <TouchableOpacity
+          <View
             style={styles.pickerDates}>
             <FeatherIcon
               color="#242329"
@@ -181,7 +198,7 @@ export default function ExtendedProduct({ route, navigation }) {
               size={16} />
 
             <Text style={styles.pickerDatesText}>   {startDay}   -   {endDay}</Text>
-          </TouchableOpacity> 
+          </View> 
         </View>}
 
     

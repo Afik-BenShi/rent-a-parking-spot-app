@@ -187,24 +187,19 @@ const styles = StyleSheet.create({
     },
 // add new product button
   newProductBtn: {
-    position: 'absolute',
-    bottom: -10,
-    right: 122,
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
+    width:"100%",
+    alignSelf:"flex-end",
+    justifyContent:"center",
+    alignItems:"center",
     zIndex: 999, // Ensure it's above other content
   },
   circle: {
-    position: 'absolute',
     backgroundColor: '#fff', 
     borderRadius: 30,
     width: 38,
     height: 38,
-    bottom: 20,
-    right: 150,
     zIndex: -1, // Ensure it's behind the button
   },
   cardList: {

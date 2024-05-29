@@ -106,11 +106,11 @@ const Filter = ({ navigation, route }) => {
         <ScrollView style={{ paddingBottom:140}}>
 
           {/* Location Input */}
-          <View style={styles.about}>
-            <Text style={styles.aboutTitle}>Location </Text>
+          {/* <View style={styles.about}>
+            <Text style={styles.aboutTitle}>Location </Text> */}
             {/* Single-Select List for Categories (All Categories) */}
           
-            <SingleSelectListDropDown
+            {/* <SingleSelectListDropDown
               dataToShow={locationsList}
               selectedData={city}
               onSelectCategory={(selected) => {
@@ -126,7 +126,7 @@ const Filter = ({ navigation, route }) => {
               placeholderText={city ? city : "Select a location"}
             />
           </View>
-          <Divider /> 
+          <Divider />  */}
 
           <View style={styles.about}>
             <Text style={styles.aboutTitle}>Max price</Text>
